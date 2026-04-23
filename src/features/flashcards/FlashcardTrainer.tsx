@@ -102,6 +102,9 @@ export const FlashcardTrainer = (props: {
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 text-left">
               {partsOfSpeech.map(part => (
                 <div key={`${currentWord.id}-${part.part_of_speech}-${part.meaning}-${part.example}`} className="rounded-lg bg-background/80 px-4 py-3">
+                  <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {part.part_of_speech}
+                  </div>
                   <div className="text-lg font-semibold leading-snug text-foreground">{part.meaning}</div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     {props.labels.example}
