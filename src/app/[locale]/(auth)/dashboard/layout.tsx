@@ -1,62 +1,55 @@
-import { SignOutButton } from '@clerk/nextjs';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher';
-import { Link } from '@/libs/I18nNavigation';
-import { BaseTemplate } from '@/templates/BaseTemplate';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default async function DashboardLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await props.params;
-  setRequestLocale(locale);
+import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
+
+export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
-    locale,
-    namespace: 'DashboardLayout',
+    locale: props.params.locale,
+    namespace: 'Dashboard',
   });
 
-  return (
-    <BaseTemplate
-      leftNav={
-        <>
-          <li>
-            <Link
-              href="/dashboard/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('dashboard_link')}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/dashboard/user-profile/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('user_profile_link')}
-            </Link>
-          </li>
-        </>
-      }
-      rightNav={
-        <>
-          <li>
-            <SignOutButton>
-              <button
-                className="border-none text-gray-700 hover:text-gray-900"
-                type="button"
-              >
-                {t('sign_out')}
-              </button>
-            </SignOutButton>
-          </li>
+  return {
+    title: t('meta_title'),
+    description: t('meta_description'),
+  };
+}
 
-          <li>
-            <LocaleSwitcher />
-          </li>
-        </>
-      }
-    >
-      {props.children}
-    </BaseTemplate>
+export default function DashboardLayout(props: { children: React.ReactNode }) {
+  const t = useTranslations('DashboardLayout');
+
+  return (
+    <>
+      <div className="shadow-md">
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-3 py-4">
+          <DashboardHeader
+            menu={[
+              {
+                href: '/dashboard',
+                label: t('home'),
+              },
+              // PRO: Link to the /dashboard/todos page
+              {
+                href: '/dashboard/organization-profile/organization-members',
+                label: t('members'),
+              },
+              {
+                href: '/dashboard/organization-profile',
+                label: t('settings'),
+              },
+              // PRO: Link to the /dashboard/billing page
+            ]}
+          />
+        </div>
+      </div>
+
+      <div className="min-h-[calc(100vh-72px)] bg-muted">
+        <div className="mx-auto max-w-screen-xl px-3 pb-16 pt-6">
+          {props.children}
+        </div>
+      </div>
+    </>
   );
 }
+
+export const dynamic = 'force-dynamic';

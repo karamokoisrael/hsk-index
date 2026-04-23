@@ -1,39 +1,37 @@
 import * as Sentry from '@sentry/nextjs';
 
-const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
-  // Sentry DSN
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Node.js Sentry configuration
+    Sentry.init({
+      // Sentry DSN
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Enable Spotlight in development
-  spotlight: process.env.NODE_ENV === 'development',
+      // Enable Spotlight in development
+      spotlight: process.env.NODE_ENV === 'development',
 
-  integrations: [Sentry.consoleLoggingIntegration()],
+      // Adjust this value in production, or use tracesSampler for greater control
+      tracesSampleRate: 1,
 
-  // Adds request headers and IP for users, for more info visit
-  sendDefaultPii: true,
+      // Setting this option to true will print useful information to the console while you're setting up Sentry.
+      debug: false,
+    });
+  }
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  if (process.env.NEXT_RUNTIME === 'edge') {
+    // Edge Sentry configuration
+    Sentry.init({
+      // Sentry DSN
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
+      // Enable Spotlight in development
+      spotlight: process.env.NODE_ENV === 'development',
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-};
+      // Adjust this value in production, or use tracesSampler for greater control
+      tracesSampleRate: 1,
 
-export function register() {
-  if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
-    if (process.env.NEXT_RUNTIME === 'nodejs') {
-      // Node.js Sentry configuration
-      Sentry.init(sentryOptions);
-    }
-
-    if (process.env.NEXT_RUNTIME === 'edge') {
-      // Edge Sentry configuration
-      Sentry.init(sentryOptions);
-    }
+      // Setting this option to true will print useful information to the console while you're setting up Sentry.
+      debug: false,
+    });
   }
 }
-
-export const onRequestError = Sentry.captureRequestError;

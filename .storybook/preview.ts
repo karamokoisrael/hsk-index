@@ -1,5 +1,6 @@
 import '../src/styles/global.css';
-import type { Preview } from '@storybook/nextjs-vite';
+
+import type { Preview } from '@storybook/react';
 
 const preview: Preview = {
   parameters: {
@@ -10,16 +11,9 @@ const preview: Preview = {
       },
     },
     nextjs: {
-      appDirectory: true, // Enable App Router support
-    },
-    docs: {
-      toc: true, // Enable table of contents
-    },
-    a11y: {
-      test: 'todo', // Make a11y tests optional
+      appDirectory: true,
     },
   },
-  tags: ['autodocs'],
 };
 
 export default preview;
