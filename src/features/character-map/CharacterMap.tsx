@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { getCharacterMapItems, getPrimaryMeaning, hskWords } from '@/data/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
-import type { HskWord } from '@/types/Hsk';
+import type { HskWord, ReviewGrade } from '@/types/Hsk';
 
 const characterMapItems = getCharacterMapItems();
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
@@ -59,9 +59,12 @@ export const CharacterMap = (props: {
     relatedWords: string;
     openStudy: string;
     studyCharacter: string;
-    markLearned: string;
-    markNotLearned: string;
     close: string;
+    revealAnswer: string;
+    gradeAgain: string;
+    gradeHard: string;
+    gradeGood: string;
+    gradeEasy: string;
     answer: string;
     example: string;
     searchPlaceholder: string;
@@ -149,14 +152,22 @@ export const CharacterMap = (props: {
     [selectedStudyWordId, studyWords],
   );
 
-  const markStudyWord = (grade: 'again' | 'easy') => {
+  const markStudyWord = (grade: ReviewGrade) => {
     if (!selectedStudyWord) {
       return;
     }
 
     reviewWord(selectedStudyWord.id, grade, new Date());
-    setIsStudyOpen(false);
     setIsStudyRevealed(false);
+
+    const currentIndex = studyWords.findIndex(word => word.id === selectedStudyWord.id);
+    if (currentIndex >= 0 && studyWords.length > 1) {
+      const nextIndex = (currentIndex + 1) % studyWords.length;
+      const nextWord = studyWords[nextIndex];
+      if (nextWord) {
+        setSelectedStudyWordId(nextWord.id);
+      }
+    }
   };
 
   const branchWords = relatedWords.slice(0, 6);
@@ -364,14 +375,30 @@ export const CharacterMap = (props: {
               }}
             />
 
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              <Button type="button" variant="outline" onClick={() => markStudyWord('again')}>
-                {props.labels.markNotLearned}
-              </Button>
-              <Button type="button" onClick={() => markStudyWord('easy')}>
-                {props.labels.markLearned}
-              </Button>
-            </div>
+            {!isStudyRevealed && (
+              <div className="flex justify-center">
+                <Button type="button" size="lg" onClick={() => setIsStudyRevealed(true)}>
+                  {props.labels.revealAnswer}
+                </Button>
+              </div>
+            )}
+
+            {isStudyRevealed && (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('again')}>
+                  {props.labels.gradeAgain}
+                </Button>
+                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('hard')}>
+                  {props.labels.gradeHard}
+                </Button>
+                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('good')}>
+                  {props.labels.gradeGood}
+                </Button>
+                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('easy')}>
+                  {props.labels.gradeEasy}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

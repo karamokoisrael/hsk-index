@@ -6,6 +6,7 @@ import { TitleBar } from '@/features/dashboard/TitleBar';
 
 const CharacterMapPage = () => {
   const t = useTranslations('CharacterMap');
+  const flashcardsT = useTranslations('Flashcards');
 
   return (
     <>
@@ -25,9 +26,12 @@ const CharacterMapPage = () => {
             relatedWords: t('related_words'),
             openStudy: t('open_study'),
             studyCharacter: t('study_character'),
-            markLearned: t('mark_learned'),
-            markNotLearned: t('mark_not_learned'),
             close: t('close'),
+            revealAnswer: flashcardsT('reveal_answer'),
+            gradeAgain: flashcardsT('grade_again'),
+            gradeHard: flashcardsT('grade_hard'),
+            gradeGood: flashcardsT('grade_good'),
+            gradeEasy: flashcardsT('grade_easy'),
             answer: t('answer'),
             example: t('example'),
             searchPlaceholder: t('search_placeholder'),
