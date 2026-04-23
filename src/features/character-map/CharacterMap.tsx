@@ -5,6 +5,9 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getCharacterMapItems, getPrimaryMeaning, hskWords } from '@/data/hskWords';
+import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
+import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
+import type { HskWord } from '@/types/Hsk';
 
 const characterMapItems = getCharacterMapItems();
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
@@ -54,6 +57,13 @@ export const CharacterMap = (props: {
     commonHint: string;
     appearsInWords: string;
     relatedWords: string;
+    openStudy: string;
+    studyCharacter: string;
+    markLearned: string;
+    markNotLearned: string;
+    close: string;
+    answer: string;
+    example: string;
     searchPlaceholder: string;
     results: string;
     empty: string;
@@ -63,6 +73,11 @@ export const CharacterMap = (props: {
   const [view, setView] = useState<'common' | 'explorer'>('common');
   const [query, setQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(topCommonCharacterEntries[0]?.character || '');
+  const [isStudyOpen, setIsStudyOpen] = useState(false);
+  const [isStudyRevealed, setIsStudyRevealed] = useState(false);
+  const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
+
+  const reviewWord = useFlashcardsStore(state => state.reviewWord);
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -96,6 +111,54 @@ export const CharacterMap = (props: {
     return [...byWord.values()].slice(0, 9);
   }, [selectedCommonCharacter]);
 
+  const openStudyForCharacter = (character: string) => {
+    const target = topCommonCharacterEntries.find(entry => entry.character === character);
+    if (!target) {
+      return;
+    }
+
+    const words = target.words.filter(word => word.word.includes(character));
+    const firstWord = words[0];
+    if (!firstWord) {
+      return;
+    }
+
+    setSelectedCharacter(character);
+    setSelectedStudyWordId(firstWord.id);
+    setIsStudyRevealed(false);
+    setIsStudyOpen(true);
+  };
+
+  const studyWords = useMemo(() => {
+    if (!selectedCommonCharacter) {
+      return [] as HskWord[];
+    }
+
+    const unique = new Map<number, HskWord>();
+    for (const word of selectedCommonCharacter.words) {
+      if (word.word.includes(selectedCommonCharacter.character) && !unique.has(word.id)) {
+        unique.set(word.id, word);
+      }
+    }
+
+    return [...unique.values()].slice(0, 10);
+  }, [selectedCommonCharacter]);
+
+  const selectedStudyWord = useMemo(
+    () => studyWords.find(word => word.id === selectedStudyWordId) || studyWords[0],
+    [selectedStudyWordId, studyWords],
+  );
+
+  const markStudyWord = (grade: 'again' | 'easy') => {
+    if (!selectedStudyWord) {
+      return;
+    }
+
+    reviewWord(selectedStudyWord.id, grade, new Date());
+    setIsStudyOpen(false);
+    setIsStudyRevealed(false);
+  };
+
   const branchWords = relatedWords.slice(0, 6);
   const leftBranchWords = branchWords.slice(0, 3);
   const rightBranchWords = branchWords.slice(3, 6);
@@ -126,7 +189,7 @@ export const CharacterMap = (props: {
                 <button
                   key={item.character}
                   type="button"
-                  onClick={() => setSelectedCharacter(item.character)}
+                  onClick={() => openStudyForCharacter(item.character)}
                   className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : 'bg-background'}`}
                 >
                   {item.character}
@@ -148,6 +211,11 @@ export const CharacterMap = (props: {
                   <div className="text-7xl font-bold leading-none sm:text-8xl">{selectedCommonCharacter.character}</div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     {props.labels.appearsInWords}: {selectedCommonCharacter.count}
+                  </div>
+                  <div className="mt-3">
+                    <Button type="button" onClick={() => openStudyForCharacter(selectedCommonCharacter.character)}>
+                      {props.labels.openStudy}
+                    </Button>
                   </div>
                 </div>
 
@@ -252,6 +320,60 @@ export const CharacterMap = (props: {
             </div>
           )}
         </>
+      )}
+
+      {isStudyOpen && selectedStudyWord && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setIsStudyOpen(false)}>
+          <div
+            className="max-h-[90vh] w-full max-w-4xl space-y-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-2xl sm:p-5"
+            onClick={event => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold">{props.labels.studyCharacter}</h3>
+                <p className="text-sm text-muted-foreground">{selectedCommonCharacter?.character}</p>
+              </div>
+              <Button type="button" variant="outline" onClick={() => setIsStudyOpen(false)}>
+                {props.labels.close}
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {studyWords.map(word => (
+                <Button
+                  key={word.id}
+                  type="button"
+                  variant={selectedStudyWord.id === word.id ? 'default' : 'outline'}
+                  onClick={() => {
+                    setSelectedStudyWordId(word.id);
+                    setIsStudyRevealed(false);
+                  }}
+                >
+                  {word.word}
+                </Button>
+              ))}
+            </div>
+
+            <FlashcardDisplay
+              word={selectedStudyWord}
+              isRevealed={isStudyRevealed}
+              onToggle={() => setIsStudyRevealed(previous => !previous)}
+              labels={{
+                answer: props.labels.answer,
+                example: props.labels.example,
+              }}
+            />
+
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Button type="button" variant="outline" onClick={() => markStudyWord('again')}>
+                {props.labels.markNotLearned}
+              </Button>
+              <Button type="button" onClick={() => markStudyWord('easy')}>
+                {props.labels.markLearned}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
