@@ -385,6 +385,7 @@ export const CharacterMap = (props: {
 
             <FlashcardDisplay
               word={selectedStudyWord}
+              total={hskWords.length}
               isRevealed={isStudyRevealed}
               onToggle={() => setIsStudyRevealed(previous => !previous)}
               labels={{

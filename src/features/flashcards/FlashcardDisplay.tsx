@@ -6,6 +6,7 @@ export const FlashcardDisplay = (props: {
   word: HskWord;
   isRevealed: boolean;
   onToggle: () => void;
+  total: number;
   labels: {
     answer: string;
     example: string;
@@ -57,10 +58,13 @@ export const FlashcardDisplay = (props: {
             ))}
           </div>
 
-          <div className="text-center text-xs text-muted-foreground">
-            {props.word.parts_of_speech.length}
-            {' '}
-            meanings
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>
+              {props.word.parts_of_speech.length}
+              {' '}
+              meanings
+            </span>
+            <span className="font-mono">{props.word.id}/{props.total}</span>
           </div>
         </article>
       </div>

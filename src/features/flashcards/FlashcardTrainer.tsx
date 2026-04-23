@@ -179,6 +179,7 @@ export const FlashcardTrainer = (props: {
       {/* ── Card ───────────────────────────────────────────────────────── */}
       <FlashcardDisplay
         word={currentWord}
+        total={hskWords.length}
         isRevealed={isRevealed}
         onToggle={() => setIsRevealed(p => !p)}
         labels={{
