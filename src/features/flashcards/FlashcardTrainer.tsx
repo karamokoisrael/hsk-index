@@ -33,10 +33,10 @@ export const FlashcardTrainer = (props: {
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
   const resetAllProgress = useFlashcardsStore(state => state.resetAllProgress);
 
-  const dueWords = useMemo(
-    () => getDueWords(hskWords, new Date()),
-    [getDueWords, progressByWordId],
-  );
+  const dueWords = useMemo(() => {
+    void progressByWordId;
+    return getDueWords(hskWords, new Date());
+  }, [getDueWords, progressByWordId]);
 
   const currentWord = dueWords[0];
 
@@ -84,7 +84,8 @@ export const FlashcardTrainer = (props: {
               setIsRevealed(previous => !previous);
             }
           }}
-          className={`relative min-h-[20rem] cursor-pointer rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [transform-style:preserve-3d] ${isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
+          style={{ transformStyle: 'preserve-3d' }}
+          className={`relative min-h-80 cursor-pointer rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
         >
           <article className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
             <div className="text-center text-6xl font-semibold sm:text-7xl">{currentWord.word}</div>
