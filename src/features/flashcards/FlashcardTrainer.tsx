@@ -53,9 +53,7 @@ export const FlashcardTrainer = (props: {
     );
   }
 
-  const primaryPart = currentWord.parts_of_speech[0];
-  const answer = primaryPart?.meaning || '';
-  const example = primaryPart?.example || '';
+  const partsOfSpeech = currentWord.parts_of_speech;
 
   return (
     <div className="space-y-6 rounded-xl border bg-background/95 p-5 sm:p-6">
@@ -97,17 +95,29 @@ export const FlashcardTrainer = (props: {
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{props.labels.answer}</div>
 
             <div className="space-y-4 text-center">
-              <div className="text-2xl font-medium text-muted-foreground sm:text-3xl">{currentWord.word}</div>
-              <div className="mx-auto max-w-3xl text-2xl font-semibold leading-tight sm:text-3xl">{answer}</div>
-              <div className="rounded-lg bg-background/80 px-4 py-3 text-left text-sm text-muted-foreground">
-                {props.labels.example}
-                :
-                {' '}
-                {example}
+              <div className="text-3xl font-semibold sm:text-4xl">{currentWord.word}</div>
+              <div className="text-base text-muted-foreground sm:text-lg">{currentWord.pinyin}</div>
+
+              <div className="max-h-48 space-y-3 overflow-y-auto pr-1 text-left">
+                {partsOfSpeech.map(part => (
+                  <div key={`${currentWord.id}-${part.part_of_speech}-${part.meaning}-${part.example}`} className="rounded-lg bg-background/80 px-4 py-3">
+                    <div className="text-lg font-semibold leading-snug text-foreground">{part.meaning}</div>
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      {props.labels.example}
+                      :
+                      {' '}
+                      {part.example}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="text-center text-xs text-muted-foreground">{currentWord.pinyin}</div>
+            <div className="text-center text-xs text-muted-foreground">
+              {partsOfSpeech.length}
+              {' '}
+              meanings
+            </div>
           </article>
         </div>
       </div>
