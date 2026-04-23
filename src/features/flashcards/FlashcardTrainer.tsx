@@ -60,8 +60,18 @@ export const FlashcardTrainer = (props: {
   return (
     <div className="space-y-4 rounded-md border bg-background p-5">
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <span>{props.labels.dueCards}: {dueWords.length}</span>
-        <span>{props.labels.studiedCards}: {sessionReviews}</span>
+        <span>
+          {props.labels.dueCards}
+          :
+          {' '}
+          {dueWords.length}
+        </span>
+        <span>
+          {props.labels.studiedCards}
+          :
+          {' '}
+          {sessionReviews}
+        </span>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -105,7 +115,12 @@ export const FlashcardTrainer = (props: {
           <div className="rounded-md border bg-muted/40 p-4">
             <div className="text-xs uppercase tracking-wide text-muted-foreground">{props.labels.answer}</div>
             <div className="mt-2 text-xl font-semibold">{answer}</div>
-            <div className="mt-2 text-sm text-muted-foreground">{props.labels.example}: {getPrimaryExample(currentWord)}</div>
+            <div className="mt-2 text-sm text-muted-foreground">
+              {props.labels.example}
+              :
+              {' '}
+              {getPrimaryExample(currentWord)}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">

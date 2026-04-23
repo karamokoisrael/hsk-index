@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "SaaS Template - Le template SaaS parfait pour construire et mettre à l'échelle votre entreprise en toute simplicité.",
-    "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS."
+    "meta_title": "HSK Index - Apprenez le chinois avec des flashcards et une carte des caractères.",
+    "meta_description": "Entraînez le vocabulaire HSK avec des flashcards SRS et explorez les caractères chinois via une carte interactive."
   },
   "Navbar": {
     "sign_in": "Se connecter",
