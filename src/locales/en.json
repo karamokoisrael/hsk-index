@@ -150,7 +150,11 @@
     "grade_again": "Again",
     "grade_hard": "Hard",
     "grade_good": "Good",
-    "grade_easy": "Easy"
+    "grade_easy": "Easy",
+    "options": "Options",
+    "max_new_per_day": "Max new cards / day",
+    "max_reviews_per_day": "Max reviews / day",
+    "save_options": "Save"
   },
   "CharacterMap": {
     "title_bar": "Character map",

@@ -150,7 +150,11 @@
     "grade_again": "Encore",
     "grade_hard": "Difficile",
     "grade_good": "Bien",
-    "grade_easy": "Facile"
+    "grade_easy": "Facile",
+    "options": "Options",
+    "max_new_per_day": "Nouvelles cartes / jour",
+    "max_reviews_per_day": "Révisions / jour",
+    "save_options": "Enregistrer"
   },
   "CharacterMap": {
     "title_bar": "Carte des caractères",
