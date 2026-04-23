@@ -2,7 +2,6 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
 import { CharacterMap } from '@/features/character-map/CharacterMap';
 import { FlashcardTrainer } from '@/features/flashcards/FlashcardTrainer';
-import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
@@ -84,8 +83,6 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
       </main>
-
-      <Footer />
     </>
   );
 };
