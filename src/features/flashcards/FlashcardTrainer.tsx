@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { getPrimaryExample, getPrimaryMeaning, hskWords } from '@/data/hskWords';
+import { hskWords } from '@/data/hskWords';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 
 export const FlashcardTrainer = (props: {
@@ -53,7 +53,9 @@ export const FlashcardTrainer = (props: {
     );
   }
 
-  const answer = getPrimaryMeaning(currentWord);
+  const primaryPart = currentWord.parts_of_speech[0];
+  const answer = primaryPart?.meaning || '';
+  const example = primaryPart?.example || '';
 
   return (
     <div className="space-y-6 rounded-xl border bg-background/95 p-5 sm:p-6">
@@ -96,12 +98,12 @@ export const FlashcardTrainer = (props: {
 
             <div className="space-y-4 text-center">
               <div className="text-2xl font-medium text-muted-foreground sm:text-3xl">{currentWord.word}</div>
-              <div className="text-4xl font-semibold sm:text-5xl">{answer}</div>
+              <div className="mx-auto max-w-3xl text-2xl font-semibold leading-tight sm:text-3xl">{answer}</div>
               <div className="rounded-lg bg-background/80 px-4 py-3 text-left text-sm text-muted-foreground">
                 {props.labels.example}
                 :
                 {' '}
-                {getPrimaryExample(currentWord)}
+                {example}
               </div>
             </div>
 
