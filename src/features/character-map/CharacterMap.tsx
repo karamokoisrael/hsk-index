@@ -96,6 +96,11 @@ export const CharacterMap = (props: {
     return [...byWord.values()].slice(0, 9);
   }, [selectedCommonCharacter]);
 
+  const branchWords = relatedWords.slice(0, 6);
+  const leftBranchWords = branchWords.slice(0, 3);
+  const rightBranchWords = branchWords.slice(3, 6);
+  const extraRelatedWords = relatedWords.slice(6);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
@@ -148,7 +153,8 @@ export const CharacterMap = (props: {
 
                 <div className="mt-5 space-y-2">
                   <div className="text-sm font-semibold">{props.labels.relatedWords}</div>
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+
+                  <div className="grid gap-3 md:hidden">
                     {relatedWords.map(word => (
                       <article key={word.id} className="rounded-md border bg-background p-3">
                         <div className="text-sm text-muted-foreground">{word.pinyin}</div>
@@ -157,6 +163,55 @@ export const CharacterMap = (props: {
                       </article>
                     ))}
                   </div>
+
+                  <div className="hidden gap-4 md:grid md:grid-cols-[1fr_7rem_1fr] md:items-center">
+                    <div className="space-y-3">
+                      {leftBranchWords.map((word, index) => (
+                        <div key={word.id} className="grid grid-cols-[1fr_2.5rem] items-center gap-2">
+                          <article className="rounded-md border bg-background p-3 text-right">
+                            <div className="text-sm text-muted-foreground">{word.pinyin}</div>
+                            <div className="mt-1 text-2xl font-semibold">{word.word}</div>
+                            <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                          </article>
+                          <div className="text-center text-2xl text-primary/80">
+                            {index === 0 ? '↘' : index === 1 ? '→' : '↗'}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rounded-md border bg-background p-4 text-center">
+                      <div className="text-6xl font-bold leading-none">{selectedCommonCharacter.character}</div>
+                      <div className="mt-2 text-xs text-muted-foreground">{selectedCommonCharacter.count}</div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {rightBranchWords.map((word, index) => (
+                        <div key={word.id} className="grid grid-cols-[2.5rem_1fr] items-center gap-2">
+                          <div className="text-center text-2xl text-primary/80">
+                            {index === 0 ? '↙' : index === 1 ? '←' : '↖'}
+                          </div>
+                          <article className="rounded-md border bg-background p-3">
+                            <div className="text-sm text-muted-foreground">{word.pinyin}</div>
+                            <div className="mt-1 text-2xl font-semibold">{word.word}</div>
+                            <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                          </article>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {extraRelatedWords.length > 0 && (
+                    <div className="hidden gap-3 md:grid md:grid-cols-3">
+                      {extraRelatedWords.map(word => (
+                        <article key={word.id} className="rounded-md border bg-background p-3">
+                          <div className="text-sm text-muted-foreground">{word.pinyin}</div>
+                          <div className="mt-1 text-2xl font-semibold">{word.word}</div>
+                          <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
