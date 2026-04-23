@@ -28,8 +28,6 @@ export const FlashcardTrainer = (props: {
   const [isRevealed, setIsRevealed] = useState(false);
   const [sessionReviews, setSessionReviews] = useState(0);
 
-  const promptMode = useFlashcardsStore(state => state.promptMode);
-  const setPromptMode = useFlashcardsStore(state => state.setPromptMode);
   const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
   const getDueWords = useFlashcardsStore(state => state.getDueWords);
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
@@ -55,13 +53,7 @@ export const FlashcardTrainer = (props: {
     );
   }
 
-  const prompt = promptMode === 'word-to-meaning'
-    ? currentWord.word
-    : getPrimaryMeaning(currentWord);
-
-  const answer = promptMode === 'word-to-meaning'
-    ? getPrimaryMeaning(currentWord)
-    : currentWord.word;
+  const answer = getPrimaryMeaning(currentWord);
 
   return (
     <div className="space-y-6 rounded-xl border bg-background/95 p-5 sm:p-6">
@@ -80,43 +72,12 @@ export const FlashcardTrainer = (props: {
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant={promptMode === 'word-to-meaning' ? 'default' : 'outline'}
-          onClick={() => {
-            setPromptMode('word-to-meaning');
-            setIsRevealed(false);
-          }}
-        >
-          {props.labels.showPromptWord}
-        </Button>
-
-        <Button
-          type="button"
-          variant={promptMode === 'meaning-to-word' ? 'default' : 'outline'}
-          onClick={() => {
-            setPromptMode('meaning-to-word');
-            setIsRevealed(false);
-          }}
-        >
-          {props.labels.showPromptMeaning}
-        </Button>
-      </div>
-
       <div className="mx-auto w-full max-w-2xl [perspective:1200px]">
         <div
           className={`relative min-h-[20rem] rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 [transform-style:preserve-3d] ${isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
         >
-          <article className="absolute inset-0 flex flex-col justify-between rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{props.labels.prompt}</div>
-
-            <div className="space-y-3 text-center">
-              <div className="text-4xl font-semibold sm:text-5xl">{prompt}</div>
-              <div className="text-sm text-muted-foreground sm:text-base">{currentWord.pinyin}</div>
-            </div>
-
-            <div className="text-center text-xs text-muted-foreground">HSK Flashcard</div>
+          <article className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
+            <div className="text-center text-6xl font-semibold sm:text-7xl">{currentWord.word}</div>
           </article>
 
           <article className="absolute inset-0 flex flex-col justify-between rounded-2xl border border-primary/20 bg-primary/5 p-6 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
