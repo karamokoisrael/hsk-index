@@ -94,7 +94,8 @@ export const FlashcardTrainer = (props: {
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{props.labels.answer}</div>
 
             <div className="space-y-4 text-center">
-              <div className="text-3xl font-semibold sm:text-4xl">{answer}</div>
+              <div className="text-2xl font-medium text-muted-foreground sm:text-3xl">{currentWord.word}</div>
+              <div className="text-4xl font-semibold sm:text-5xl">{answer}</div>
               <div className="rounded-lg bg-background/80 px-4 py-3 text-left text-sm text-muted-foreground">
                 {props.labels.example}
                 :
