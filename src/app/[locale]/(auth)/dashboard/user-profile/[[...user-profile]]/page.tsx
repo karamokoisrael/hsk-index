@@ -1,33 +1,31 @@
 import { UserProfile } from '@clerk/nextjs';
-import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
+
+import { TitleBar } from '@/features/dashboard/TitleBar';
 import { getI18nPath } from '@/utils/Helpers';
 
-type UserProfilePageProps = {
-  params: Promise<{ locale: string }>;
-};
-
-export async function generateMetadata(
-  props: UserProfilePageProps
-): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = await getTranslations({
-    locale,
-    namespace: 'UserProfile',
-  });
-
-  return {
-    title: t('meta_title'),
-  };
-}
-
-export default async function UserProfilePage(props: UserProfilePageProps) {
-  const { locale } = await props.params;
-  setRequestLocale(locale);
+const UserProfilePage = (props: { params: { locale: string } }) => {
+  const t = useTranslations('UserProfile');
 
   return (
-    <div className="my-6 lg:-ml-12">
-      <UserProfile path={getI18nPath('/dashboard/user-profile', locale)} />
-    </div>
+    <>
+      <TitleBar
+        title={t('title_bar')}
+        description={t('title_bar_description')}
+      />
+
+      <UserProfile
+        routing="path"
+        path={getI18nPath('/dashboard/user-profile', props.params.locale)}
+        appearance={{
+          elements: {
+            rootBox: 'w-full',
+            cardBox: 'w-full flex',
+          },
+        }}
+      />
+    </>
   );
-}
+};
+
+export default UserProfilePage;

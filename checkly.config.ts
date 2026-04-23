@@ -7,14 +7,19 @@ const sendDefaults = {
   sendDegraded: true,
 };
 
+// FIXME: Add your production URL
+const productionURL = 'https://react-saas.com';
+
 const emailChannel = new EmailAlertChannel('email-channel-1', {
-  address: process.env.CHECKLY_EMAIL_ADDRESS ?? '',
+  // FIXME: add your own email address, Checkly will send you an email notification if a check fails
+  address: 'contact@creativedesignsguru.com',
   ...sendDefaults,
 });
 
 export const config = defineConfig({
-  projectName: process.env.CHECKLY_PROJECT_NAME ?? '',
-  logicalId: process.env.CHECKLY_LOGICAL_ID ?? '',
+  // FIXME: Add your own project name, logical ID, and repository URL
+  projectName: 'SaaS Boilerplate',
+  logicalId: 'saas-boilerplate',
   repoUrl: 'https://github.com/ixartz/Next-js-Boilerplate',
   checks: {
     locations: ['us-east-1', 'eu-central-1'],
@@ -27,7 +32,7 @@ export const config = defineConfig({
     },
     playwrightConfig: {
       use: {
-        baseURL: process.env.ENVIRONMENT_URL ?? process.env.NEXT_PUBLIC_APP_URL,
+        baseURL: process.env.ENVIRONMENT_URL || productionURL,
         extraHTTPHeaders: {
           'x-vercel-protection-bypass': process.env.VERCEL_BYPASS_TOKEN,
         },

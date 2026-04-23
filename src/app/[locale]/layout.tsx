@@ -1,10 +1,10 @@
-import type { Metadata, Viewport } from 'next';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { DemoBadge } from '@/components/DemoBadge';
-import { routing } from '@/libs/I18nRouting';
 import '@/styles/global.css';
+
+import type { Metadata } from 'next';
+import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { unstable_setRequestLocale } from 'next-intl/server';
+
+import { AllLocales } from '@/utils/AppConfig';
 
 export const metadata: Metadata = {
   icons: [
@@ -31,34 +31,33 @@ export const metadata: Metadata = {
   ],
 };
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
-
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return AllLocales.map(locale => ({ locale }));
 }
 
-export default async function RootLayout(props: {
+export default function RootLayout(props: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 }) {
-  const { locale } = await props.params;
+  unstable_setRequestLocale(props.params.locale);
 
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+  // Using internationalization in Client Components
+  const messages = useMessages();
 
-  setRequestLocale(locale);
+  // The `suppressHydrationWarning` in <html> is used to prevent hydration errors caused by `next-themes`.
+  // Solution provided by the package itself: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app
 
+  // The `suppressHydrationWarning` attribute in <body> is used to prevent hydration errors caused by Sentry Overlay,
+  // which dynamically adds a `style` attribute to the body tag.
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider>
+    <html lang={props.params.locale} suppressHydrationWarning>
+      <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
+        {/* PRO: Dark mode support for Shadcn UI */}
+        <NextIntlClientProvider
+          locale={props.params.locale}
+          messages={messages}
+        >
           {props.children}
-
-          <DemoBadge />
         </NextIntlClientProvider>
       </body>
     </html>

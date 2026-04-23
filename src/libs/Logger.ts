@@ -1,45 +1,27 @@
-import type { AsyncSink } from '@logtape/logtape';
-import {
-  configure,
-  fromAsyncSink,
-  getConsoleSink,
-  getJsonLinesFormatter,
-  getLogger,
-} from '@logtape/logtape';
+import logtail from '@logtail/pino';
+import pino, { type DestinationStream } from 'pino';
+import pretty from 'pino-pretty';
+
 import { Env } from './Env';
 
-const betterStackSink: AsyncSink = async (record) => {
-  await fetch(`https://${Env.NEXT_PUBLIC_BETTER_STACK_INGESTING_HOST}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${Env.NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN}`,
+let stream: DestinationStream;
+
+if (Env.LOGTAIL_SOURCE_TOKEN) {
+  stream = pino.multistream([
+    await logtail({
+      sourceToken: Env.LOGTAIL_SOURCE_TOKEN,
+      options: {
+        sendLogsToBetterStack: true,
+      },
+    }),
+    {
+      stream: pretty(), // Prints logs to the console
     },
-    body: JSON.stringify(record),
+  ]);
+} else {
+  stream = pretty({
+    colorize: true,
   });
-};
+}
 
-const canForwardToBetterStack =
-  Boolean(Env.NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN) &&
-  Boolean(Env.NEXT_PUBLIC_BETTER_STACK_INGESTING_HOST);
-
-await configure({
-  sinks: {
-    console: getConsoleSink({ formatter: getJsonLinesFormatter() }),
-    betterStack: fromAsyncSink(betterStackSink),
-  },
-  loggers: [
-    {
-      category: ['logtape', 'meta'],
-      sinks: ['console'],
-      lowestLevel: 'warning',
-    },
-    {
-      category: ['app'],
-      sinks: canForwardToBetterStack ? ['console', 'betterStack'] : ['console'],
-      lowestLevel: Env.NEXT_PUBLIC_LOGGING_LEVEL,
-    },
-  ],
-});
-
-export const logger = getLogger(['app']);
+export const logger = pino({ base: undefined }, stream);

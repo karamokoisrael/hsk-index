@@ -1,32 +1,41 @@
-import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Hello } from '@/components/Hello';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
-type DashboardPageProps = {
-  params: Promise<{ locale: string }>;
-};
+import { Button } from '@/components/ui/button';
+import { DashboardSection } from '@/features/dashboard/DashboardSection';
+import { TitleBar } from '@/features/dashboard/TitleBar';
 
-export async function generateMetadata(
-  props: DashboardPageProps
-): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = await getTranslations({
-    locale,
-    namespace: 'Dashboard',
-  });
-
-  return {
-    title: t('meta_title'),
-  };
-}
-
-export default async function DashboardPage(props: DashboardPageProps) {
-  const { locale } = await props.params;
-  setRequestLocale(locale);
+const DashboardIndexPage = () => {
+  const t = useTranslations('DashboardIndex');
 
   return (
-    <div className="py-5 [&_p]:my-6">
-      <Hello />
-    </div>
+    <>
+      <TitleBar
+        title={t('title_bar')}
+        description={t('title_bar_description')}
+      />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <DashboardSection
+          title={t('flashcards_title')}
+          description={t('flashcards_description')}
+        >
+          <Button asChild>
+            <Link href="/dashboard/flashcards">{t('flashcards_button')}</Link>
+          </Button>
+        </DashboardSection>
+
+        <DashboardSection
+          title={t('character_map_title')}
+          description={t('character_map_description')}
+        >
+          <Button asChild>
+            <Link href="/dashboard/character-map">{t('character_map_button')}</Link>
+          </Button>
+        </DashboardSection>
+      </div>
+    </>
   );
-}
+};
+
+export default DashboardIndexPage;
