@@ -198,17 +198,19 @@ export const CharacterMap = (props: {
               <p className="mt-1 text-xs text-muted-foreground">{props.labels.commonHint}</p>
             </div>
 
-            <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
-              {commonCharacterEntries.map(item => (
-                <button
-                  key={item.character}
-                  type="button"
-                  onClick={() => selectCharacter(item.character)}
-                  className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : 'bg-background'}`}
-                >
-                  {item.character}
-                </button>
-              ))}
+            <div className="max-h-[70vh] overflow-y-auto pr-1">
+              <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
+                {commonCharacterEntries.map(item => (
+                  <button
+                    key={item.character}
+                    type="button"
+                    onClick={() => selectCharacter(item.character)}
+                    className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : 'bg-background'}`}
+                  >
+                    {item.character}
+                  </button>
+                ))}
+              </div>
             </div>
           </aside>
 
