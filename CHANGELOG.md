@@ -1,3 +1,22 @@
+# 1.0.0 (2026-04-23)
+
+
+### Bug Fixes
+
+* simplify meanings in ref.json for clarity ([d7e4383](https://github.com/karamokoisrael/hsk-index/commit/d7e438388f517c121fff8e6dd0038301861fe5a9))
+* update pinyin formatting in ref.json for consistency ([23558bf](https://github.com/karamokoisrael/hsk-index/commit/23558bfad026422657b008116b23a81cde5d554a))
+
+
+### Features
+
+* add HSK flashcards and character map features with SRS logic and UI components ([23fdb9e](https://github.com/karamokoisrael/hsk-index/commit/23fdb9e993b8f6101000f379c726f563d229a576))
+* add useMenu hook with tests for menu visibility and toggle functionality ([f786437](https://github.com/karamokoisrael/hsk-index/commit/f7864371b0713ce726a83228b5a4d79fc3dcd053))
+* enhance FlashcardTrainer interactivity with keyboard accessibility and click events for answer reveal ([dc168dc](https://github.com/karamokoisrael/hsk-index/commit/dc168dc9b6b36ae0de5eea43cab1a8fc81d65845))
+* enhance FlashcardTrainer UI with improved card flipping animation and layout adjustments ([a68c55b](https://github.com/karamokoisrael/hsk-index/commit/a68c55bcfdc02bebfc226e8a7ca7a0977e1bad35))
+* enhance IndexPage with FlashcardTrainer and CharacterMap components, update translations and metadata ([44a3854](https://github.com/karamokoisrael/hsk-index/commit/44a385401b149ba6cedfeabb54418d6b19d85240))
+* update FlashcardTrainer UI to enhance answer display with improved styling and current word visibility ([99b7e45](https://github.com/karamokoisrael/hsk-index/commit/99b7e45b4052449ea9b826644a85fa2fbf1841ff))
+* update Navbar and IndexPage to include flashcards and character map sections, enhance FlashcardTrainer logic, and add translations ([8da9934](https://github.com/karamokoisrael/hsk-index/commit/8da993408c7c9fe2aff12f89d5ecb2b7092cd95a))
+
 ## [1.7.7](https://github.com/ixartz/SaaS-Boilerplate/compare/v1.7.6...v1.7.7) (2025-12-12)
 
 
