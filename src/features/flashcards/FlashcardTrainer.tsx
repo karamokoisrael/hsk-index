@@ -74,7 +74,17 @@ export const FlashcardTrainer = (props: {
 
       <div className="mx-auto w-full max-w-2xl [perspective:1200px]">
         <div
-          className={`relative min-h-[20rem] rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 [transform-style:preserve-3d] ${isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
+          role="button"
+          tabIndex={0}
+          aria-label={isRevealed ? 'Hide flashcard answer' : 'Reveal flashcard answer'}
+          onClick={() => setIsRevealed(previous => !previous)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              setIsRevealed(previous => !previous);
+            }
+          }}
+          className={`relative min-h-[20rem] cursor-pointer rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [transform-style:preserve-3d] ${isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
         >
           <article className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
             <div className="text-center text-6xl font-semibold sm:text-7xl">{currentWord.word}</div>
