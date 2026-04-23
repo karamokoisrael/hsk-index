@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,9 +40,12 @@ export const FlashcardTrainer = (props: {
 }) => {
   useFlashcardSync();
 
+  const [isMounted, setIsMounted] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [sessionReviews, setSessionReviews] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
+
+  useEffect(() => { setIsMounted(true); }, []);
 
   const progressByWordId = useFlashcardsStore(s => s.progressByWordId);
   const getDueWords = useFlashcardsStore(s => s.getDueWords);
@@ -97,6 +100,10 @@ export const FlashcardTrainer = (props: {
     );
     setShowOptions(false);
   };
+
+  if (!isMounted) {
+    return <div className="h-96 animate-pulse rounded-xl border bg-background/95" />;
+  }
 
   if (!currentWord) {
     return (
