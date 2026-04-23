@@ -114,7 +114,7 @@ export const CharacterMap = (props: {
     return [...byWord.values()].slice(0, 9);
   }, [selectedCommonCharacter]);
 
-  const openStudyForCharacter = (character: string) => {
+  const selectCharacter = (character: string) => {
     const target = topCommonCharacterEntries.find(entry => entry.character === character);
     if (!target) {
       return;
@@ -128,6 +128,11 @@ export const CharacterMap = (props: {
 
     setSelectedCharacter(character);
     setSelectedStudyWordId(firstWord.id);
+    setIsStudyRevealed(false);
+  };
+
+  const openStudyForWord = (wordId: number) => {
+    setSelectedStudyWordId(wordId);
     setIsStudyRevealed(false);
     setIsStudyOpen(true);
   };
@@ -200,7 +205,7 @@ export const CharacterMap = (props: {
                 <button
                   key={item.character}
                   type="button"
-                  onClick={() => openStudyForCharacter(item.character)}
+                  onClick={() => selectCharacter(item.character)}
                   className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : 'bg-background'}`}
                 >
                   {item.character}
@@ -223,11 +228,6 @@ export const CharacterMap = (props: {
                   <div className="mt-2 text-sm text-muted-foreground">
                     {props.labels.appearsInWords}: {selectedCommonCharacter.count}
                   </div>
-                  <div className="mt-3">
-                    <Button type="button" onClick={() => openStudyForCharacter(selectedCommonCharacter.character)}>
-                      {props.labels.openStudy}
-                    </Button>
-                  </div>
                 </div>
 
                 <div className="mt-5 space-y-2">
@@ -235,11 +235,16 @@ export const CharacterMap = (props: {
 
                   <div className="grid gap-3 md:hidden">
                     {relatedWords.map(word => (
-                      <article key={word.id} className="rounded-md border bg-background p-3">
+                      <button
+                        key={word.id}
+                        type="button"
+                        onClick={() => openStudyForWord(word.id)}
+                        className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                      >
                         <div className="text-sm text-muted-foreground">{word.pinyin}</div>
                         <div className="mt-1 text-2xl font-semibold">{word.word}</div>
                         <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
-                      </article>
+                      </button>
                     ))}
                   </div>
 
@@ -247,11 +252,15 @@ export const CharacterMap = (props: {
                     <div className="space-y-3">
                       {leftBranchWords.map((word, index) => (
                         <div key={word.id} className="grid grid-cols-[1fr_2.5rem] items-center gap-2">
-                          <article className="rounded-md border bg-background p-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => openStudyForWord(word.id)}
+                            className="rounded-md border bg-background p-3 text-right transition hover:border-primary"
+                          >
                             <div className="text-sm text-muted-foreground">{word.pinyin}</div>
                             <div className="mt-1 text-2xl font-semibold">{word.word}</div>
                             <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
-                          </article>
+                          </button>
                           <div className="text-center text-2xl text-primary/80">
                             {index === 0 ? '↘' : index === 1 ? '→' : '↗'}
                           </div>
@@ -270,11 +279,15 @@ export const CharacterMap = (props: {
                           <div className="text-center text-2xl text-primary/80">
                             {index === 0 ? '↙' : index === 1 ? '←' : '↖'}
                           </div>
-                          <article className="rounded-md border bg-background p-3">
+                          <button
+                            type="button"
+                            onClick={() => openStudyForWord(word.id)}
+                            className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                          >
                             <div className="text-sm text-muted-foreground">{word.pinyin}</div>
                             <div className="mt-1 text-2xl font-semibold">{word.word}</div>
                             <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
-                          </article>
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -283,11 +296,16 @@ export const CharacterMap = (props: {
                   {extraRelatedWords.length > 0 && (
                     <div className="hidden gap-3 md:grid md:grid-cols-3">
                       {extraRelatedWords.map(word => (
-                        <article key={word.id} className="rounded-md border bg-background p-3">
+                        <button
+                          key={word.id}
+                          type="button"
+                          onClick={() => openStudyForWord(word.id)}
+                          className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                        >
                           <div className="text-sm text-muted-foreground">{word.pinyin}</div>
                           <div className="mt-1 text-2xl font-semibold">{word.word}</div>
                           <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
-                        </article>
+                        </button>
                       ))}
                     </div>
                   )}
