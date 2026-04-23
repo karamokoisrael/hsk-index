@@ -47,8 +47,6 @@ const commonCharacterEntries = (() => {
     .sort((a, b) => b.count - a.count);
 })();
 
-const topCommonCharacterEntries = commonCharacterEntries.slice(0, 24);
-
 export const CharacterMap = (props: {
   labels: {
     viewCommon: string;
@@ -75,7 +73,7 @@ export const CharacterMap = (props: {
 }) => {
   const [view, setView] = useState<'common' | 'explorer'>('common');
   const [query, setQuery] = useState('');
-  const [selectedCharacter, setSelectedCharacter] = useState(topCommonCharacterEntries[0]?.character || '');
+  const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
@@ -94,7 +92,7 @@ export const CharacterMap = (props: {
     : characterMapItems;
 
   const selectedCommonCharacter = useMemo(
-    () => topCommonCharacterEntries.find(item => item.character === selectedCharacter) || topCommonCharacterEntries[0],
+    () => commonCharacterEntries.find(item => item.character === selectedCharacter) || commonCharacterEntries[0],
     [selectedCharacter],
   );
 
@@ -115,7 +113,7 @@ export const CharacterMap = (props: {
   }, [selectedCommonCharacter]);
 
   const selectCharacter = (character: string) => {
-    const target = topCommonCharacterEntries.find(entry => entry.character === character);
+    const target = commonCharacterEntries.find(entry => entry.character === character);
     if (!target) {
       return;
     }
@@ -201,7 +199,7 @@ export const CharacterMap = (props: {
             </div>
 
             <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
-              {topCommonCharacterEntries.map(item => (
+              {commonCharacterEntries.map(item => (
                 <button
                   key={item.character}
                   type="button"
