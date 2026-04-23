@@ -88,7 +88,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "bú kè qi You’re welcome.",
+        "meaning": "You’re welcome.",
         "example": "甲：谢谢你！乙：～。"
       }
     ]
@@ -165,7 +165,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "dǎ dià nhuà make a phone call",
+        "meaning": "make a phone call",
         "example": "他在～呢。"
       }
     ]
@@ -310,7 +310,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "duìbuqǐ I’m sorry.",
+        "meaning": "I’m sorry.",
         "example": "甲：～。乙：没关系。"
       }
     ]
@@ -378,11 +378,6 @@
     "word": "饭店",
     "pinyin": "fàn diàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "restaurant,eatery;(large) hotel",
@@ -548,11 +543,6 @@
     "pinyin": "hòu miàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "at the back; in the rear; behind",
         "example": "商店在学校～。"
@@ -716,11 +706,6 @@
     "pinyin": "kàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "look; watch",
         "example": "你～，那本书在桌子上呢。"
@@ -737,11 +722,6 @@
     "word": "看见",
     "pinyin": "kàn jiàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "see",
@@ -908,8 +888,13 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "mé i guānxi That’s all right. You are welcome.",
-        "example": "甲：对不起！乙：～。 have no relation with 这件事，跟我～。"
+        "meaning": "That’s all right. You are welcome.",
+        "example": "甲：对不起！乙：～。"
+      },
+      {
+        "part_of_speech": "",
+        "meaning": "have no relation with",
+        "example": "这件事，跟我～。"
       }
     ]
   },
@@ -1049,11 +1034,6 @@
     "pinyin": "nián",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "year",
         "example": "我在中国住了三～。"
@@ -1126,11 +1106,6 @@
     "pinyin": "qián",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "money",
         "example": "一个苹果三块～。"
@@ -1142,11 +1117,6 @@
     "word": "前面",
     "pinyin": "qián miàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "before; in front; at the head; ahead ～",
@@ -1220,11 +1190,6 @@
     "word": "人",
     "pinyin": "rén",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "human being; person; people",
@@ -2287,8 +2252,8 @@
     "pinyin": "cì",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "cì nm./vm. number of times",
+        "part_of_speech": "nm./vm.",
+        "meaning": "number of times",
         "example": "我去过一～北京。"
       }
     ]
@@ -2324,7 +2289,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "dǎ lánqiú play basketball",
+        "meaning": "play basketball",
         "example": "我每天下午都去～。"
       }
     ]
@@ -2466,11 +2431,6 @@
     "word": "服务员",
     "pinyin": "fú wù yuán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "attendant; waiter; waitress",
@@ -2632,7 +2592,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "hǎochī delicious",
+        "meaning": "delicious",
         "example": "您做的米饭真～。"
       }
     ]
@@ -2732,11 +2692,6 @@
     "pinyin": "jiàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "nm.",
         "meaning": "used for clothes and things",
         "example": "这～衣服颜色非常好看。"
@@ -2790,11 +2745,6 @@
     "pinyin": "jìn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "enter",
         "example": "我马上要～机场了。"
@@ -2806,11 +2756,6 @@
     "word": "近",
     "pinyin": "jìn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "close; near",
@@ -3061,11 +3006,6 @@
     "pinyin": "màn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adj.",
         "meaning": "slow",
         "example": "我们走得很～。"
@@ -3131,11 +3071,6 @@
     "pinyin": "mén",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "exits and entrances; doorways",
         "example": "我在～外等你。"
@@ -3153,11 +3088,6 @@
     "pinyin": "nán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "man; male",
         "example": "我不认识那个～人。"
@@ -3169,11 +3099,6 @@
     "word": "您",
     "pinyin": "nín",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "pron.",
         "meaning": "you or your (used to address someone with respect)",
@@ -3318,11 +3243,6 @@
     "word": "去年",
     "pinyin": "qù nián",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "last year",
@@ -3503,7 +3423,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "tī zúqiú play soccer",
+        "meaning": "play soccer",
         "example": "我和同学们在～。"
       }
     ]
@@ -3555,11 +3475,6 @@
     "pinyin": "wán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "indicating finished; be used up; run out",
         "example": "这本书我看～了。"
@@ -3571,11 +3486,6 @@
     "word": "玩",
     "pinyin": "wán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "play",
@@ -3602,7 +3512,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "wè i shé nme why",
+        "meaning": "why",
         "example": "你～不喝点儿水呢？"
       }
     ]
@@ -3612,11 +3522,6 @@
     "word": "问",
     "pinyin": "wèn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "ask; inquire after",
@@ -4305,11 +4210,6 @@
     "pinyin": "bàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "num.",
         "meaning": "half",
         "example": "现在是三点～。"
@@ -4695,11 +4595,6 @@
     "pinyin": "chuán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "boat; ship",
         "example": "你可以坐～去上海。"
@@ -4813,8 +4708,8 @@
     "pinyin": "dāng rán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "dāngrán adv.. of course; naturally; certainly",
+        "part_of_speech": "adv.",
+        "meaning": "of course; naturally; certainly",
         "example": "你生病了，我～要来看看你。"
       }
     ]
@@ -4933,11 +4828,6 @@
     "pinyin": "dòng wù yuán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "zoo ～",
         "example": "里有一百多种动物。"
@@ -4962,11 +4852,6 @@
     "pinyin": "duàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "nm.",
         "meaning": "passage, paragraph (of an article); period (of time); section (of a distance)",
         "example": "这～时间我很忙。"
@@ -4978,11 +4863,6 @@
     "word": "锻炼",
     "pinyin": "duàn liàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "do physical training; to take exercise",
@@ -5126,11 +5006,6 @@
     "pinyin": "fù jìn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "nearby; neighbour; vicinity; proximity",
         "example": "他家就住在公司～。"
@@ -5180,7 +5055,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "gǎnxìngqù interest; taste",
+        "meaning": "interest; taste",
         "example": "小王对音乐很～。"
       }
     ]
@@ -5298,7 +5173,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "guāfēng blow (of wind)",
+        "meaning": "blow (of wind)",
         "example": "今天～了，别骑自行车了。"
       }
     ]
@@ -5543,11 +5418,6 @@
     "pinyin": "hái",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "return sth to the owner",
         "example": "我把书～给图书馆了。"
@@ -5571,11 +5441,6 @@
     "word": "换",
     "pinyin": "huàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "change",
@@ -5713,11 +5578,6 @@
     "word": "见面",
     "pinyin": "jiàn miàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "meet",
@@ -6039,11 +5899,6 @@
     "pinyin": "kè rén",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "guest",
         "example": "春节的时候，家里会来很多～。"
@@ -6120,11 +5975,6 @@
     "word": "蓝",
     "pinyin": "lán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "blue",
@@ -6424,11 +6274,6 @@
     "pinyin": "nán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "south",
         "example": "我家在火车站的～边。"
@@ -6440,11 +6285,6 @@
     "word": "难",
     "pinyin": "nán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "difficult; hard",
@@ -7023,11 +6863,6 @@
     "pinyin": "tián",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adj.",
         "meaning": "sweet",
         "example": "这个西瓜真～啊！"
@@ -7158,11 +6993,6 @@
     "pinyin": "wàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "num.",
         "meaning": "ten thousand",
         "example": "我们学校有一～名学生。"
@@ -7246,11 +7076,6 @@
     "word": "习惯",
     "pinyin": "xí guàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "be accustomed to; be/get used to",
@@ -7547,7 +7372,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "yí huì r a moment",
+        "meaning": "a moment",
         "example": "我看～电视就睡觉。"
       }
     ]
@@ -7743,11 +7568,6 @@
     "pinyin": "yuán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "nm.",
         "meaning": "RMB Y uan",
         "example": "这块手表 600～。"
@@ -7795,11 +7615,6 @@
     "word": "站",
     "pinyin": "zhàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "stand",
@@ -7851,11 +7666,6 @@
     "word": "照片",
     "pinyin": "zhào piān",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "photo",
@@ -8049,11 +7859,6 @@
     "pinyin": "zuì jìn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adv.",
         "meaning": "recently; of late; lately",
         "example": "我～很忙。"
@@ -8161,7 +7966,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "bǎifēnzhī percent",
+        "meaning": "percent",
         "example": "任务完成～八十了。"
       }
     ]
@@ -8249,11 +8054,6 @@
     "pinyin": "bào qiàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "be sorry; feel apologetic; regret",
         "example": "非常～，让您等了这么久。"
@@ -8290,11 +8090,6 @@
     "pinyin": "bèn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adj.",
         "meaning": "dull; foolish; stupid",
         "example": "你并不～，只是需要更努力。"
@@ -8330,11 +8125,6 @@
     "word": "遍",
     "pinyin": "biàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "vm.",
         "meaning": "number of times",
@@ -8472,7 +8262,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "bù dé bù must; have to",
+        "meaning": "must; have to",
         "example": "任务还没完成，所以周末我们～加班。"
       }
     ]
@@ -8496,7 +8286,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "bùhǎoyìsi feel shy or sorry",
+        "meaning": "feel shy or sorry",
         "example": "大家都看着他，他有点儿～了。"
       }
     ]
@@ -8770,7 +8560,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "chōuyān smoke a cigarette",
+        "meaning": "smoke a cigarette",
         "example": "对不起，医院里不能～。"
       }
     ]
@@ -8889,11 +8679,6 @@
     "pinyin": "cún",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "keep; save; deposit",
         "example": "我把钱～进了银行。"
@@ -8972,7 +8757,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "dǎzhāohu greet sb by word or gesture",
+        "meaning": "greet sb by word or gesture",
         "example": "他笑着和我～。"
       }
     ]
@@ -9138,11 +8923,6 @@
     "word": "道歉",
     "pinyin": "dào qiàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "sv.",
         "meaning": "make an apology",
@@ -9375,11 +9155,6 @@
     "pinyin": "duì miàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "the opposite side",
         "example": "我就住在学校～。"
@@ -9554,7 +9329,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "fàng shǔjià have a summer vacation",
+        "meaning": "have a summer vacation",
         "example": "明天就要～了。"
       }
     ]
@@ -9588,11 +9363,6 @@
     "word": "份",
     "pinyin": "fèn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "nm.",
         "meaning": "part; portion",
@@ -9687,11 +9457,6 @@
     "word": "复印",
     "pinyin": "fù yìn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "copy; reproduce on a copying machine",
@@ -9839,11 +9604,6 @@
     "word": "干",
     "pinyin": "gàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "do; work",
@@ -10250,11 +10010,6 @@
     "pinyin": "hàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "sweat",
         "example": "我一吃饭就出～。"
@@ -10640,11 +10395,6 @@
     "word": "既然",
     "pinyin": "jì rán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "conj.",
         "meaning": "since",
@@ -11168,11 +10918,6 @@
     "pinyin": "jìng rán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adv.",
         "meaning": "unexpectedly",
         "example": "他们～只用了一周就完成了任务。"
@@ -11282,7 +11027,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "kāi wánxiào make a joke",
+        "meaning": "make a joke",
         "example": "你是在～吧？"
       }
     ]
@@ -11485,11 +11230,6 @@
     "pinyin": "kùn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adj.",
         "meaning": "feel sleepy",
         "example": "我～了，要去睡觉。"
@@ -11556,7 +11296,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "lá ibují haven’t enough time",
+        "meaning": "haven’t enough time",
         "example": "我今天早上起晚了，～吃早饭了。"
       }
     ]
@@ -11568,7 +11308,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "lá idejí have enough time",
+        "meaning": "have enough time",
         "example": "电影九点半才开始，还～。"
       }
     ]
@@ -11614,11 +11354,6 @@
     "word": "浪漫",
     "pinyin": "làng màn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "romantic",
@@ -11774,11 +11509,6 @@
     "pinyin": "lián",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adv.",
         "meaning": "even (used for emphasis)",
         "example": "你怎么～我都忘了？"
@@ -11824,11 +11554,6 @@
     "word": "零钱",
     "pinyin": "líng qián",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "change",
@@ -11913,11 +11638,6 @@
     "word": "乱",
     "pinyin": "luàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "messy; disorderly; in confusion; confused",
@@ -12287,11 +12007,6 @@
     "pinyin": "pàn duàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "decision; judgement; estimation",
         "example": "你的～完全正确。"
@@ -12368,11 +12083,6 @@
     "word": "骗",
     "pinyin": "piàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "deceive; cheat",
@@ -12791,11 +12501,6 @@
     "word": "仍然",
     "pinyin": "réng rán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adv.",
         "meaning": "still; yet",
@@ -13245,7 +12950,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "shòubuliǎo can’t bear; can't stand",
+        "meaning": "can’t bear; can't stand",
         "example": "这里太吵了，真让人～。"
       }
     ]
@@ -13267,11 +12972,6 @@
     "word": "售货员",
     "pinyin": "shòu huò yuán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "shop assistant; salesclerk",
@@ -13349,11 +13049,6 @@
     "word": "顺便",
     "pinyin": "shùn biàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adv.",
         "meaning": "conveniently; without extra effort",
@@ -13468,11 +13163,6 @@
     "pinyin": "suí biàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adj.",
         "meaning": "casual; random; informal",
         "example": "大家请～坐吧。"
@@ -13557,11 +13247,6 @@
     "pinyin": "tán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "talk; speak; chat; discuss",
         "example": "他们两个人～得很高兴。"
@@ -13575,7 +13260,7 @@
     "parts_of_speech": [
       {
         "part_of_speech": "",
-        "meaning": "tán gāngqín play the piano",
+        "meaning": "play the piano",
         "example": "我四岁开始学习～。"
       }
     ]
@@ -13709,11 +13394,6 @@
     "pinyin": "tí qián",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "adv.",
         "meaning": "in advance; ahead of time; ahead of schedule; beforehand",
         "example": "我们～完成了任务。"
@@ -13754,11 +13434,6 @@
     "word": "条件",
     "pinyin": "tiáo jiàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "requirement; prerequisite; qualification",
@@ -13894,11 +13569,6 @@
     "word": "完全",
     "pinyin": "wán quán",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adv.",
         "meaning": "completely; absolutely; entirely; all; totally",
@@ -14056,11 +13726,6 @@
     "pinyin": "wú lùn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "conj.",
         "meaning": "no matter what, how, etc.; regardless of ～",
         "example": "我怎么解释，他都不明白。"
@@ -14113,11 +13778,6 @@
     "word": "咸",
     "pinyin": "xián",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "salty",
@@ -14542,11 +14202,6 @@
     "pinyin": "yán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "salt",
         "example": "汤不咸，还是再放点儿～吧。"
@@ -14751,11 +14406,6 @@
     "pinyin": "yì jiàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "view; suggestion; opinion; idea",
         "example": "你有什么～，请说出来吧。"
@@ -14815,11 +14465,6 @@
     "word": "应聘",
     "pinyin": "yìng pìn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "employed by",
@@ -15126,11 +14771,6 @@
     "pinyin": "yún",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "cloud",
         "example": "天上的～越来越多。"
@@ -15203,11 +14843,6 @@
     "pinyin": "zé rèn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "duty; responsibility",
         "example": "这件事情，我们大家都有～。"
@@ -15231,11 +14866,6 @@
     "word": "占线",
     "pinyin": "zhàn xiàn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "v.",
         "meaning": "The line is busy.",
@@ -15638,11 +15268,6 @@
     "pinyin": "zhuàn",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "v.",
         "meaning": "make a profit; gain; earn",
         "example": "他做生意～了不少钱。"
@@ -15691,11 +15316,6 @@
     "pinyin": "zì rán",
     "parts_of_speech": [
       {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
-      {
         "part_of_speech": "n.",
         "meaning": "nature; natural world",
         "example": "我们需要保护～环境。"
@@ -15707,11 +15327,6 @@
     "word": "自信",
     "pinyin": "zì xìn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "adj.",
         "meaning": "self-confident",
@@ -15760,11 +15375,6 @@
     "word": "最近",
     "pinyin": "zuì jìn",
     "parts_of_speech": [
-      {
-        "part_of_speech": "",
-        "meaning": "n",
-        "example": ""
-      },
       {
         "part_of_speech": "n.",
         "meaning": "recently; of late; lately",
