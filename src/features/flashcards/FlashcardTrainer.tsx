@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { hskWords } from '@/data/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
+import { useFlashcardSync } from '@/hooks/useFlashcardSync';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 
 export const FlashcardTrainer = (props: {
@@ -26,6 +27,8 @@ export const FlashcardTrainer = (props: {
     gradeEasy: string;
   };
 }) => {
+  useFlashcardSync();
+
   const [isRevealed, setIsRevealed] = useState(false);
   const [sessionReviews, setSessionReviews] = useState(0);
 

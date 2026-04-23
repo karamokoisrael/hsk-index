@@ -1,7 +1,7 @@
-import { SignIn } from '@clerk/nextjs';
 import { getTranslations } from 'next-intl/server';
 
-import { getI18nPath } from '@/utils/Helpers';
+import { SignInForm } from '@/features/auth/SignInForm';
+import { AppConfig } from '@/utils/AppConfig';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -15,8 +15,11 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-const SignInPage = (props: { params: { locale: string } }) => (
-  <SignIn path={getI18nPath('/sign-in', props.params.locale)} />
-);
+const SignInPage = (props: { params: { locale: string } }) => {
+  const isDefault = props.params.locale === AppConfig.defaultLocale;
+  const dashboardUrl = isDefault ? '/dashboard' : `/${props.params.locale}/dashboard`;
+
+  return <SignInForm dashboardUrl={dashboardUrl} />;
+};
 
 export default SignInPage;

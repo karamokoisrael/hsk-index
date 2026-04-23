@@ -82,11 +82,31 @@
   },
   "SignIn": {
     "meta_title": "Se connecter",
-    "meta_description": "Connectez-vous à votre compte avec facilité."
+    "meta_description": "Connectez-vous à votre compte avec facilité.",
+    "title": "Connectez-vous à votre compte",
+    "subtitle": "Entrez vos identifiants pour continuer",
+    "email_label": "E-mail",
+    "password_label": "Mot de passe",
+    "submit_button": "Se connecter",
+    "loading_button": "Connexion en cours…",
+    "no_account": "Pas encore de compte ?",
+    "sign_up_link": "S'inscrire",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer."
   },
   "SignUp": {
     "meta_title": "S'inscrire",
-    "meta_description": "Créez un compte sans effort grâce à notre processus d'inscription intuitif."
+    "meta_description": "Créez un compte sans effort grâce à notre processus d'inscription intuitif.",
+    "title": "Créez votre compte",
+    "subtitle": "Commencez à apprendre le chinois aujourd'hui",
+    "email_label": "E-mail",
+    "password_label": "Mot de passe",
+    "confirm_password_label": "Confirmer le mot de passe",
+    "submit_button": "Créer un compte",
+    "loading_button": "Création en cours…",
+    "already_account": "Vous avez déjà un compte ?",
+    "sign_in_link": "Se connecter",
+    "password_mismatch": "Les mots de passe ne correspondent pas",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer."
   },
   "DashboardLayout": {
     "home": "Accueil",
@@ -156,8 +176,14 @@
     "based_on_word": "À partir du mot"
   },
   "UserProfile": {
+    "meta_title": "Profil utilisateur",
+    "meta_description": "Afficher et gérer votre profil utilisateur",
     "title_bar": "Profil utilisateur",
-    "title_bar_description": "Afficher et gérer votre profil utilisateur"
+    "title_bar_description": "Afficher et gérer votre profil utilisateur",
+    "section_title": "Détails du compte",
+    "section_description": "Vos informations de compte",
+    "email_label": "Adresse e-mail",
+    "user_id_label": "Identifiant utilisateur"
   },
   "OrganizationProfile": {
     "title_bar": "Gestion de l’organisation",

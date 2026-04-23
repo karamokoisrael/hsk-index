@@ -14,6 +14,7 @@ type FlashcardsStore = {
   getProgress: (wordId: number) => FlashcardProgress;
   getDueWords: (words: HskWord[], baseDate: Date) => HskWord[];
   reviewWord: (wordId: number, grade: ReviewGrade, baseDate: Date) => void;
+  loadProgress: (progress: Record<number, FlashcardProgress>) => void;
   resetAllProgress: () => void;
 };
 
@@ -56,6 +57,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
           },
         }));
       },
+      loadProgress: progress => set({ progressByWordId: progress }),
       resetAllProgress: () => set({ progressByWordId: {} }),
     }),
     {

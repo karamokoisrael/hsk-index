@@ -1,9 +1,5 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import {
-  type NextFetchEvent,
-  type NextRequest,
-  NextResponse,
-} from 'next/server';
+import { jwtVerify } from 'jose';
+import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 import { AllLocales, AppConfig } from './utils/AppConfig';
@@ -14,60 +10,72 @@ const intlMiddleware = createMiddleware({
   defaultLocale: AppConfig.defaultLocale,
 });
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/:locale/dashboard(.*)',
-  '/onboarding(.*)',
-  '/:locale/onboarding(.*)',
-  '/api(.*)',
-  '/:locale/api(.*)',
-]);
+function isProtectedPath(pathname: string): boolean {
+  return (
+    /\/(dashboard)(\/.*)?$/.test(pathname)
+    // protect all API routes except /api/auth/*
+    || /\/api\/(?!auth\/).+/.test(pathname)
+  );
+}
 
-export default function middleware(
-  request: NextRequest,
-  event: NextFetchEvent,
-) {
-  if (
-    request.nextUrl.pathname.includes('/sign-in')
-    || request.nextUrl.pathname.includes('/sign-up')
-    || isProtectedRoute(request)
-  ) {
-    return clerkMiddleware(async (auth, req) => {
-      if (isProtectedRoute(req)) {
-        const locale
-          = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
+function isAuthPath(pathname: string): boolean {
+  return /\/(sign-in|sign-up)(\/.*)?$/.test(pathname);
+}
 
-        const signInUrl = new URL(`${locale}/sign-in`, req.url);
+async function hasValidSession(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get('hsk-session')?.value;
+  if (!token) {
+    return false;
+  }
 
-        await auth.protect({
-          // `unauthenticatedUrl` is needed to avoid error: "Unable to find `next-intl` locale because the middleware didn't run on this request"
-          unauthenticatedUrl: signInUrl.toString(),
-        });
+  try {
+    const secret = new TextEncoder().encode(
+      process.env.JWT_SECRET ?? 'dev-secret-please-change-in-production',
+    );
+    await jwtVerify(token, secret);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getLocalePrefix(pathname: string): string {
+  for (const locale of AllLocales) {
+    if (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`) {
+      if (locale !== AppConfig.defaultLocale) {
+        return `/${locale}`;
       }
+    }
+  }
+  return '';
+}
 
-      const authObj = await auth();
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-      if (
-        authObj.userId
-        && !authObj.orgId
-        && req.nextUrl.pathname.includes('/dashboard')
-        && !req.nextUrl.pathname.endsWith('/organization-selection')
-      ) {
-        const orgSelection = new URL(
-          '/onboarding/organization-selection',
-          req.url,
-        );
+  if (isProtectedPath(pathname)) {
+    const authenticated = await hasValidSession(request);
 
-        return NextResponse.redirect(orgSelection);
-      }
+    if (!authenticated) {
+      const locale = getLocalePrefix(pathname);
+      const signInUrl = new URL(`${locale}/sign-in`, request.url);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
 
-      return intlMiddleware(req);
-    })(request, event);
+  if (isAuthPath(pathname)) {
+    const authenticated = await hasValidSession(request);
+
+    if (authenticated) {
+      const locale = getLocalePrefix(pathname);
+      const dashboardUrl = new URL(`${locale}/dashboard`, request.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
   }
 
   return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next|monitoring).*)', '/', '/(api|trpc)(.*)'], // Also exclude tunnelRoute used in Sentry from the matcher
+  matcher: ['/((?!.+\\.[\\w]+$|_next|monitoring).*)', '/', '/(api|trpc)(.*)'],
 };

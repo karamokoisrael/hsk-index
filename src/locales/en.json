@@ -82,11 +82,31 @@
   },
   "SignIn": {
     "meta_title": "Sign in",
-    "meta_description": "Seamlessly sign in to your account with our user-friendly login process."
+    "meta_description": "Seamlessly sign in to your account with our user-friendly login process.",
+    "title": "Sign in to your account",
+    "subtitle": "Enter your credentials to continue",
+    "email_label": "Email",
+    "password_label": "Password",
+    "submit_button": "Sign in",
+    "loading_button": "Signing in…",
+    "no_account": "Don't have an account?",
+    "sign_up_link": "Sign up",
+    "generic_error": "Something went wrong. Please try again."
   },
   "SignUp": {
     "meta_title": "Sign up",
-    "meta_description": "Effortlessly create an account through our intuitive sign-up process."
+    "meta_description": "Effortlessly create an account through our intuitive sign-up process.",
+    "title": "Create your account",
+    "subtitle": "Start learning Chinese today",
+    "email_label": "Email",
+    "password_label": "Password",
+    "confirm_password_label": "Confirm password",
+    "submit_button": "Create account",
+    "loading_button": "Creating account…",
+    "already_account": "Already have an account?",
+    "sign_in_link": "Sign in",
+    "password_mismatch": "Passwords do not match",
+    "generic_error": "Something went wrong. Please try again."
   },
   "DashboardLayout": {
     "home": "Home",
@@ -156,8 +176,14 @@
     "based_on_word": "From word"
   },
   "UserProfile": {
+    "meta_title": "User Profile",
+    "meta_description": "View and manage your user profile",
     "title_bar": "User Profile",
-    "title_bar_description": "View and manage your user profile"
+    "title_bar_description": "View and manage your user profile",
+    "section_title": "Account details",
+    "section_description": "Your account information",
+    "email_label": "Email address",
+    "user_id_label": "User ID"
   },
   "OrganizationProfile": {
     "title_bar": "Organization Management",
