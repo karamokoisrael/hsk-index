@@ -1,18 +1,28 @@
 'use client';
 
-import type { HskWord } from '@/types/Hsk';
+import type { CardState, HskWord } from '@/types/Hsk';
+
+const STATE_GRADIENT: Record<CardState, string> = {
+  new: 'from-blue-500/5 via-background to-blue-500/10',
+  learning: 'from-red-500/5 via-background to-red-500/10',
+  relearning: 'from-red-500/5 via-background to-red-500/10',
+  review: 'from-green-500/5 via-background to-green-500/10',
+};
 
 export const FlashcardDisplay = (props: {
   word: HskWord;
   isRevealed: boolean;
   onToggle: () => void;
   total: number;
+  cardState?: CardState;
   labels: {
     answer: string;
     example: string;
   };
   className?: string;
 }) => {
+  const gradient = props.cardState ? STATE_GRADIENT[props.cardState] : 'from-background via-background to-muted/30';
+
   return (
     <div className={`mx-auto w-full max-w-2xl [perspective:1200px] ${props.className || ''}`}>
       <div
@@ -27,7 +37,7 @@ export const FlashcardDisplay = (props: {
           }
         }}
         style={{ transformStyle: 'preserve-3d' }}
-        className={`relative min-h-96 cursor-pointer rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${props.isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
+        className={`relative min-h-96 cursor-pointer rounded-2xl border bg-gradient-to-br ${gradient} shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${props.isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
       >
         <article className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
           <div className="text-center text-6xl font-semibold sm:text-7xl">{props.word.word}</div>

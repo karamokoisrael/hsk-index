@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { hskWords } from '@/data/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
-import { getNextIntervalLabel } from '@/features/flashcards/srs';
+import { getNextIntervalLabel, resolveState } from '@/features/flashcards/srs';
 import { useFlashcardSync } from '@/hooks/useFlashcardSync';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import type { ReviewGrade } from '@/types/Hsk';
@@ -195,6 +195,7 @@ export const FlashcardTrainer = (props: {
         total={hskWords.length}
         isRevealed={isRevealed}
         onToggle={() => setIsRevealed(p => !p)}
+        cardState={currentProgress ? resolveState(currentProgress) : 'new'}
         labels={{
           answer: props.labels.answer,
           example: props.labels.example,
