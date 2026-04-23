@@ -976,7 +976,7 @@
   {
     "id": 68,
     "word": "哪儿",
-    "pinyin": "nǎ ér",
+    "pinyin": "nǎr",
     "parts_of_speech": [
       {
         "part_of_speech": "pron.",
@@ -988,7 +988,7 @@
   {
     "id": 69,
     "word": "那（那儿）",
-    "pinyin": "nà （ nà ér ）",
+    "pinyin": "nà（nà r）",
     "parts_of_speech": [
       {
         "part_of_speech": "pron.",
@@ -1872,7 +1872,7 @@
   {
     "id": 131,
     "word": "一点儿",
-    "pinyin": "yì diǎn ér",
+    "pinyin": "yìdiǎnr",
     "parts_of_speech": [
       {
         "part_of_speech": "nm.",
@@ -2014,7 +2014,7 @@
   {
     "id": 142,
     "word": "这（这儿）",
-    "pinyin": "zhè （ zhè ér ）",
+    "pinyin": "zhè（zhè r）",
     "parts_of_speech": [
       {
         "part_of_speech": "pron.",
@@ -3475,7 +3475,7 @@
   {
     "id": 250,
     "word": "虽然……但是……",
-    "pinyin": "suī rán …… dàn shì ……",
+    "pinyin": "suī rán……dàn shì……",
     "parts_of_speech": [
       {
         "part_of_speech": "conj.",
@@ -3912,7 +3912,7 @@
   {
     "id": 281,
     "word": "因为…… 所以……",
-    "pinyin": "yīn wèi ……  suǒ yǐ ……",
+    "pinyin": "yīn wèi……suǒ yǐ……",
     "parts_of_speech": [
       {
         "part_of_speech": "conj.",
@@ -4502,7 +4502,7 @@
   {
     "id": 326,
     "word": "不但…… 而且……",
-    "pinyin": "bú dàn ……  ér qiě ……",
+    "pinyin": "bú dàn……ér qiě……",
     "parts_of_speech": [
       {
         "part_of_speech": "conj.",
@@ -7543,7 +7543,7 @@
   {
     "id": 559,
     "word": "一会儿",
-    "pinyin": "yī huì er",
+    "pinyin": "yí huì r",
     "parts_of_speech": [
       {
         "part_of_speech": "",
