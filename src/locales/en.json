@@ -4,6 +4,8 @@
     "meta_description": "Practice HSK vocabulary with spaced repetition flashcards and explore Chinese characters through an interactive character map."
   },
   "Navbar": {
+    "flashcards": "Flashcards",
+    "character_map": "Character Maps",
     "sign_in": "Sign In",
     "sign_up": "Sign Up",
     "product": "Product",

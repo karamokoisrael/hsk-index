@@ -35,7 +35,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
       <Navbar />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
-        <section className="space-y-2">
+        <section id="flashcards" className="space-y-2 scroll-mt-24">
           <h1 className="text-3xl font-bold tracking-tight">
             {flashcardsT('section_title')}
           </h1>
@@ -65,7 +65,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
 
-        <section className="space-y-2">
+        <section id="character-map" className="space-y-2 scroll-mt-24">
           <h2 className="text-2xl font-semibold tracking-tight">
             {characterMapT('section_title')}
           </h2>

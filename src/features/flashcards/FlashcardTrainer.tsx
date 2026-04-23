@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { getPrimaryExample, getPrimaryMeaning, hskWords } from '@/data/hskWords';
@@ -30,9 +30,15 @@ export const FlashcardTrainer = (props: {
 
   const promptMode = useFlashcardsStore(state => state.promptMode);
   const setPromptMode = useFlashcardsStore(state => state.setPromptMode);
-  const dueWords = useFlashcardsStore(state => state.getDueWords(hskWords, new Date()));
+  const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
+  const getDueWords = useFlashcardsStore(state => state.getDueWords);
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
   const resetAllProgress = useFlashcardsStore(state => state.resetAllProgress);
+
+  const dueWords = useMemo(
+    () => getDueWords(hskWords, new Date()),
+    [getDueWords, progressByWordId],
+  );
 
   const currentWord = dueWords[0];
 
@@ -129,7 +135,7 @@ export const FlashcardTrainer = (props: {
               variant="outline"
               onClick={() => {
                 reviewWord(currentWord.id, 'again', new Date());
-                setSessionReviews(sessionReviews + 1);
+                setSessionReviews(previous => previous + 1);
                 setIsRevealed(false);
               }}
             >
@@ -141,7 +147,7 @@ export const FlashcardTrainer = (props: {
               variant="outline"
               onClick={() => {
                 reviewWord(currentWord.id, 'hard', new Date());
-                setSessionReviews(sessionReviews + 1);
+                setSessionReviews(previous => previous + 1);
                 setIsRevealed(false);
               }}
             >
@@ -153,7 +159,7 @@ export const FlashcardTrainer = (props: {
               variant="outline"
               onClick={() => {
                 reviewWord(currentWord.id, 'good', new Date());
-                setSessionReviews(sessionReviews + 1);
+                setSessionReviews(previous => previous + 1);
                 setIsRevealed(false);
               }}
             >
@@ -165,7 +171,7 @@ export const FlashcardTrainer = (props: {
               variant="outline"
               onClick={() => {
                 reviewWord(currentWord.id, 'easy', new Date());
-                setSessionReviews(sessionReviews + 1);
+                setSessionReviews(previous => previous + 1);
                 setIsRevealed(false);
               }}
             >

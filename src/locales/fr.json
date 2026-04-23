@@ -4,6 +4,8 @@
     "meta_description": "Entraînez le vocabulaire HSK avec des flashcards SRS et explorez les caractères chinois via une carte interactive."
   },
   "Navbar": {
+    "flashcards": "Cartes mémoire",
+    "character_map": "Carte des caractères",
     "sign_in": "Se connecter",
     "sign_up": "S'inscrire",
     "product": "Produit",
