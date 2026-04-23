@@ -63,6 +63,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 maxNewPerDay: flashcardsT('max_new_per_day'),
                 maxReviewsPerDay: flashcardsT('max_reviews_per_day'),
                 saveOptions: flashcardsT('save_options'),
+                addMoreCards: flashcardsT('add_more_cards'),
               }}
             />
           </div>

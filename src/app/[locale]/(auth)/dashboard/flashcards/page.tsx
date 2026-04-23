@@ -36,6 +36,7 @@ const FlashcardsPage = () => {
             maxNewPerDay: t('max_new_per_day'),
             maxReviewsPerDay: t('max_reviews_per_day'),
             saveOptions: t('save_options'),
+            addMoreCards: t('add_more_cards'),
           }}
         />
       </DashboardSection>

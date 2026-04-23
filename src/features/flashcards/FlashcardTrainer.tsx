@@ -35,6 +35,7 @@ export const FlashcardTrainer = (props: {
     maxNewPerDay: string;
     maxReviewsPerDay: string;
     saveOptions: string;
+    addMoreCards: string;
   };
 }) => {
   useFlashcardSync();
@@ -102,9 +103,14 @@ export const FlashcardTrainer = (props: {
       <div className="space-y-4 rounded-md border bg-background p-5">
         <div className="text-lg font-semibold">{props.labels.noCardsTitle}</div>
         <p className="text-sm text-muted-foreground">{props.labels.noCardsDescription}</p>
-        <Button type="button" variant="outline" onClick={resetAllProgress}>
-          {props.labels.resetProgress}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" onClick={() => setLimits(maxNewPerDay + 20, maxReviewsPerDay)}>
+            {props.labels.addMoreCards}
+          </Button>
+          <Button type="button" variant="outline" onClick={resetAllProgress}>
+            {props.labels.resetProgress}
+          </Button>
+        </div>
       </div>
     );
   }

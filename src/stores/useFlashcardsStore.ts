@@ -127,7 +127,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
           if (state === 'new' && newCount < newRemaining) {
             newCount++;
-          } else if ((state === 'learning' || state === 'relearning') && isDue(progress, baseDate)) {
+          } else if (state === 'learning' || state === 'relearning') {
             learningCount++;
           } else if (state === 'review' && isDue(progress, baseDate) && reviewCount < reviewRemaining) {
             reviewCount++;
