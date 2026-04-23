@@ -74,6 +74,12 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           <div className="mt-4">
             <CharacterMap
               labels={{
+                viewCommon: characterMapT('view_common'),
+                viewExplorer: characterMapT('view_explorer'),
+                commonCharacters: characterMapT('common_characters'),
+                commonHint: characterMapT('common_hint'),
+                appearsInWords: characterMapT('appears_in_words'),
+                relatedWords: characterMapT('related_words'),
                 searchPlaceholder: characterMapT('search_placeholder'),
                 results: characterMapT('results'),
                 empty: characterMapT('empty'),

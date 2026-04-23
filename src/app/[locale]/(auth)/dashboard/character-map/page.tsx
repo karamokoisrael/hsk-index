@@ -17,6 +17,12 @@ const CharacterMapPage = () => {
       >
         <CharacterMap
           labels={{
+            viewCommon: t('view_common'),
+            viewExplorer: t('view_explorer'),
+            commonCharacters: t('common_characters'),
+            commonHint: t('common_hint'),
+            appearsInWords: t('appears_in_words'),
+            relatedWords: t('related_words'),
             searchPlaceholder: t('search_placeholder'),
             results: t('results'),
             empty: t('empty'),
