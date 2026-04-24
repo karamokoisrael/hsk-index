@@ -8,7 +8,7 @@ import { getCharacterMapItems, getPrimaryMeaning, hskWords } from '@/data/hskWor
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
-import type { CardState, HskWord, ReviewGrade } from '@/types/Hsk';
+import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 const characterMapItems = getCharacterMapItems();
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
@@ -54,12 +54,12 @@ function wordBg(state: CardState): string {
   return 'bg-blue-500/10';
 }
 
-function getWordState(wordId: number, progressByWordId: Record<number, import('@/types/Hsk').FlashcardProgress>): CardState {
+function getWordState(wordId: number, progressByWordId: Record<number, FlashcardProgress>): CardState {
   const p = progressByWordId[wordId];
   return p ? resolveState(p) : 'new';
 }
 
-function charAggregate(wordIds: number[], progressByWordId: Record<number, import('@/types/Hsk').FlashcardProgress>): CardState {
+function charAggregate(wordIds: number[], progressByWordId: Record<number, FlashcardProgress>): CardState {
   let hasNew = false;
   for (const id of wordIds) {
     const p = progressByWordId[id];
