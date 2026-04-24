@@ -1,3 +1,22 @@
+# [1.1.0](https://github.com/karamokoisrael/hsk-index/compare/v1.0.0...v1.1.0) (2026-04-24)
+
+
+### Bug Fixes
+
+* correct casing of I18n import path in next.config.mjs ([e513e14](https://github.com/karamokoisrael/hsk-index/commit/e513e14ebd1025978c31048cef9cfc54ee7142ed))
+
+
+### Features
+
+* Add "Add more cards" option to Flashcard components and translations ([c3817a5](https://github.com/karamokoisrael/hsk-index/commit/c3817a55c5af03b774ffe87666f88e7789d85158))
+* Add loading state to FlashcardTrainer component ([c0c36ca](https://github.com/karamokoisrael/hsk-index/commit/c0c36ca3934d0022644f4542f049e9b587fb7323))
+* Add toggle for showing/hiding details in CharacterMap component and update translations ([91c6e7c](https://github.com/karamokoisrael/hsk-index/commit/91c6e7c14c974c78ce8ea784978e630514b0fd07))
+* Add total word count to FlashcardDisplay and FlashcardTrainer components ([e883e7d](https://github.com/karamokoisrael/hsk-index/commit/e883e7d448f99ab32c09ed6888e58680981e755b))
+* Enhance flashcard components with state resolution and background color updates ([238a3cd](https://github.com/karamokoisrael/hsk-index/commit/238a3cd074818d8cd0f0f263c3f480a2835ac960))
+* Enhance flashcard options and review logic ([29f1fc2](https://github.com/karamokoisrael/hsk-index/commit/29f1fc2aa18078a54fe4b70b8e2e4b20c2f8db24))
+* Refactor authentication flow and user profile management ([8ec3400](https://github.com/karamokoisrael/hsk-index/commit/8ec34003b4ca25cfaf2c5a49e1d85d2808630244))
+* Update type imports for FlashcardProgress in CharacterMap component ([e7888cf](https://github.com/karamokoisrael/hsk-index/commit/e7888cf065a4f56a2fbeee3140885ef69b38a163))
+
 # 1.0.0 (2026-04-23)
 
 
