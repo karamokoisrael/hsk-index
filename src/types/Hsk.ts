@@ -23,6 +23,8 @@ export type PromptMode = 'word-to-meaning' | 'meaning-to-word';
 
 export type ReviewGrade = 'again' | 'hard' | 'good' | 'easy';
 
+export type CardState = 'new' | 'learning' | 'relearning' | 'review';
+
 export type FlashcardProgress = {
   ease: number;
   interval: number;
@@ -30,4 +32,7 @@ export type FlashcardProgress = {
   dueAt: string;
   lastReviewedAt?: string;
   lapses: number;
+  // Optional for backward compatibility with stored data
+  state?: CardState;
+  learningStep?: number;
 };

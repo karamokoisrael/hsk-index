@@ -1,13 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getCharacterMapItems, getPrimaryMeaning, hskWords } from '@/data/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
+import { resolveState } from '@/features/flashcards/srs';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
-import type { HskWord, ReviewGrade } from '@/types/Hsk';
+import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 const characterMapItems = getCharacterMapItems();
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
@@ -47,6 +48,28 @@ const commonCharacterEntries = (() => {
     .sort((a, b) => b.count - a.count);
 })();
 
+function wordBg(state: CardState): string {
+  if (state === 'learning' || state === 'relearning') return 'bg-red-500/10';
+  if (state === 'review') return 'bg-green-500/10';
+  return 'bg-blue-500/10';
+}
+
+function getWordState(wordId: number, progressByWordId: Record<number, FlashcardProgress>): CardState {
+  const p = progressByWordId[wordId];
+  return p ? resolveState(p) : 'new';
+}
+
+function charAggregate(wordIds: number[], progressByWordId: Record<number, FlashcardProgress>): CardState {
+  let hasNew = false;
+  for (const id of wordIds) {
+    const p = progressByWordId[id];
+    const s = p ? resolveState(p) : 'new';
+    if (s === 'learning' || s === 'relearning') return 'learning';
+    if (s === 'new') hasNew = true;
+  }
+  return hasNew ? 'new' : 'review';
+}
+
 export const CharacterMap = (props: {
   labels: {
     viewCommon: string;
@@ -69,8 +92,12 @@ export const CharacterMap = (props: {
     results: string;
     empty: string;
     basedOnWord: string;
+    hideDetails: string;
+    showDetails: string;
   };
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
   const [view, setView] = useState<'common' | 'explorer'>('common');
   const [query, setQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
@@ -78,7 +105,19 @@ export const CharacterMap = (props: {
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
 
+  useEffect(() => { setIsMounted(true); }, []);
+
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
+  const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
+
+  const characterStates = useMemo(() => {
+    if (!isMounted) return new Map<string, CardState>();
+    const map = new Map<string, CardState>();
+    for (const entry of commonCharacterEntries) {
+      map.set(entry.character, charAggregate(entry.words.map(w => w.id), progressByWordId));
+    }
+    return map;
+  }, [isMounted, progressByWordId]);
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -205,7 +244,7 @@ export const CharacterMap = (props: {
                     key={item.character}
                     type="button"
                     onClick={() => selectCharacter(item.character)}
-                    className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : 'bg-background'}`}
+                    className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : wordBg(characterStates.get(item.character) ?? 'new')}`}
                   >
                     {item.character}
                   </button>
@@ -231,7 +270,16 @@ export const CharacterMap = (props: {
                 </div>
 
                 <div className="mt-5 space-y-2">
-                  <div className="text-sm font-semibold">{props.labels.relatedWords}</div>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-sm font-semibold">{props.labels.relatedWords}</div>
+                    <button
+                      type="button"
+                      onClick={() => setShowDetails(v => !v)}
+                      className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                    >
+                      {showDetails ? props.labels.hideDetails : props.labels.showDetails}
+                    </button>
+                  </div>
 
                   <div className="grid gap-3 md:hidden">
                     {relatedWords.map(word => (
@@ -239,11 +287,11 @@ export const CharacterMap = (props: {
                         key={word.id}
                         type="button"
                         onClick={() => openStudyForWord(word.id)}
-                        className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                        className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
                       >
-                        <div className="text-sm text-muted-foreground">{word.pinyin}</div>
-                        <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                        <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                        {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
+                        <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                        {showDetails && <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>}
                       </button>
                     ))}
                   </div>
@@ -255,11 +303,11 @@ export const CharacterMap = (props: {
                           <button
                             type="button"
                             onClick={() => openStudyForWord(word.id)}
-                            className="rounded-md border bg-background p-3 text-right transition hover:border-primary"
+                            className={`rounded-md border p-3 text-right transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
                           >
-                            <div className="text-sm text-muted-foreground">{word.pinyin}</div>
-                            <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                            <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                            {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
+                            <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                            {showDetails && <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>}
                           </button>
                           <div className="text-center text-2xl text-primary/80">
                             {index === 0 ? '↘' : index === 1 ? '→' : '↗'}
@@ -282,11 +330,11 @@ export const CharacterMap = (props: {
                           <button
                             type="button"
                             onClick={() => openStudyForWord(word.id)}
-                            className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                            className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
                           >
-                            <div className="text-sm text-muted-foreground">{word.pinyin}</div>
-                            <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                            <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                            {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
+                            <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                            {showDetails && <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>}
                           </button>
                         </div>
                       ))}
@@ -300,11 +348,11 @@ export const CharacterMap = (props: {
                           key={word.id}
                           type="button"
                           onClick={() => openStudyForWord(word.id)}
-                          className="rounded-md border bg-background p-3 text-left transition hover:border-primary"
+                          className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
                         >
-                          <div className="text-sm text-muted-foreground">{word.pinyin}</div>
-                          <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                          <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>
+                          {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
+                          <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                          {showDetails && <div className="mt-2 text-sm">{getPrimaryMeaning(word)}</div>}
                         </button>
                       ))}
                     </div>
@@ -373,6 +421,7 @@ export const CharacterMap = (props: {
                   key={word.id}
                   type="button"
                   variant={selectedStudyWord.id === word.id ? 'default' : 'outline'}
+                  className={selectedStudyWord.id !== word.id && isMounted ? wordBg(getWordState(word.id, progressByWordId)) : ''}
                   onClick={() => {
                     setSelectedStudyWordId(word.id);
                     setIsStudyRevealed(false);
@@ -385,8 +434,10 @@ export const CharacterMap = (props: {
 
             <FlashcardDisplay
               word={selectedStudyWord}
+              total={hskWords.length}
               isRevealed={isStudyRevealed}
               onToggle={() => setIsStudyRevealed(previous => !previous)}
+              cardState={isMounted ? getWordState(selectedStudyWord.id, progressByWordId) : undefined}
               labels={{
                 answer: props.labels.answer,
                 example: props.labels.example,

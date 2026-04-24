@@ -32,6 +32,11 @@ const FlashcardsPage = () => {
             gradeHard: t('grade_hard'),
             gradeGood: t('grade_good'),
             gradeEasy: t('grade_easy'),
+            options: t('options'),
+            maxNewPerDay: t('max_new_per_day'),
+            maxReviewsPerDay: t('max_reviews_per_day'),
+            saveOptions: t('save_options'),
+            addMoreCards: t('add_more_cards'),
           }}
         />
       </DashboardSection>
