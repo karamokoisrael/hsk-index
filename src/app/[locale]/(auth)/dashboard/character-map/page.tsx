@@ -38,6 +38,8 @@ const CharacterMapPage = () => {
             results: t('results'),
             empty: t('empty'),
             basedOnWord: t('based_on_word'),
+            hideDetails: t('hide_details'),
+            showDetails: t('show_details'),
           }}
         />
       </DashboardSection>

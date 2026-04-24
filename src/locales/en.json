@@ -178,7 +178,9 @@
     "search_placeholder": "Search characters, words, pinyin, or meanings",
     "results": "Results",
     "empty": "No character matched your search.",
-    "based_on_word": "From word"
+    "based_on_word": "From word",
+    "hide_details": "Hide meanings",
+    "show_details": "Show meanings"
   },
   "UserProfile": {
     "meta_title": "User Profile",

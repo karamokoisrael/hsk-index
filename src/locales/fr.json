@@ -178,7 +178,9 @@
     "search_placeholder": "Rechercher des caractères, mots, pinyin ou sens",
     "results": "Résultats",
     "empty": "Aucun caractère ne correspond à votre recherche.",
-    "based_on_word": "À partir du mot"
+    "based_on_word": "À partir du mot",
+    "hide_details": "Masquer les sens",
+    "show_details": "Afficher les sens"
   },
   "UserProfile": {
     "meta_title": "Profil utilisateur",

@@ -99,6 +99,8 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 results: characterMapT('results'),
                 empty: characterMapT('empty'),
                 basedOnWord: characterMapT('based_on_word'),
+                hideDetails: characterMapT('hide_details'),
+                showDetails: characterMapT('show_details'),
               }}
             />
           </div>
