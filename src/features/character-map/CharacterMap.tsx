@@ -111,6 +111,7 @@ export const CharacterMap = (props: {
   const [showDetails, setShowDetails] = useState(true);
   const [view, setView] = useState<'common' | 'explorer'>('common');
   const [query, setQuery] = useState('');
+  const [charQuery, setCharQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
@@ -129,6 +130,17 @@ export const CharacterMap = (props: {
     }
     return map;
   }, [isMounted, progressByWordId]);
+
+  const normalizedCharQuery = charQuery.trim().toLowerCase();
+  const filteredCharacters = normalizedCharQuery
+    ? commonCharacterEntries.filter(item =>
+      item.character.includes(normalizedCharQuery)
+      || item.words.some(w =>
+        w.pinyin.toLowerCase().includes(normalizedCharQuery)
+        || w.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedCharQuery)),
+      ),
+    )
+    : commonCharacterEntries;
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -248,9 +260,16 @@ export const CharacterMap = (props: {
               <p className="mt-1 text-xs text-muted-foreground">{props.labels.commonHint}</p>
             </div>
 
+            <Input
+              value={charQuery}
+              onChange={e => setCharQuery(e.target.value)}
+              placeholder={props.labels.searchPlaceholder}
+              className="h-8 text-sm"
+            />
+
             <div className="max-h-[70vh] overflow-y-auto pr-1">
               <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
-                {commonCharacterEntries.map(item => (
+                {filteredCharacters.map(item => (
                   <button
                     key={item.character}
                     type="button"
