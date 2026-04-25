@@ -26,7 +26,6 @@ export const FlashcardTrainer = (props: {
     showPromptMeaning: string;
     answer: string;
     example: string;
-    resetProgress: string;
     gradeAgain: string;
     gradeHard: string;
     gradeGood: string;
@@ -52,7 +51,6 @@ export const FlashcardTrainer = (props: {
   const getDeckStats = useFlashcardsStore(s => s.getDeckStats);
   const getProgress = useFlashcardsStore(s => s.getProgress);
   const reviewWord = useFlashcardsStore(s => s.reviewWord);
-  const resetAllProgress = useFlashcardsStore(s => s.resetAllProgress);
   const maxNewPerDay = useFlashcardsStore(s => s.maxNewPerDay);
   const maxReviewsPerDay = useFlashcardsStore(s => s.maxReviewsPerDay);
   const setLimits = useFlashcardsStore(s => s.setLimits);
@@ -64,15 +62,19 @@ export const FlashcardTrainer = (props: {
 
   const dueWords = useMemo(() => {
     void progressByWordId;
+    void maxNewPerDay;
+    void maxReviewsPerDay;
     return getDueWords(hskWords, now);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getDueWords, progressByWordId]);
+  }, [getDueWords, progressByWordId, maxNewPerDay, maxReviewsPerDay]);
 
   const stats = useMemo(() => {
     void progressByWordId;
+    void maxNewPerDay;
+    void maxReviewsPerDay;
     return getDeckStats(hskWords, now);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getDeckStats, progressByWordId]);
+  }, [getDeckStats, progressByWordId, maxNewPerDay, maxReviewsPerDay]);
 
   const currentWord = dueWords[0];
   const currentProgress = currentWord ? getProgress(currentWord.id) : null;
@@ -110,14 +112,9 @@ export const FlashcardTrainer = (props: {
       <div className="space-y-4 rounded-md border bg-background p-5">
         <div className="text-lg font-semibold">{props.labels.noCardsTitle}</div>
         <p className="text-sm text-muted-foreground">{props.labels.noCardsDescription}</p>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" onClick={() => setLimits(maxNewPerDay + 20, maxReviewsPerDay)}>
-            {props.labels.addMoreCards}
-          </Button>
-          <Button type="button" variant="outline" onClick={resetAllProgress}>
-            {props.labels.resetProgress}
-          </Button>
-        </div>
+        <Button type="button" onClick={() => setLimits(maxNewPerDay + 20, maxReviewsPerDay)}>
+          {props.labels.addMoreCards}
+        </Button>
       </div>
     );
   }

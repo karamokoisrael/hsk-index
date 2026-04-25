@@ -11,7 +11,7 @@ export default async function CenteredLayout(props: {
 
   if (session) {
     const isDefault = props.params.locale === AppConfig.defaultLocale;
-    redirect(isDefault ? '/dashboard' : `/${props.params.locale}/dashboard`);
+    redirect(isDefault ? '/' : `/${props.params.locale}`);
   }
 
   return (

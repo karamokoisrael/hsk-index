@@ -54,7 +54,6 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 showPromptMeaning: flashcardsT('show_prompt_meaning'),
                 answer: flashcardsT('answer'),
                 example: flashcardsT('example'),
-                resetProgress: flashcardsT('reset_progress'),
                 gradeAgain: flashcardsT('grade_again'),
                 gradeHard: flashcardsT('grade_hard'),
                 gradeGood: flashcardsT('grade_good'),

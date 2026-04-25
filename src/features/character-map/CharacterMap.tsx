@@ -59,10 +59,21 @@ function getWordState(wordId: number, progressByWordId: Record<number, Flashcard
   return p ? resolveState(p) : 'new';
 }
 
-function charAggregate(wordIds: number[], progressByWordId: Record<number, FlashcardProgress>): CardState {
+function getDisplayWords(words: typeof hskWords): typeof hskWords {
+  const byWord = new Map<string, (typeof hskWords)[number]>();
+  for (const word of words) {
+    if (!byWord.has(word.word)) {
+      byWord.set(word.word, word);
+    }
+  }
+  return [...byWord.values()].slice(0, 9);
+}
+
+function charAggregate(words: typeof hskWords, progressByWordId: Record<number, FlashcardProgress>): CardState {
+  const displayed = getDisplayWords(words);
   let hasNew = false;
-  for (const id of wordIds) {
-    const p = progressByWordId[id];
+  for (const word of displayed) {
+    const p = progressByWordId[word.id];
     const s = p ? resolveState(p) : 'new';
     if (s === 'learning' || s === 'relearning') return 'learning';
     if (s === 'new') hasNew = true;
@@ -100,6 +111,7 @@ export const CharacterMap = (props: {
   const [showDetails, setShowDetails] = useState(true);
   const [view, setView] = useState<'common' | 'explorer'>('common');
   const [query, setQuery] = useState('');
+  const [charQuery, setCharQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
@@ -114,10 +126,21 @@ export const CharacterMap = (props: {
     if (!isMounted) return new Map<string, CardState>();
     const map = new Map<string, CardState>();
     for (const entry of commonCharacterEntries) {
-      map.set(entry.character, charAggregate(entry.words.map(w => w.id), progressByWordId));
+      map.set(entry.character, charAggregate(entry.words, progressByWordId));
     }
     return map;
   }, [isMounted, progressByWordId]);
+
+  const normalizedCharQuery = charQuery.trim().toLowerCase();
+  const filteredCharacters = normalizedCharQuery
+    ? commonCharacterEntries.filter(item =>
+      item.character.includes(normalizedCharQuery)
+      || item.words.some(w =>
+        w.pinyin.toLowerCase().includes(normalizedCharQuery)
+        || w.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedCharQuery)),
+      ),
+    )
+    : commonCharacterEntries;
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -237,14 +260,21 @@ export const CharacterMap = (props: {
               <p className="mt-1 text-xs text-muted-foreground">{props.labels.commonHint}</p>
             </div>
 
+            <Input
+              value={charQuery}
+              onChange={e => setCharQuery(e.target.value)}
+              placeholder={props.labels.searchPlaceholder}
+              className="h-8 text-sm"
+            />
+
             <div className="max-h-[70vh] overflow-y-auto pr-1">
               <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
-                {commonCharacterEntries.map(item => (
+                {filteredCharacters.map(item => (
                   <button
                     key={item.character}
                     type="button"
                     onClick={() => selectCharacter(item.character)}
-                    className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${selectedCommonCharacter?.character === item.character ? 'border-primary bg-primary/10 text-primary' : wordBg(characterStates.get(item.character) ?? 'new')}`}
+                    className={`rounded-md border px-2 py-2 text-center text-lg font-semibold transition hover:border-primary ${isMounted ? wordBg(characterStates.get(item.character) ?? 'new') : ''} ${selectedCommonCharacter?.character === item.character ? 'border-primary text-primary' : ''}`}
                   >
                     {item.character}
                   </button>

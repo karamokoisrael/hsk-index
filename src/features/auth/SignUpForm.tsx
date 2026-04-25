@@ -36,10 +36,17 @@ export const SignUpForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
 
       if (res.ok) {
         window.location.href = dashboardUrl;
-      } else {
-        const data = await res.json();
-        setError(data.error ?? t('generic_error'));
+        return;
       }
+
+      let message = t('generic_error');
+      try {
+        const data = await res.json();
+        message = data.error ?? message;
+      } catch {}
+      setError(message);
+    } catch {
+      setError(t('generic_error'));
     } finally {
       setLoading(false);
     }

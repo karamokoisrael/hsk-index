@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/Auth';
+import { Env } from '@/libs/Env';
 import { getDb } from '@/libs/MongoDB';
 
 const schema = z.object({
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
   }
 
-  const valid = await compare(password, user.passwordHash as string);
+  const valid = await compare(password + Env.PASSWORD_PEPPER, user.passwordHash as string);
   if (!valid) {
     return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
   }

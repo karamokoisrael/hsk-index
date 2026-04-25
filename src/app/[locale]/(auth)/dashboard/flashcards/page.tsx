@@ -27,7 +27,6 @@ const FlashcardsPage = () => {
             showPromptMeaning: t('show_prompt_meaning'),
             answer: t('answer'),
             example: t('example'),
-            resetProgress: t('reset_progress'),
             gradeAgain: t('grade_again'),
             gradeHard: t('grade_hard'),
             gradeGood: t('grade_good'),

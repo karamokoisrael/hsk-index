@@ -3,15 +3,15 @@ import type { CardState, FlashcardProgress, ReviewGrade } from '@/types/Hsk';
 const MIN_EASE = 1.3;
 const MAX_EASE = 3.0;
 
-// Learning steps in minutes (new cards pass through these before graduating to review)
 const LEARNING_STEPS_MIN = [1, 10];
-// Relearning steps in minutes (review cards that lapse go here)
 const RELEARN_STEPS_MIN = [10];
 
-const GRADUATING_INTERVAL_DAYS = 1; // Good on last learning step → 1 day
-const EASY_INTERVAL_DAYS = 4;       // Easy on any learning step → 4 days
+const GRADUATING_INTERVAL_DAYS = 1;
+const EASY_INTERVAL_DAYS = 4;
 const HARD_MULTIPLIER = 1.2;
 const EASY_BONUS = 1.3;
+// Anki default: lapsed cards reset to 0% of old interval (i.e. 1 day minimum)
+const LAPSE_NEW_INTERVAL_FACTOR = 0;
 
 function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.getTime() + minutes * 60 * 1000);
@@ -21,6 +21,11 @@ function addDays(date: Date, days: number): Date {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
   return d;
+}
+
+// Anki: next review interval is always at least current_interval + 1
+function nextReviewInterval(current: number, multiplied: number): number {
+  return Math.max(current + 1, Math.round(multiplied));
 }
 
 // Infer state for cards persisted before the state field existed
@@ -44,7 +49,6 @@ export const createInitialProgress = (baseDate: Date): FlashcardProgress => ({
 export const isDue = (progress: FlashcardProgress, baseDate: Date): boolean =>
   new Date(progress.dueAt).getTime() <= baseDate.getTime();
 
-// Returns the interval string shown above each grade button, e.g. "<1m", "10m", "3d"
 export function getNextIntervalLabel(
   progress: FlashcardProgress,
   grade: ReviewGrade,
@@ -53,61 +57,42 @@ export function getNextIntervalLabel(
   const step = progress.learningStep ?? 0;
 
   if (state === 'new') {
-    if (grade === 'again' || grade === 'hard') {
-      return `<${LEARNING_STEPS_MIN[0]}m`;
-    }
+    if (grade === 'again' || grade === 'hard') return `<${LEARNING_STEPS_MIN[0]}m`;
     if (grade === 'good') {
       return LEARNING_STEPS_MIN.length > 1
         ? `<${LEARNING_STEPS_MIN[1]}m`
         : `${GRADUATING_INTERVAL_DAYS}d`;
     }
-    // easy
     return `${EASY_INTERVAL_DAYS}d`;
   }
 
   if (state === 'learning') {
-    if (grade === 'again') {
-      return `<${LEARNING_STEPS_MIN[0]}m`;
-    }
-    if (grade === 'hard') {
-      return `<${LEARNING_STEPS_MIN[step] ?? LEARNING_STEPS_MIN[0]}m`;
-    }
+    if (grade === 'again') return `<${LEARNING_STEPS_MIN[0]}m`;
+    if (grade === 'hard') return `<${LEARNING_STEPS_MIN[step] ?? LEARNING_STEPS_MIN[0]}m`;
     if (grade === 'good') {
       const next = step + 1;
       return next >= LEARNING_STEPS_MIN.length
         ? `${GRADUATING_INTERVAL_DAYS}d`
         : `<${LEARNING_STEPS_MIN[next]}m`;
     }
-    // easy
     return `${EASY_INTERVAL_DAYS}d`;
   }
 
   if (state === 'relearning') {
-    if (grade === 'again') {
-      return `<${RELEARN_STEPS_MIN[0]}m`;
-    }
-    if (grade === 'hard') {
-      return `<${RELEARN_STEPS_MIN[Math.min(step, RELEARN_STEPS_MIN.length - 1)]}m`;
-    }
-    // good or easy → graduate back to review
-    return `${Math.max(1, progress.interval)}d`;
+    if (grade === 'again') return `<${RELEARN_STEPS_MIN[0]}m`;
+    if (grade === 'hard') return `<${RELEARN_STEPS_MIN[Math.min(step, RELEARN_STEPS_MIN.length - 1)]}m`;
+    // good or easy: graduate back to review at lapse interval (1 day)
+    return `${Math.max(1, Math.round(progress.interval * LAPSE_NEW_INTERVAL_FACTOR))}d`;
   }
 
   // review state
   const ease = progress.ease;
   const interval = Math.max(1, progress.interval);
 
-  if (grade === 'again') {
-    return `<${RELEARN_STEPS_MIN[0]}m`;
-  }
-  if (grade === 'hard') {
-    return `${Math.max(1, Math.round(interval * HARD_MULTIPLIER))}d`;
-  }
-  if (grade === 'good') {
-    return `${Math.max(1, Math.round(interval * ease))}d`;
-  }
-  // easy
-  return `${Math.max(1, Math.round(interval * ease * EASY_BONUS))}d`;
+  if (grade === 'again') return `<${RELEARN_STEPS_MIN[0]}m`;
+  if (grade === 'hard') return `${nextReviewInterval(interval, interval * HARD_MULTIPLIER)}d`;
+  if (grade === 'good') return `${nextReviewInterval(interval, interval * ease)}d`;
+  return `${nextReviewInterval(interval, interval * ease * EASY_BONUS)}d`;
 }
 
 export const scheduleNextReview = (
@@ -187,9 +172,9 @@ export const scheduleNextReview = (
       nextStep = Math.min(step, RELEARN_STEPS_MIN.length - 1);
       nextDue = addMinutes(baseDate, RELEARN_STEPS_MIN[nextStep]!);
     } else {
-      // good or easy → graduate back to review
+      // good or easy → graduate back to review at lapse interval (Anki default: 1 day)
       nextState = 'review';
-      nextInterval = Math.max(1, progress.interval);
+      nextInterval = Math.max(1, Math.round(progress.interval * LAPSE_NEW_INTERVAL_FACTOR));
       nextReps += 1;
       nextDue = addDays(baseDate, nextInterval);
     }
@@ -205,19 +190,19 @@ export const scheduleNextReview = (
     } else if (grade === 'hard') {
       nextState = 'review';
       nextEase = Math.max(MIN_EASE, progress.ease - 0.15);
-      nextInterval = Math.max(1, Math.round(progress.interval * HARD_MULTIPLIER));
+      nextInterval = nextReviewInterval(progress.interval, progress.interval * HARD_MULTIPLIER);
       nextReps += 1;
       nextDue = addDays(baseDate, nextInterval);
     } else if (grade === 'good') {
       nextState = 'review';
-      nextInterval = Math.max(1, Math.round(progress.interval * progress.ease));
+      nextInterval = nextReviewInterval(progress.interval, progress.interval * progress.ease);
       nextReps += 1;
       nextDue = addDays(baseDate, nextInterval);
     } else {
       // easy
       nextState = 'review';
       nextEase = Math.min(MAX_EASE, progress.ease + 0.15);
-      nextInterval = Math.max(1, Math.round(progress.interval * progress.ease * EASY_BONUS));
+      nextInterval = nextReviewInterval(progress.interval, progress.interval * progress.ease * EASY_BONUS);
       nextReps += 1;
       nextDue = addDays(baseDate, nextInterval);
     }
