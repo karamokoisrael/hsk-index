@@ -79,8 +79,8 @@ export default async function middleware(request: NextRequest) {
 
     if (authenticated) {
       const locale = getLocalePrefix(pathname);
-      const dashboardUrl = new URL(`${locale}/dashboard`, request.url);
-      return NextResponse.redirect(dashboardUrl);
+      const homeUrl = new URL(`${locale}/`, request.url);
+      return NextResponse.redirect(homeUrl);
     }
   }
 

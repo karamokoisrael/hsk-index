@@ -17,7 +17,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 
 const SignInPage = (props: { params: { locale: string } }) => {
   const isDefault = props.params.locale === AppConfig.defaultLocale;
-  const dashboardUrl = isDefault ? '/dashboard' : `/${props.params.locale}/dashboard`;
+  const dashboardUrl = isDefault ? '/' : `/${props.params.locale}`;
 
   return <SignInForm dashboardUrl={dashboardUrl} />;
 };
