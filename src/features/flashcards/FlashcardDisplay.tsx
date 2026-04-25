@@ -39,11 +39,25 @@ export const FlashcardDisplay = (props: {
         style={{ transformStyle: 'preserve-3d' }}
         className={`relative min-h-96 cursor-pointer rounded-2xl border bg-gradient-to-br ${gradient} shadow-lg transition-transform duration-500 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${props.isRevealed ? '[transform:rotateY(180deg)]' : ''}`}
       >
-        <article className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 [backface-visibility:hidden] sm:p-8">
+        <article
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            visibility: props.isRevealed ? 'hidden' : 'visible',
+          }}
+          className="absolute inset-0 flex items-center justify-center rounded-2xl p-6 sm:p-8"
+        >
           <div className="text-center text-6xl font-semibold sm:text-7xl">{props.word.word}</div>
         </article>
 
-        <article className="absolute inset-0 flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 p-6 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+        <article
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+          }}
+          className="absolute inset-0 flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8"
+        >
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{props.labels.answer}</div>
 
           <div className="space-y-3 text-center">
