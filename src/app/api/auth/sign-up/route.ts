@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/Auth';
+import { Env } from '@/libs/Env';
 import { getDb } from '@/libs/MongoDB';
 
 const schema = z.object({
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
   }
 
-  const passwordHash = await hash(password, 10);
+  const passwordHash = await hash(password + Env.PASSWORD_PEPPER, 10);
   const result = await db.collection('users').insertOne({
     email,
     passwordHash,
