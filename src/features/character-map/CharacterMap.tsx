@@ -4,13 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getCharacterMapItems, getPrimaryMeaning, hskWords } from '@/data/hskWords';
+import { getPrimaryMeaning, hskWords } from '@/data/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
-const characterMapItems = getCharacterMapItems();
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
 
 const commonCharacterEntries = (() => {
@@ -116,6 +115,7 @@ export const CharacterMap = (props: {
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
+  const [explorerStudyWord, setExplorerStudyWord] = useState<HskWord | null>(null);
 
   useEffect(() => { setIsMounted(true); }, []);
 
@@ -144,14 +144,13 @@ export const CharacterMap = (props: {
 
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filtered = normalizedQuery
-    ? characterMapItems.filter(item => (
-      item.character.includes(normalizedQuery)
-      || item.word.includes(normalizedQuery)
-      || item.pinyin.toLowerCase().includes(normalizedQuery)
-      || item.meaning.toLowerCase().includes(normalizedQuery)
-    ))
-    : characterMapItems;
+  const filteredWords = normalizedQuery
+    ? hskWords.filter(word =>
+      word.word.includes(normalizedQuery)
+      || word.pinyin.toLowerCase().includes(normalizedQuery)
+      || word.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedQuery)),
+    )
+    : hskWords;
 
   const selectedCommonCharacter = useMemo(
     () => commonCharacterEntries.find(item => item.character === selectedCharacter) || commonCharacterEntries[0],
@@ -192,7 +191,15 @@ export const CharacterMap = (props: {
   };
 
   const openStudyForWord = (wordId: number) => {
+    setExplorerStudyWord(null);
     setSelectedStudyWordId(wordId);
+    setIsStudyRevealed(false);
+    setIsStudyOpen(true);
+  };
+
+  const openExplorerWord = (word: HskWord) => {
+    setExplorerStudyWord(word);
+    setSelectedStudyWordId(word.id);
     setIsStudyRevealed(false);
     setIsStudyOpen(true);
   };
@@ -218,19 +225,18 @@ export const CharacterMap = (props: {
   );
 
   const markStudyWord = (grade: ReviewGrade) => {
-    if (!selectedStudyWord) {
-      return;
-    }
+    const activeWord = explorerStudyWord ?? selectedStudyWord;
+    if (!activeWord) return;
 
-    reviewWord(selectedStudyWord.id, grade, new Date());
+    reviewWord(activeWord.id, grade, new Date());
     setIsStudyRevealed(false);
 
-    const currentIndex = studyWords.findIndex(word => word.id === selectedStudyWord.id);
-    if (currentIndex >= 0 && studyWords.length > 1) {
-      const nextIndex = (currentIndex + 1) % studyWords.length;
-      const nextWord = studyWords[nextIndex];
-      if (nextWord) {
-        setSelectedStudyWordId(nextWord.id);
+    if (!explorerStudyWord) {
+      const currentIndex = studyWords.findIndex(word => word.id === activeWord.id);
+      if (currentIndex >= 0 && studyWords.length > 1) {
+        const nextIndex = (currentIndex + 1) % studyWords.length;
+        const nextWord = studyWords[nextIndex];
+        if (nextWord) setSelectedStudyWordId(nextWord.id);
       }
     }
   };
@@ -396,41 +402,53 @@ export const CharacterMap = (props: {
 
       {view === 'explorer' && (
         <>
-          <Input
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder={props.labels.searchPlaceholder}
-          />
-
-          <div className="text-sm text-muted-foreground">
-            {props.labels.results}: {filtered.length}
+          <div className="flex items-center gap-3">
+            <Input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              placeholder={props.labels.searchPlaceholder}
+              className="flex-1"
+            />
+            <button
+              type="button"
+              onClick={() => setShowDetails(v => !v)}
+              className="shrink-0 text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {showDetails ? props.labels.hideDetails : props.labels.showDetails}
+            </button>
           </div>
 
-          {filtered.length === 0 && (
+          <div className="text-sm text-muted-foreground">
+            {props.labels.results}: {filteredWords.length}
+          </div>
+
+          {filteredWords.length === 0 && (
             <div className="rounded-md border p-4 text-sm text-muted-foreground">
               {props.labels.empty}
             </div>
           )}
 
-          {filtered.length > 0 && (
+          {filteredWords.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {filtered.map(item => (
-                <article key={item.character} className="rounded-md border bg-background p-3">
-                  <div className="text-3xl font-semibold">{item.character}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">{item.pinyin}</div>
-                  <div className="mt-2 line-clamp-2 text-sm">{item.meaning}</div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    {props.labels.basedOnWord}: {item.word}
-                  </div>
-                </article>
+              {filteredWords.map(word => (
+                <button
+                  key={word.id}
+                  type="button"
+                  onClick={() => openExplorerWord(word)}
+                  className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                >
+                  {showDetails && <div className="text-xs text-muted-foreground">{word.pinyin}</div>}
+                  <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                  {showDetails && <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>}
+                </button>
               ))}
             </div>
           )}
         </>
       )}
 
-      {isStudyOpen && selectedStudyWord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setIsStudyOpen(false)}>
+      {isStudyOpen && (explorerStudyWord ?? selectedStudyWord) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
           <div
             className="max-h-[90vh] w-full max-w-4xl space-y-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-2xl sm:p-5"
             onClick={event => event.stopPropagation()}
@@ -438,41 +456,51 @@ export const CharacterMap = (props: {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold">{props.labels.studyCharacter}</h3>
-                <p className="text-sm text-muted-foreground">{selectedCommonCharacter?.character}</p>
+                <p className="text-sm text-muted-foreground">
+                  {explorerStudyWord ? explorerStudyWord.word : selectedCommonCharacter?.character}
+                </p>
               </div>
-              <Button type="button" variant="outline" onClick={() => setIsStudyOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
                 {props.labels.close}
               </Button>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {studyWords.map(word => (
-                <Button
-                  key={word.id}
-                  type="button"
-                  variant={selectedStudyWord.id === word.id ? 'default' : 'outline'}
-                  className={selectedStudyWord.id !== word.id && isMounted ? wordBg(getWordState(word.id, progressByWordId)) : ''}
-                  onClick={() => {
-                    setSelectedStudyWordId(word.id);
-                    setIsStudyRevealed(false);
-                  }}
-                >
-                  {word.word}
-                </Button>
-              ))}
-            </div>
+            {!explorerStudyWord && (
+              <div className="flex flex-wrap gap-2">
+                {studyWords.map(word => (
+                  <Button
+                    key={word.id}
+                    type="button"
+                    variant={selectedStudyWord?.id === word.id ? 'default' : 'outline'}
+                    className={selectedStudyWord?.id !== word.id && isMounted ? wordBg(getWordState(word.id, progressByWordId)) : ''}
+                    onClick={() => {
+                      setSelectedStudyWordId(word.id);
+                      setIsStudyRevealed(false);
+                    }}
+                  >
+                    {word.word}
+                  </Button>
+                ))}
+              </div>
+            )}
 
-            <FlashcardDisplay
-              word={selectedStudyWord}
-              total={hskWords.length}
-              isRevealed={isStudyRevealed}
-              onToggle={() => setIsStudyRevealed(previous => !previous)}
-              cardState={isMounted ? getWordState(selectedStudyWord.id, progressByWordId) : undefined}
-              labels={{
-                answer: props.labels.answer,
-                example: props.labels.example,
-              }}
-            />
+            {(() => {
+              const activeWord = explorerStudyWord ?? selectedStudyWord;
+              if (!activeWord) return null;
+              return (
+                <FlashcardDisplay
+                  word={activeWord}
+                  total={hskWords.length}
+                  isRevealed={isStudyRevealed}
+                  onToggle={() => setIsStudyRevealed(previous => !previous)}
+                  cardState={isMounted ? getWordState(activeWord.id, progressByWordId) : undefined}
+                  labels={{
+                    answer: props.labels.answer,
+                    example: props.labels.example,
+                  }}
+                />
+              );
+            })()}
 
             {!isStudyRevealed && (
               <div className="flex justify-center">
