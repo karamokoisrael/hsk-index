@@ -53,6 +53,17 @@ function getLocalePrefix(pathname: string): string {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // API routes: handle auth protection then pass through — skip intl middleware
+  if (pathname.startsWith('/api/')) {
+    if (isProtectedPath(pathname)) {
+      const authenticated = await hasValidSession(request);
+      if (!authenticated) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+    return NextResponse.next();
+  }
+
   if (isProtectedPath(pathname)) {
     const authenticated = await hasValidSession(request);
 
