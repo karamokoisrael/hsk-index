@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -116,6 +116,7 @@ export const CharacterMap = (props: {
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
   const [explorerStudyWord, setExplorerStudyWord] = useState<HskWord | null>(null);
+  const detailRef = useRef<HTMLElement>(null);
 
   useEffect(() => { setIsMounted(true); }, []);
 
@@ -188,6 +189,10 @@ export const CharacterMap = (props: {
     setSelectedCharacter(character);
     setSelectedStudyWordId(firstWord.id);
     setIsStudyRevealed(false);
+
+    if (window.innerWidth < 1024 && detailRef.current) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
   };
 
   const openStudyForWord = (wordId: number) => {
@@ -289,7 +294,7 @@ export const CharacterMap = (props: {
             </div>
           </aside>
 
-          <section className="rounded-md border bg-muted/20 p-4 sm:p-5">
+          <section ref={detailRef} className="rounded-md border bg-muted/20 p-4 sm:p-5">
             {!selectedCommonCharacter && (
               <div className="rounded-md border p-4 text-sm text-muted-foreground">
                 {props.labels.empty}
