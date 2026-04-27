@@ -1,9 +1,10 @@
 import crypto from 'node:crypto';
+
 import { NextResponse } from 'next/server';
 
-import { getSession } from '@/libs/Auth';
-import { sendVerificationEmail } from '@/libs/Email';
-import { getDb } from '@/libs/MongoDB';
+import { getDb } from '@/libs/database/mongo';
+import { getSession } from '@/libs/services/auth';
+import { sendVerificationEmail } from '@/libs/services/email';
 
 export async function POST() {
   const session = await getSession();

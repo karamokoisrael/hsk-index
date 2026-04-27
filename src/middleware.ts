@@ -2,7 +2,7 @@ import { jwtVerify } from 'jose';
 import { type NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
-import { AllLocales, AppConfig } from './utils/AppConfig';
+import { AllLocales, AppConfig } from './utils/appConfig';
 
 const intlMiddleware = createMiddleware({
   locales: AllLocales,

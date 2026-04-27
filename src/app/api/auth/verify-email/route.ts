@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
-import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/Auth';
-import { getDb } from '@/libs/MongoDB';
+import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/services/auth';
+import { getDb } from '@/libs/database/mongo';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 

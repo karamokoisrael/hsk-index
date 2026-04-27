@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { EmailVerificationBanner } from '@/features/auth/EmailVerificationBanner';
 import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
-import { getSession } from '@/libs/Auth';
+import { getSession } from '@/libs/services/auth';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({

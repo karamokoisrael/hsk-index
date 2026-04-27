@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { ToggleMenuButton } from '@/components/ToggleMenuButton';
 import { useMenu } from '@/hooks/useMenu';
-import { cn } from '@/utils/Helpers';
+import { cn } from '@/utils/helpers';
 
 export const CenteredMenu = (props: {
   logo: React.ReactNode;

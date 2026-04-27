@@ -2,7 +2,7 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
 import { CharacterMap } from '@/features/character-map/CharacterMap';
 import { FlashcardTrainer } from '@/features/flashcards/FlashcardTrainer';
-import { Navbar } from '@/templates/Navbar';
+import { Navbar } from '@/components/templates/Navbar';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({

@@ -2,8 +2,8 @@ import { hash } from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { Env } from '@/libs/Env';
-import { getDb } from '@/libs/MongoDB';
+import { getDb } from '@/libs/database/mongo';
+import { Env } from '@/utils/env';
 
 const schema = z.object({
   token: z.string().min(1),

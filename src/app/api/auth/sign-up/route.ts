@@ -3,10 +3,10 @@ import { hash } from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/Auth';
-import { sendVerificationEmail } from '@/libs/Email';
-import { Env } from '@/libs/Env';
-import { getDb } from '@/libs/MongoDB';
+import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/services/auth';
+import { sendVerificationEmail } from '@/libs/services/email';
+import { Env } from '@/utils/env';
+import { getDb } from '@/libs/database/mongo';
 
 const schema = z.object({
   email: z.string().email(),

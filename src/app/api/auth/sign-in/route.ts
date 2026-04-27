@@ -2,9 +2,9 @@ import { compare } from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/Auth';
-import { Env } from '@/libs/Env';
-import { getDb } from '@/libs/MongoDB';
+import { getDb } from '@/libs/database/mongo';
+import { COOKIE_NAME, SESSION_COOKIE_OPTIONS, signToken } from '@/libs/services/auth';
+import { Env } from '@/utils/env';
 
 const schema = z.object({
   email: z.string().email(),

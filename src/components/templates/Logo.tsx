@@ -1,4 +1,4 @@
-import { AppConfig } from '@/utils/AppConfig';
+import { AppConfig } from '@/utils/appConfig';
 
 export const Logo = (props: {
   isTextHidden?: boolean;

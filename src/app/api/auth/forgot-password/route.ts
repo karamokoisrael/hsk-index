@@ -1,9 +1,10 @@
 import crypto from 'node:crypto';
+
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getDb } from '@/libs/MongoDB';
-import { sendPasswordResetEmail } from '@/libs/Email';
+import { getDb } from '@/libs/database/mongo';
+import { sendPasswordResetEmail } from '@/libs/services/email';
 
 const schema = z.object({
   email: z.string().email(),

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { buttonVariants } from '@/components/ui/buttonVariants';
 import { PricingInformation } from '@/features/billing/PricingInformation';
 import { Section } from '@/features/landing/Section';
-import { PLAN_ID } from '@/utils/AppConfig';
+import { PLAN_ID } from '@/utils/appConfig';
 
 export const Pricing = () => {
   const t = useTranslations('Pricing');

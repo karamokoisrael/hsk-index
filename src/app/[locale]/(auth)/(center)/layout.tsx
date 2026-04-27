@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/libs/Auth';
-import { AppConfig } from '@/utils/AppConfig';
+import { getSession } from '@/libs/services/auth';
+import { AppConfig } from '@/utils/appConfig';
 
 export default async function CenteredLayout(props: {
   children: React.ReactNode;

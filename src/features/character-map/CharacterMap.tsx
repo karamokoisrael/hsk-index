@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getPrimaryMeaning, hskWords } from '@/data/hskWords';
+import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
