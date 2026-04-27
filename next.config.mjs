@@ -7,9 +7,9 @@ import withNextIntl from 'next-intl/plugin';
 
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
-jiti('./src/libs/Env');
+jiti('./src/utils/env');
 
-const withNextIntlConfig = withNextIntl('./src/libs/I18n.ts');
+const withNextIntlConfig = withNextIntl('./src/libs/i18n/i18n.ts');
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
