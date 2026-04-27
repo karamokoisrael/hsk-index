@@ -91,7 +91,8 @@
     "loading_button": "Signing in…",
     "no_account": "Don't have an account?",
     "sign_up_link": "Sign up",
-    "generic_error": "Something went wrong. Please try again."
+    "generic_error": "Something went wrong. Please try again.",
+    "forgot_password": "Forgot password?"
   },
   "SignUp": {
     "meta_title": "Sign up",
@@ -245,5 +246,33 @@
     "message_title": "Message",
     "message_description": "Enter a detailed message for your todo.",
     "submit_button": "Submit"
+  },
+  "ForgotPassword": {
+    "meta_title": "Forgot password",
+    "meta_description": "Reset your HSK Index password.",
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email and we will send you a reset link.",
+    "email_label": "Email",
+    "submit_button": "Send reset link",
+    "loading_button": "Sending…",
+    "success": "Check your email — a reset link is on its way. It expires in 1 hour.",
+    "back_to_sign_in": "Back to sign in",
+    "generic_error": "Something went wrong. Please try again."
+  },
+  "ResetPassword": {
+    "meta_title": "Reset password",
+    "meta_description": "Set a new password for your HSK Index account.",
+    "title": "Set new password",
+    "subtitle": "Enter your new password below.",
+    "password_label": "New password",
+    "confirm_password_label": "Confirm new password",
+    "submit_button": "Reset password",
+    "loading_button": "Resetting…",
+    "success": "Password reset successfully. You can now sign in.",
+    "password_mismatch": "Passwords do not match",
+    "invalid_token": "This reset link is invalid or has expired.",
+    "request_new_link": "Request a new reset link",
+    "back_to_sign_in": "Back to sign in",
+    "generic_error": "Something went wrong. Please try again."
   }
 }

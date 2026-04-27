@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export const SignInForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
-  const t = useTranslations('SignIn');
+export const ForgotPasswordForm = () => {
+  const t = useTranslations('ForgotPassword');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,14 +21,14 @@ export const SignInForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/sign-in', {
+      const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
 
       if (res.ok) {
-        window.location.href = dashboardUrl;
+        setSubmitted(true);
         return;
       }
 
@@ -44,6 +44,25 @@ export const SignInForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
       setLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="w-full max-w-md space-y-6 rounded-xl border bg-background p-8 shadow-sm">
+        <div className="space-y-1 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('success')}</p>
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          <Link
+            href="/sign-in"
+            className="font-medium text-primary underline underline-offset-4"
+          >
+            {t('back_to_sign_in')}
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md space-y-6 rounded-xl border bg-background p-8 shadow-sm">
@@ -66,27 +85,6 @@ export const SignInForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">{t('password_label')}</Label>
-            <Link
-              href="/forgot-password"
-              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-            >
-              {t('forgot_password')}
-            </Link>
-          </div>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            placeholder="••••••••"
-          />
-        </div>
-
         {error && (
           <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
@@ -99,13 +97,11 @@ export const SignInForm = ({ dashboardUrl }: { dashboardUrl: string }) => {
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        {t('no_account')}
-        {' '}
         <Link
-          href="/sign-up"
+          href="/sign-in"
           className="font-medium text-primary underline underline-offset-4"
         >
-          {t('sign_up_link')}
+          {t('back_to_sign_in')}
         </Link>
       </p>
     </div>

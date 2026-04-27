@@ -91,7 +91,8 @@
     "loading_button": "Connexion en cours…",
     "no_account": "Pas encore de compte ?",
     "sign_up_link": "S'inscrire",
-    "generic_error": "Une erreur est survenue. Veuillez réessayer."
+    "generic_error": "Une erreur est survenue. Veuillez réessayer.",
+    "forgot_password": "Mot de passe oublié ?"
   },
   "SignUp": {
     "meta_title": "S'inscrire",
@@ -245,5 +246,33 @@
     "message_title": "Message",
     "message_description": "Entrez un message détaillé pour votre todo.",
     "submit_button": "Envoyer"
+  },
+  "ForgotPassword": {
+    "meta_title": "Mot de passe oublié",
+    "meta_description": "Réinitialisez votre mot de passe HSK Index.",
+    "title": "Mot de passe oublié ?",
+    "subtitle": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+    "email_label": "E-mail",
+    "submit_button": "Envoyer le lien",
+    "loading_button": "Envoi en cours…",
+    "success": "Vérifiez votre e-mail — un lien de réinitialisation est en route. Il expire dans 1 heure.",
+    "back_to_sign_in": "Retour à la connexion",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "ResetPassword": {
+    "meta_title": "Réinitialiser le mot de passe",
+    "meta_description": "Définissez un nouveau mot de passe pour votre compte HSK Index.",
+    "title": "Nouveau mot de passe",
+    "subtitle": "Entrez votre nouveau mot de passe ci-dessous.",
+    "password_label": "Nouveau mot de passe",
+    "confirm_password_label": "Confirmer le nouveau mot de passe",
+    "submit_button": "Réinitialiser",
+    "loading_button": "Réinitialisation…",
+    "success": "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+    "password_mismatch": "Les mots de passe ne correspondent pas",
+    "invalid_token": "Ce lien de réinitialisation est invalide ou a expiré.",
+    "request_new_link": "Demander un nouveau lien",
+    "back_to_sign_in": "Retour à la connexion",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer."
   }
 }
