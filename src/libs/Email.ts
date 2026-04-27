@@ -1,8 +1,24 @@
 import 'server-only';
 
+import nodemailer from 'nodemailer';
+
+import { Env } from '@/libs/Env';
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.EMAIL_FROM ?? 'HSK Index <noreply@hsk-index.com>';
+
+function createTransporter() {
+  const configs = {
+    host: Env.SMTP_HOST ?? 'smtp.gmail.com',
+    port: Env.SMTP_PORT ?? 587,
+    secure: (Env.SMTP_PORT ?? 587) === 465,
+    auth: {
+      user: Env.SMTP_USER,
+      pass: Env.SMTP_PASS,
+    },
+  };
+  console.log(configs);
+  return nodemailer.createTransport(configs);
+}
 
 export async function sendPasswordResetEmail({
   email,
@@ -13,17 +29,16 @@ export async function sendPasswordResetEmail({
 }) {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`;
 
-  if (!RESEND_API_KEY) {
-    // In development without an API key, log the link to the console
+  if (!Env.SMTP_USER || !Env.SMTP_PASS) {
     console.info(`[Password Reset] Link for ${email}: ${resetUrl}`);
     return;
   }
 
-  const { Resend } = await import('resend');
-  const resend = new Resend(RESEND_API_KEY);
+  const transporter = createTransporter();
+  const from = Env.EMAIL_FROM ?? Env.SMTP_USER;
 
-  await resend.emails.send({
-    from: FROM_EMAIL,
+  await transporter.sendMail({
+    from,
     to: email,
     subject: 'Reset your HSK Index password',
     html: `
