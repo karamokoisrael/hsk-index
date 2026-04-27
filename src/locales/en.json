@@ -247,6 +247,13 @@
     "message_description": "Enter a detailed message for your todo.",
     "submit_button": "Submit"
   },
+  "EmailVerification": {
+    "message": "Please verify your email address ({email}) to get the most out of HSK Index.",
+    "resend": "Resend email",
+    "resending": "Sending…",
+    "sent": "Email sent — check your inbox.",
+    "error": "Failed to send. Try again."
+  },
   "ForgotPassword": {
     "meta_title": "Forgot password",
     "meta_description": "Reset your HSK Index password.",

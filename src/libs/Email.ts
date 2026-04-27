@@ -20,6 +20,43 @@ function createTransporter() {
   return nodemailer.createTransport(configs);
 }
 
+export async function sendVerificationEmail({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) {
+  const verifyUrl = `${APP_URL}/api/auth/verify-email?token=${token}`;
+
+  if (!Env.SMTP_USER || !Env.SMTP_PASS) {
+    console.info(`[Email Verification] Link for ${email}: ${verifyUrl}`);
+    return;
+  }
+
+  const transporter = createTransporter();
+  const from = Env.EMAIL_FROM ?? Env.SMTP_USER;
+
+  await transporter.sendMail({
+    from,
+    to: email,
+    subject: 'Verify your HSK Index email',
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="font-size: 20px; font-weight: 600;">Verify your email</h2>
+        <p style="color: #555;">Click the link below to verify your email address.</p>
+        <a
+          href="${verifyUrl}"
+          style="display: inline-block; margin: 16px 0; padding: 12px 24px; background: #000; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 500;"
+        >
+          Verify email
+        </a>
+        <p style="color: #888; font-size: 13px;">If you didn't create an HSK Index account, you can safely ignore this email.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendPasswordResetEmail({
   email,
   token,
