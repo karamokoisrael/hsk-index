@@ -40,6 +40,11 @@ function charRelevance(item: { character: string; words: typeof hskWords }, quer
 
 function wordRelevance(word: (typeof hskWords)[number], query: string): number {
   if (word.word.includes(query)) {
+    return 4;
+  }
+  const strippedPinyin = stripTones(word.pinyin).replace(/\s+/g, '');
+  const strippedQuery = stripTones(query).replace(/\s+/g, '');
+  if (strippedPinyin === strippedQuery) {
     return 3;
   }
   if (matchesPinyin(word.pinyin, query)) {
