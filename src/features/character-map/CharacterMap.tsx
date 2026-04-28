@@ -4,13 +4,54 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getPrimaryMeaning, hskWords } from '@/data/hskWords';
+import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
+
+const stripTones = (s: string) =>
+  s.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase();
+
+const matchesPinyin = (pinyin: string, query: string) => {
+  const stripped = stripTones(pinyin);
+  const strippedQuery = stripTones(query);
+  return stripped.includes(strippedQuery)
+    || stripped.replace(/\s+/g, '').includes(strippedQuery.replace(/\s+/g, ''));
+};
+
+function charRelevance(item: { character: string; words: typeof hskWords }, query: string): number {
+  if (item.character.includes(query)) {
+    return 4;
+  }
+  if (item.words.some(w => w.word === item.character && matchesPinyin(w.pinyin, query))) {
+    return 3;
+  }
+  if (item.words.some(w => w.word.length <= 2 && matchesPinyin(w.pinyin, query))) {
+    return 2;
+  }
+  if (item.words.some(w => matchesPinyin(w.pinyin, query))) {
+    return 1;
+  }
+  return 0;
+}
+
+function wordRelevance(word: (typeof hskWords)[number], query: string): number {
+  if (word.word.includes(query)) {
+    return 4;
+  }
+  const strippedPinyin = stripTones(word.pinyin).replace(/\s+/g, '');
+  const strippedQuery = stripTones(query).replace(/\s+/g, '');
+  if (strippedPinyin === strippedQuery) {
+    return 3;
+  }
+  if (matchesPinyin(word.pinyin, query)) {
+    return 2;
+  }
+  return 1;
+}
 
 const commonCharacterEntries = (() => {
   const map = new Map<string, { count: number; words: typeof hskWords }>();
@@ -134,23 +175,30 @@ export const CharacterMap = (props: {
 
   const normalizedCharQuery = charQuery.trim().toLowerCase();
   const filteredCharacters = normalizedCharQuery
-    ? commonCharacterEntries.filter(item =>
-      item.character.includes(normalizedCharQuery)
-      || item.words.some(w =>
-        w.pinyin.toLowerCase().includes(normalizedCharQuery)
-        || w.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedCharQuery)),
-      ),
-    )
+    ? commonCharacterEntries
+      .filter(item =>
+        item.character.includes(normalizedCharQuery)
+        || item.words.some(w =>
+          matchesPinyin(w.pinyin, normalizedCharQuery)
+          || w.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedCharQuery)),
+        ),
+      )
+      .sort((a, b) => {
+        const diff = charRelevance(b, normalizedCharQuery) - charRelevance(a, normalizedCharQuery);
+        return diff !== 0 ? diff : b.count - a.count;
+      })
     : commonCharacterEntries;
 
   const normalizedQuery = query.trim().toLowerCase();
 
   const filteredWords = normalizedQuery
-    ? hskWords.filter(word =>
-      word.word.includes(normalizedQuery)
-      || word.pinyin.toLowerCase().includes(normalizedQuery)
-      || word.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedQuery)),
-    )
+    ? hskWords
+      .filter(word =>
+        word.word.includes(normalizedQuery)
+        || matchesPinyin(word.pinyin, normalizedQuery)
+        || word.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedQuery)),
+      )
+      .sort((a, b) => wordRelevance(b, normalizedQuery) - wordRelevance(a, normalizedQuery))
     : hskWords;
 
   const selectedCommonCharacter = useMemo(

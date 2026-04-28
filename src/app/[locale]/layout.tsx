@@ -6,8 +6,8 @@ import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
 
 import { SyncProvider } from '@/components/SyncProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { getSession } from '@/libs/Auth';
-import { AllLocales } from '@/utils/AppConfig';
+import { getSession } from '@/libs/services/auth';
+import { AllLocales } from '@/utils/appConfig';
 
 export const metadata: Metadata = {
   icons: [

@@ -10,8 +10,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { usePathname, useRouter } from '@/libs/I18nNavigation';
-import { AppConfig } from '@/utils/AppConfig';
+import { usePathname, useRouter } from '@/libs/i18n/i18nNavigation';
+import { AppConfig } from '@/utils/appConfig';
 
 export const LocaleSwitcher = () => {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { hskWords } from '@/data/hskWords';
+import { hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { getNextIntervalLabel, resolveState } from '@/features/flashcards/srs';
 import { useFlashcardSync } from '@/hooks/useFlashcardSync';

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { UserMenu } from '@/features/auth/UserMenu';
-import { Logo } from '@/templates/Logo';
+import { Logo } from '@/components/templates/Logo';
 
 export const DashboardHeader = (props: {
   menu: {

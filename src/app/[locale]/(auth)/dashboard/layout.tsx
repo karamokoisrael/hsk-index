@@ -1,7 +1,9 @@
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
+import { EmailVerificationBanner } from '@/features/auth/EmailVerificationBanner';
 import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
+import { getSession } from '@/libs/services/auth';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -15,11 +17,15 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-export default function DashboardLayout(props: { children: React.ReactNode }) {
+export default async function DashboardLayout(props: { children: React.ReactNode }) {
   const t = useTranslations('DashboardLayout');
+  const session = await getSession();
 
   return (
     <>
+      {session?.emailVerified === false && (
+        <EmailVerificationBanner email={session.email} />
+      )}
       <div className="shadow-md">
         <div className="mx-auto flex max-w-screen-xl items-center justify-between px-3 py-4">
           <DashboardHeader

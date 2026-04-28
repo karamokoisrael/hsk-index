@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getSession } from '@/libs/Auth';
-import { getDb } from '@/libs/MongoDB';
+import { getSession } from '@/libs/services/auth';
+import { getDb } from '@/libs/database/mongo';
 import type { FlashcardProgress } from '@/types/Hsk';
 
 export async function GET() {

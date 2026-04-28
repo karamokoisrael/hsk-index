@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { hskWords } from '@/data/hskWords';
+import { hskWords } from '@/libs/services/hskWords';
 import {
   createInitialProgress,
   isDue,

@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
 import { SignInForm } from '@/features/auth/SignInForm';
-import { AppConfig } from '@/utils/AppConfig';
+import { AppConfig } from '@/utils/appConfig';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({

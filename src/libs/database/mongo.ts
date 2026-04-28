@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-import { Env } from './Env';
+import { Env } from '../../utils/env';
 
 declare global {
   // eslint-disable-next-line no-var

@@ -16,6 +16,7 @@ function getSecret(): Uint8Array {
 export type SessionUser = {
   userId: string;
   email: string;
+  emailVerified?: boolean;
 };
 
 export async function signToken(payload: SessionUser): Promise<string> {
@@ -32,6 +33,7 @@ export async function verifyToken(token: string): Promise<SessionUser | null> {
     return {
       userId: payload.userId as string,
       email: payload.email as string,
+      emailVerified: payload.emailVerified as boolean | undefined,
     };
   } catch {
     return null;
