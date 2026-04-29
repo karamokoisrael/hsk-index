@@ -9,19 +9,23 @@ const STATE_GRADIENT: Record<CardState, string> = {
   review: 'from-green-500/5 via-background to-green-500/10',
 };
 
+const NEUTRAL_GRADIENT = 'from-background via-background to-muted/30';
+
 export const FlashcardDisplay = (props: {
   word: HskWord;
   isRevealed: boolean;
   onToggle: () => void;
   total: number;
   cardState?: CardState;
+  learningStep?: number;
   labels: {
     answer: string;
     example: string;
   };
   className?: string;
 }) => {
-  const gradient = props.cardState ? STATE_GRADIENT[props.cardState] : 'from-background via-background to-muted/30';
+  const isGoodStep = props.cardState === 'learning' && (props.learningStep ?? 0) > 0;
+  const gradient = props.cardState && !isGoodStep ? STATE_GRADIENT[props.cardState] : NEUTRAL_GRADIENT;
 
   return (
     <div className={`mx-auto w-full max-w-2xl [perspective:1200px] ${props.className || ''}`}>

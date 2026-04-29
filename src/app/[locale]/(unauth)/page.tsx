@@ -1,8 +1,8 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
+import { Navbar } from '@/components/templates/Navbar';
 import { CharacterMap } from '@/features/character-map/CharacterMap';
 import { FlashcardTrainer } from '@/features/flashcards/FlashcardTrainer';
-import { Navbar } from '@/components/templates/Navbar';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -34,7 +34,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
       <Navbar />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
-        <section id="flashcards" className="space-y-2 scroll-mt-24">
+        <section id="flashcards" className="scroll-mt-24 space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
             {flashcardsT('section_title')}
           </h1>
@@ -68,7 +68,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
 
-        <section id="character-map" className="space-y-2 scroll-mt-24">
+        <section id="character-map" className="scroll-mt-24 space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight">
             {characterMapT('section_title')}
           </h2>
@@ -105,6 +105,14 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
       </main>
+
+      <footer className="mt-20 border-t py-6 text-center text-sm text-muted-foreground">
+        ©
+        {' '}
+        {new Date().getFullYear()}
+        {' '}
+        HSK Index. All rights reserved.
+      </footer>
     </>
   );
 };

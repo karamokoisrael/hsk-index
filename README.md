@@ -105,6 +105,9 @@ src/
 └── store/               # Zustand flashcard store
 ```
 
+## Planning
+- TODO: Allow the user to set their current hsk level through an onboarding and also in the navbar
+
 ## License
 
 MIT
