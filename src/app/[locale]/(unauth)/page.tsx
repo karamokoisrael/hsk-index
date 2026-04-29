@@ -105,6 +105,10 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
       </main>
+
+      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
+        © {new Date().getFullYear()} HSK Index. All rights reserved.
+      </footer>
     </>
   );
 };

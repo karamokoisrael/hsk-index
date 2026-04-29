@@ -1,6 +1,6 @@
 import type { CharacterMapItem, HskWord } from '@/types/Hsk';
 
-import rawHskWords from '../../../ref.json';
+import rawHskWords from '../../data/ref.json';
 
 const characterRegex = /[\u4E00-\u9FFF]/;
 
