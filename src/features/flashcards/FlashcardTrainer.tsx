@@ -193,6 +193,7 @@ export const FlashcardTrainer = (props: {
         isRevealed={isRevealed}
         onToggle={() => setIsRevealed(p => !p)}
         cardState={currentProgress ? resolveState(currentProgress) : 'new'}
+        learningStep={currentProgress?.learningStep}
         labels={{
           answer: props.labels.answer,
           example: props.labels.example,

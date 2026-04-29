@@ -88,7 +88,8 @@ const commonCharacterEntries = (() => {
     .sort((a, b) => b.count - a.count);
 })();
 
-function wordBg(state: CardState): string {
+function wordBg(state: CardState, learningStep?: number): string {
+  if (state === 'learning' && (learningStep ?? 0) > 0) return '';
   if (state === 'learning' || state === 'relearning') return 'bg-red-500/10';
   if (state === 'review') return 'bg-green-500/10';
   return 'bg-blue-500/10';
@@ -376,7 +377,7 @@ export const CharacterMap = (props: {
                         key={word.id}
                         type="button"
                         onClick={() => openStudyForWord(word.id)}
-                        className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                        className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
                       >
                         {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
                         <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
@@ -392,7 +393,7 @@ export const CharacterMap = (props: {
                           <button
                             type="button"
                             onClick={() => openStudyForWord(word.id)}
-                            className={`rounded-md border p-3 text-right transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                            className={`rounded-md border p-3 text-right transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
                           >
                             {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
                             <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
@@ -419,7 +420,7 @@ export const CharacterMap = (props: {
                           <button
                             type="button"
                             onClick={() => openStudyForWord(word.id)}
-                            className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                            className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
                           >
                             {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
                             <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
@@ -437,7 +438,7 @@ export const CharacterMap = (props: {
                           key={word.id}
                           type="button"
                           onClick={() => openStudyForWord(word.id)}
-                          className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                          className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
                         >
                           {showDetails && <div className="text-sm text-muted-foreground">{word.pinyin}</div>}
                           <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
@@ -488,7 +489,7 @@ export const CharacterMap = (props: {
                   key={word.id}
                   type="button"
                   onClick={() => openExplorerWord(word)}
-                  className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId)) : 'bg-background'}`}
+                  className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
                 >
                   {showDetails && <div className="text-xs text-muted-foreground">{word.pinyin}</div>}
                   <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
@@ -525,7 +526,7 @@ export const CharacterMap = (props: {
                     key={word.id}
                     type="button"
                     variant={selectedStudyWord?.id === word.id ? 'default' : 'outline'}
-                    className={selectedStudyWord?.id !== word.id && isMounted ? wordBg(getWordState(word.id, progressByWordId)) : ''}
+                    className={selectedStudyWord?.id !== word.id && isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : ''}
                     onClick={() => {
                       setSelectedStudyWordId(word.id);
                       setIsStudyRevealed(false);
@@ -547,6 +548,7 @@ export const CharacterMap = (props: {
                   isRevealed={isStudyRevealed}
                   onToggle={() => setIsStudyRevealed(previous => !previous)}
                   cardState={isMounted ? getWordState(activeWord.id, progressByWordId) : undefined}
+                  learningStep={isMounted ? progressByWordId[activeWord.id]?.learningStep : undefined}
                   labels={{
                     answer: props.labels.answer,
                     example: props.labels.example,
