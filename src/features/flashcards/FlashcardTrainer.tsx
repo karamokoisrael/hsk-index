@@ -57,24 +57,24 @@ export const FlashcardTrainer = (props: {
 
   const [draftNew, setDraftNew] = useState(maxNewPerDay);
   const [draftReviews, setDraftReviews] = useState(maxReviewsPerDay);
+  const [now, setNow] = useState(() => new Date());
 
-  const now = new Date();
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
-  const dueWords = useMemo(() => {
-    void progressByWordId;
-    void maxNewPerDay;
-    void maxReviewsPerDay;
-    return getDueWords(hskWords, now);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getDueWords, progressByWordId, maxNewPerDay, maxReviewsPerDay]);
+  const dueWords = useMemo(
+    () => getDueWords(hskWords, now),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getDueWords, progressByWordId, maxNewPerDay, maxReviewsPerDay, now],
+  );
 
-  const stats = useMemo(() => {
-    void progressByWordId;
-    void maxNewPerDay;
-    void maxReviewsPerDay;
-    return getDeckStats(hskWords, now);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getDeckStats, progressByWordId, maxNewPerDay, maxReviewsPerDay]);
+  const stats = useMemo(
+    () => getDeckStats(hskWords, now),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [getDeckStats, progressByWordId, maxNewPerDay, maxReviewsPerDay, now],
+  );
 
   const currentWord = dueWords[0];
   const currentProgress = currentWord ? getProgress(currentWord.id) : null;

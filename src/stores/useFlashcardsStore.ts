@@ -82,6 +82,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
         const learningDue: HskWord[] = [];
         const reviewDue: HskWord[] = [];
         const newCards: HskWord[] = [];
+        const knownChars = new Set<string>();
 
         for (const word of words) {
           const progress = progressByWordId[word.id] ?? createInitialProgress(baseDate);
@@ -94,7 +95,22 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
           } else if (state === 'new') {
             newCards.push(word);
           }
+
+          if (state !== 'new') {
+            for (const char of word.word) {
+              knownChars.add(char);
+            }
+          }
         }
+
+        // Sort new cards: words sharing characters with already-seen words come first.
+        // Tie-break by original JSON order (stable sort preserves it).
+        const charScore = (word: HskWord) => {
+          let n = 0;
+          for (const char of word.word) if (knownChars.has(char)) n++;
+          return n;
+        };
+        newCards.sort((a, b) => charScore(b) - charScore(a));
 
         const byDue = (a: HskWord, b: HskWord) => {
           const pa = progressByWordId[a.id] ?? createInitialProgress(baseDate);
