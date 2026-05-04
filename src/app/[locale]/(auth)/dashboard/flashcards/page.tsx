@@ -36,6 +36,8 @@ const FlashcardsPage = () => {
             maxReviewsPerDay: t('max_reviews_per_day'),
             saveOptions: t('save_options'),
             addMoreCards: t('add_more_cards'),
+            hskLevelCurrent: t('hsk_level_current'),
+            hskLevelChange: t('hsk_level_change'),
           }}
         />
       </DashboardSection>

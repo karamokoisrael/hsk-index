@@ -156,7 +156,16 @@
     "max_new_per_day": "Nouvelles cartes / jour",
     "max_reviews_per_day": "Révisions / jour",
     "save_options": "Enregistrer",
-    "add_more_cards": "Ajouter 20 cartes"
+    "add_more_cards": "Ajouter 20 cartes",
+    "hsk_level_title": "Sélectionnez votre niveau HSK",
+    "hsk_level_subtitle": "Choisissez la plage de vocabulaire que vous souhaitez étudier.",
+    "hsk_level_total_words": "mots au total",
+    "hsk_level_new_words": "dans ce niveau",
+    "hsk_level_confirm": "Commencer l'étude",
+    "hsk_level_note": "Les mots des niveaux inférieurs seront automatiquement marqués comme déjà appris.",
+    "hsk_level_current": "Niveau HSK",
+    "hsk_level_change": "Changer de niveau",
+    "hsk_level_cancel": "Annuler"
   },
   "CharacterMap": {
     "title_bar": "Carte des caractères",

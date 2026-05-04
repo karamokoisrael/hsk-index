@@ -6,6 +6,7 @@ import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
 
 import { SyncProvider } from '@/components/SyncProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { HskLevelModal } from '@/features/flashcards/HskLevelModal';
 import { getSession } from '@/libs/services/auth';
 import { AllLocales } from '@/utils/appConfig';
 
@@ -54,6 +55,7 @@ export default async function RootLayout(props: {
           messages={messages}
         >
           <AuthProvider initialUser={session}>
+            <HskLevelModal />
             <SyncProvider />
             {props.children}
           </AuthProvider>

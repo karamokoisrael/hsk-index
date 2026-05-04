@@ -10,6 +10,7 @@ import {
   resolveState,
   scheduleNextReview,
 } from '@/features/flashcards/srs';
+import { HSK_LEVEL_MAX_ID, type HskLevel } from '@/libs/constants/hskLevels';
 import type { FlashcardProgress, HskWord, PromptMode, ReviewGrade } from '@/types/Hsk';
 
 type DailyStats = {
@@ -30,6 +31,9 @@ type FlashcardsStore = {
   maxNewPerDay: number;
   maxReviewsPerDay: number;
   dailyStats: DailyStats | null;
+  hskLevel: HskLevel;
+  isLevelSelected: boolean;
+  hskModalOpen: boolean;
 
   setPromptMode: (mode: PromptMode) => void;
   setLimits: (maxNew: number, maxReviews: number) => void;
@@ -39,6 +43,9 @@ type FlashcardsStore = {
   reviewWord: (wordId: number, grade: ReviewGrade, baseDate: Date) => void;
   loadProgress: (progress: Record<number, FlashcardProgress>) => void;
   resetAllProgress: () => void;
+  setHskLevel: (level: HskLevel) => void;
+  openHskModal: () => void;
+  closeHskModal: () => void;
 };
 
 function todayKey(date: Date): string {
@@ -60,6 +67,9 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       maxNewPerDay: 20,
       maxReviewsPerDay: 100,
       dailyStats: null,
+      hskLevel: 4,
+      isLevelSelected: false,
+      hskModalOpen: false,
 
       setPromptMode: mode => set({ promptMode: mode }),
 
@@ -182,11 +192,49 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       loadProgress: progress => set({ progressByWordId: progress }),
 
       resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null }),
+
+      openHskModal: () => set({ hskModalOpen: true }),
+      closeHskModal: () => set({ hskModalOpen: false }),
+
+      setHskLevel: (level) => {
+        const prevMaxId = level > 1 ? HSK_LEVEL_MAX_ID[(level - 1) as HskLevel] : 0;
+        const now = new Date();
+        const farFuture = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString();
+        set(state => {
+          const updates: Record<number, FlashcardProgress> = {};
+          for (const word of hskWords) {
+            if (word.id <= prevMaxId) {
+              const existing = state.progressByWordId[word.id];
+              if (!existing || resolveState(existing) === 'new') {
+                updates[word.id] = {
+                  ease: 2.5,
+                  interval: 365,
+                  repetitions: 1,
+                  dueAt: farFuture,
+                  lastReviewedAt: now.toISOString(),
+                  lapses: 0,
+                  state: 'review',
+                  learningStep: 0,
+                };
+              }
+            }
+          }
+          return {
+            hskLevel: level,
+            isLevelSelected: true,
+            progressByWordId: { ...state.progressByWordId, ...updates },
+          };
+        });
+      },
     }),
     {
       name: 'hsk-flashcards-store',
       storage: createJSONStorage(() => localStorage),
       version: 2,
+      partialize: (state) => {
+        const { hskModalOpen: _m, ...rest } = state;
+        return rest as typeof state;
+      },
     },
   ),
 );
