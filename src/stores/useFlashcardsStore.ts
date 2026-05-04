@@ -198,10 +198,14 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
       setHskLevel: (level) => {
         const prevMaxId = level > 1 ? HSK_LEVEL_MAX_ID[(level - 1) as HskLevel] : 0;
+        const maxId = HSK_LEVEL_MAX_ID[level];
         const now = new Date();
+        const nowIso = now.toISOString();
         const farFuture = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString();
         set(state => {
           const updates: Record<number, FlashcardProgress> = {};
+
+          // Mark previous-level 'new' words as already-known (far-future review).
           for (const word of hskWords) {
             if (word.id <= prevMaxId) {
               const existing = state.progressByWordId[word.id];
@@ -211,7 +215,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
                   interval: 365,
                   repetitions: 1,
                   dueAt: farFuture,
-                  lastReviewedAt: now.toISOString(),
+                  lastReviewedAt: nowIso,
                   lapses: 0,
                   state: 'review',
                   learningStep: 0,
@@ -219,10 +223,40 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
               }
             }
           }
+
+          // Check if the target level has any 'new' words remaining.
+          const targetWords = hskWords.filter(w => w.id > prevMaxId && w.id <= maxId);
+          const hasNewWords = targetWords.some(w => {
+            const existing = state.progressByWordId[w.id];
+            return !existing || resolveState(existing) === 'new';
+          });
+
+          // If all target-level words are already studied and scheduled for the
+          // future, bring the 20 soonest-due review cards forward to now so the
+          // user isn't stuck on "no cards due" immediately after switching levels.
+          if (!hasNewWords) {
+            const futureDue = targetWords
+              .filter(w => {
+                const p = state.progressByWordId[w.id];
+                return p && new Date(p.dueAt) > now;
+              })
+              .sort((a, b) => {
+                const pa = state.progressByWordId[a.id]!;
+                const pb = state.progressByWordId[b.id]!;
+                return new Date(pa.dueAt).getTime() - new Date(pb.dueAt).getTime();
+              })
+              .slice(0, 20);
+
+            for (const word of futureDue) {
+              updates[word.id] = { ...state.progressByWordId[word.id]!, dueAt: nowIso };
+            }
+          }
+
           return {
             hskLevel: level,
             isLevelSelected: true,
             progressByWordId: { ...state.progressByWordId, ...updates },
+            dailyStats: null,
           };
         });
       },
