@@ -6,6 +6,9 @@ const characterRegex = /[\u4E00-\u9FFF]/;
 
 export const hskWords = rawHskWords as HskWord[];
 
+// IDs run 1–1200 with one gap; use the last entry's id as the authoritative total.
+export const totalWords: number = (hskWords[hskWords.length - 1]?.id) ?? hskWords.length;
+
 export const getPrimaryMeaning = (word: HskWord) => {
   const firstMeaning = word.parts_of_speech[0]?.meaning;
   return firstMeaning || '';
