@@ -77,6 +77,16 @@ export const FlashcardTrainer = (props: {
     [hskLevel],
   );
 
+  // Reset the queue whenever the HSK level changes (level selection rebuilds the deck).
+  // Skip on initial render when the queue is still null — the effect below handles that.
+  useEffect(() => {
+    if (sessionQueue !== null) {
+      setSessionQueue(null);
+      setPendingRequeue([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hskLevel]);
+
   // Build the session queue once after mount (localStorage is hydrated by then).
   useEffect(() => {
     if (isMounted && sessionQueue === null) {
