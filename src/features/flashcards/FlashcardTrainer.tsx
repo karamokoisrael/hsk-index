@@ -113,21 +113,26 @@ export const FlashcardTrainer = (props: {
     // Predict next state before updating the store (scheduleNextReview is pure).
     const nextProg = scheduleNextReview(getProgress(currentWord.id), grade, gradeTime);
     const nextState = resolveState(nextProg);
+    const wordId = currentWord.id;
 
     reviewWord(currentWord.id, grade, gradeTime);
     setSessionReviews(n => n + 1);
     setIsRevealed(false);
 
-    // Advance the queue unconditionally — the current card is done for now.
-    setSessionQueue(q => (q ? q.slice(1) : null));
+    // Delay queue advancement until the flip-back animation finishes (duration-500).
+    // Without this delay, React batches isRevealed=false and queue.slice(1) together,
+    // making the next card's back face visible during the first half of the flip.
+    setTimeout(() => {
+      setSessionQueue(q => (q ? q.slice(1) : null));
 
-    // If the card entered a learning step, schedule it to reappear this session.
-    if (nextState === 'learning' || nextState === 'relearning') {
-      setPendingRequeue(p => [
-        ...p,
-        { wordId: currentWord.id, dueAt: new Date(nextProg.dueAt).getTime() },
-      ]);
-    }
+      // If the card entered a learning step, schedule it to reappear this session.
+      if (nextState === 'learning' || nextState === 'relearning') {
+        setPendingRequeue(p => [
+          ...p,
+          { wordId, dueAt: new Date(nextProg.dueAt).getTime() },
+        ]);
+      }
+    }, 500);
   };
 
   const resetQueue = () => {
