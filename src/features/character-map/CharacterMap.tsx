@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
+import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
@@ -53,10 +54,10 @@ function wordRelevance(word: (typeof hskWords)[number], query: string): number {
   return 1;
 }
 
-const commonCharacterEntries = (() => {
+function buildCommonCharacterEntries(words: typeof hskWords) {
   const map = new Map<string, { count: number; words: typeof hskWords }>();
 
-  for (const word of hskWords) {
+  for (const word of words) {
     const seenCharacters = new Set<string>();
 
     for (const character of word.word) {
@@ -86,7 +87,7 @@ const commonCharacterEntries = (() => {
       words: data.words,
     }))
     .sort((a, b) => b.count - a.count);
-})();
+}
 
 function wordBg(state: CardState, learningStep?: number): string {
   if (state === 'learning' && (learningStep ?? 0) > 0) return '';
@@ -151,6 +152,19 @@ export const CharacterMap = (props: {
     showDetails: string;
   };
 }) => {
+  const reviewWord = useFlashcardsStore(state => state.reviewWord);
+  const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
+  const hskLevel = useFlashcardsStore(s => s.hskLevel);
+
+  const levelWords = useMemo(
+    () => hskWords.filter(w => w.id <= HSK_LEVEL_MAX_ID[hskLevel]),
+    [hskLevel],
+  );
+  const commonCharacterEntries = useMemo(
+    () => buildCommonCharacterEntries(levelWords),
+    [levelWords],
+  );
+
   const [isMounted, setIsMounted] = useState(false);
   const [showDetails, setShowDetails] = useState(true);
   const [view, setView] = useState<'common' | 'explorer'>('common');
@@ -165,8 +179,9 @@ export const CharacterMap = (props: {
 
   useEffect(() => { setIsMounted(true); }, []);
 
-  const reviewWord = useFlashcardsStore(state => state.reviewWord);
-  const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
+  useEffect(() => {
+    setSelectedCharacter(commonCharacterEntries[0]?.character || '');
+  }, [hskLevel]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const characterBgs = useMemo(() => {
     if (!isMounted) return new Map<string, string>();
@@ -196,14 +211,14 @@ export const CharacterMap = (props: {
   const normalizedQuery = query.trim().toLowerCase();
 
   const filteredWords = normalizedQuery
-    ? hskWords
+    ? levelWords
       .filter(word =>
         word.word.includes(normalizedQuery)
         || matchesPinyin(word.pinyin, normalizedQuery)
         || word.parts_of_speech.some(p => p.meaning.toLowerCase().includes(normalizedQuery)),
       )
       .sort((a, b) => wordRelevance(b, normalizedQuery) - wordRelevance(a, normalizedQuery))
-    : hskWords;
+    : levelWords;
 
   const selectedCommonCharacter = useMemo(
     () => commonCharacterEntries.find(item => item.character === selectedCharacter) || commonCharacterEntries[0],
