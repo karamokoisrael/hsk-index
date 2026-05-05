@@ -66,6 +66,7 @@ export const FlashcardTrainer = (props: {
   const maxNewPerDay = useFlashcardsStore(s => s.maxNewPerDay);
   const maxReviewsPerDay = useFlashcardsStore(s => s.maxReviewsPerDay);
   const setLimits = useFlashcardsStore(s => s.setLimits);
+  const addExtraNewCards = useFlashcardsStore(s => s.addExtraNewCards);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
   const openHskModal = useFlashcardsStore(s => s.openHskModal);
 
@@ -185,7 +186,7 @@ export const FlashcardTrainer = (props: {
         <Button
           type="button"
           onClick={() => {
-            setLimits(maxNewPerDay + 20, maxReviewsPerDay);
+            addExtraNewCards(20);
             resetQueue();
           }}
         >

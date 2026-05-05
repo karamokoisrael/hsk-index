@@ -37,6 +37,7 @@ type FlashcardsStore = {
 
   setPromptMode: (mode: PromptMode) => void;
   setLimits: (maxNew: number, maxReviews: number) => void;
+  addExtraNewCards: (n: number) => void;
   getProgress: (wordId: number) => FlashcardProgress;
   getDueWords: (words: HskWord[], baseDate: Date) => HskWord[];
   getDeckStats: (words: HskWord[], baseDate: Date) => DeckStats;
@@ -66,7 +67,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       progressByWordId: {},
       promptMode: 'word-to-meaning',
       maxNewPerDay: 20,
-      maxReviewsPerDay: 100,
+      maxReviewsPerDay: 20,
       dailyStats: null,
       hskLevel: 4,
       isLevelSelected: false,
@@ -76,6 +77,20 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
       setLimits: (maxNew, maxReviews) =>
         set({ maxNewPerDay: maxNew, maxReviewsPerDay: maxReviews }),
+
+      addExtraNewCards: (n) => {
+        const today = todayKey(new Date());
+        set(state => {
+          const stats = resolveStats(state.dailyStats, today);
+          return {
+            dailyStats: {
+              date: today,
+              newCardsSeen: Math.max(0, stats.newCardsSeen - n),
+              reviewsDone: stats.reviewsDone,
+            },
+          };
+        });
+      },
 
       getProgress: (wordId) => {
         const existing = get().progressByWordId[wordId];
@@ -226,6 +241,8 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
           isLevelSelected: true,
           progressByWordId,
           dailyStats: null,
+          maxNewPerDay: 20,
+          maxReviewsPerDay: 20,
         });
       },
     }),
