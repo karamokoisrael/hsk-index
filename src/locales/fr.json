@@ -165,7 +165,10 @@
     "hsk_level_note": "Les mots des niveaux inférieurs seront automatiquement marqués comme déjà appris.",
     "hsk_level_current": "Niveau HSK",
     "hsk_level_change": "Changer de niveau",
-    "hsk_level_cancel": "Annuler"
+    "hsk_level_cancel": "Annuler",
+    "hsk_level_reset_warning": "Changer de niveau effacera tout votre historique d'étude et réinitialisera vos limites quotidiennes. Cette action est irréversible.",
+    "hsk_level_reset_confirm": "Oui, changer de niveau",
+    "hsk_level_reset_back": "Retour"
   },
   "CharacterMap": {
     "title_bar": "Carte des caractères",

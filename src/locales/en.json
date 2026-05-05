@@ -165,7 +165,10 @@
     "hsk_level_note": "Words from lower levels will be automatically marked as already learned.",
     "hsk_level_current": "HSK Level",
     "hsk_level_change": "Change level",
-    "hsk_level_cancel": "Cancel"
+    "hsk_level_cancel": "Cancel",
+    "hsk_level_reset_warning": "Changing your level will erase all your study history and reset your daily limits. This cannot be undone.",
+    "hsk_level_reset_confirm": "Yes, change level",
+    "hsk_level_reset_back": "Go back"
   },
   "CharacterMap": {
     "title_bar": "Character map",
