@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,7 +20,9 @@ export const Navbar = () => {
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
   const openHskModal = useFlashcardsStore(s => s.openHskModal);
 
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <Section className="px-3 py-6">

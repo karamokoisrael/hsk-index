@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
-import { CollectionsView, type CollectionLabels } from '@/features/collections/CollectionsView';
+import type { CollectionLabels } from '@/features/collections/CollectionsView';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import { useCollectionsStore } from '@/stores/useCollectionsStore';
@@ -556,61 +556,48 @@ export const CharacterMap = (props: {
       )}
 
       {view === 'explorer' && (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.95fr)] lg:items-start">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Input
-                value={query}
-                onChange={event => setQuery(event.target.value)}
-                placeholder={props.labels.searchPlaceholder}
-                className="flex-1"
-              />
-              <button
-                type="button"
-                onClick={() => setShowDetails(v => !v)}
-                className="shrink-0 text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-              >
-                {showDetails ? props.labels.hideDetails : props.labels.showDetails}
-              </button>
-            </div>
-
-            <div className="text-sm text-muted-foreground">
-              {props.labels.results}: {filteredWords.length}
-            </div>
-
-            {filteredWords.length === 0 && (
-              <div className="rounded-md border p-4 text-sm text-muted-foreground">
-                {props.labels.empty}
-              </div>
-            )}
-
-            {filteredWords.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {filteredWords.map(word => (
-                  <button
-                    key={word.id}
-                    type="button"
-                    onClick={() => openExplorerWord(word)}
-                    className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
-                  >
-                    {showDetails && <div className="text-xs text-muted-foreground">{word.pinyin}</div>}
-                    <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
-                    {showDetails && <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>}
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              placeholder={props.labels.searchPlaceholder}
+              className="flex-1"
+            />
+            <button
+              type="button"
+              onClick={() => setShowDetails(v => !v)}
+              className="shrink-0 text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {showDetails ? props.labels.hideDetails : props.labels.showDetails}
+            </button>
           </div>
 
-          {props.labels.collectionLabels && (
-            <section id="collections" className="scroll-mt-24 space-y-4 rounded-md border bg-background p-4 sm:p-5">
-              <div>
-                <div className="text-sm font-semibold">{props.labels.viewCollections ?? 'Collections'}</div>
-                <p className="mt-1 text-xs text-muted-foreground">{props.labels.collectionLabels.emptyState}</p>
-              </div>
+          <div className="text-sm text-muted-foreground">
+            {props.labels.results}: {filteredWords.length}
+          </div>
 
-              <CollectionsView labels={props.labels.collectionLabels} />
-            </section>
+          {filteredWords.length === 0 && (
+            <div className="rounded-md border p-4 text-sm text-muted-foreground">
+              {props.labels.empty}
+            </div>
+          )}
+
+          {filteredWords.length > 0 && (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {filteredWords.map(word => (
+                <button
+                  key={word.id}
+                  type="button"
+                  onClick={() => openExplorerWord(word)}
+                  className={`rounded-md border p-3 text-left transition hover:border-primary ${isMounted ? wordBg(getWordState(word.id, progressByWordId), progressByWordId[word.id]?.learningStep) : 'bg-background'}`}
+                >
+                  {showDetails && <div className="text-xs text-muted-foreground">{word.pinyin}</div>}
+                  <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                  {showDetails && <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>}
+                </button>
+              ))}
+            </div>
           )}
         </div>
       )}
