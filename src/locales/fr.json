@@ -120,14 +120,19 @@
     "settings": "Réglages"
   },
   "Dashboard": {
-    "meta_title": "Tableau de bord du SaaS Template",
+    "meta_title": "Compte",
     "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec Next.js, TypeScript, Shadcn UI et Tailwind CSS."
   },
   "DashboardIndex": {
-    "title_bar": "Tableau de bord",
+    "title_bar": "Compte",
     "title_bar_description": "Développez vos habitudes d'apprentissage du chinois",
     "study_stats_title": "Statistiques d'étude",
     "study_stats_description": "Suivez ce que vous avez révisé aujourd'hui et le volume total étudié.",
+    "account_title": "Détails du compte",
+    "account_description": "Vos informations utilisateur sont affichées ici au lieu d'une page de profil séparée.",
+    "email_label": "Adresse e-mail",
+    "user_id_label": "Identifiant utilisateur",
+    "sign_out": "Se déconnecter",
     "study_stats_today_title": "Aujourd'hui",
     "study_stats_overall_title": "Tout le temps",
     "study_stats_touched_today": "Cartes marquées aujourd'hui",

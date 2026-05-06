@@ -33,7 +33,7 @@ export const DashboardHeader = (props: {
   return (
     <>
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="max-sm:hidden">
+        <Link href="/account" className="max-sm:hidden">
           <Logo />
         </Link>
 

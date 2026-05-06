@@ -120,14 +120,19 @@
     "settings": "Settings"
   },
   "Dashboard": {
-    "meta_title": "SaaS Template Dashboard",
+    "meta_title": "Account",
     "meta_description": "A free and open-source landing page template for your SaaS business, built with Next.js, TypeScript, Shadcn UI, and Tailwind CSS."
   },
   "DashboardIndex": {
-    "title_bar": "Dashboard",
+    "title_bar": "Account",
     "title_bar_description": "Build your Chinese study habits",
     "study_stats_title": "Study statistics",
     "study_stats_description": "Track what you reviewed today and your total study volume.",
+    "account_title": "Account details",
+    "account_description": "Your user information is shown here instead of on a separate profile page.",
+    "email_label": "Email address",
+    "user_id_label": "User ID",
+    "sign_out": "Sign out",
     "study_stats_today_title": "Today",
     "study_stats_overall_title": "All time",
     "study_stats_touched_today": "Cards touched today",
