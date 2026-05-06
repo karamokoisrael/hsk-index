@@ -19,9 +19,8 @@ export function useFlashcardSync() {
   const levelFromDb = useRef<HskLevel | null>(null);
 
   // On first authenticated mount: pull from MongoDB.
-  // If levels mismatch (local changed but DB not yet synced), push local state.
-  // If server has progress → overwrite local store.
-  // If server has no data → push local data up (first login upload).
+  // DB is always the source of truth for returning users.
+  // Only push local state when DB has nothing AND the user has explicitly acted on this device.
   useEffect(() => {
     if (!isLoaded || !user || initialized.current) {
       return;
@@ -31,42 +30,32 @@ export function useFlashcardSync() {
     fetch('/api/flashcards/progress')
       .then(res => res.json())
       .then((data: { progressByWordId: Record<number, unknown>; hskLevel: HskLevel | null }) => {
-        const localLevel = useFlashcardsStore.getState().hskLevel;
-        const localProgress = useFlashcardsStore.getState().progressByWordId;
+        const dbHasData =
+          data.hskLevel != null ||
+          (data.progressByWordId && Object.keys(data.progressByWordId).length > 0);
 
-        // If the DB level differs from local, a level change happened locally but
-        // wasn't fully synced. Push local state (level + progress) and don't overwrite.
-        if (data.hskLevel != null && data.hskLevel !== localLevel) {
-          fetch('/api/flashcards/progress', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ progressByWordId: localProgress, hskLevel: localLevel }),
-          }).catch(() => {});
-          return;
-        }
-
-        // Same level (or DB has no level yet): pull progress from DB.
-        if (data.progressByWordId && Object.keys(data.progressByWordId).length > 0) {
-          loadProgress(data.progressByWordId as Parameters<typeof loadProgress>[0]);
+        if (dbHasData) {
+          // Existing user — DB is the source of truth, always overwrite local.
+          if (data.progressByWordId && Object.keys(data.progressByWordId).length > 0) {
+            loadProgress(data.progressByWordId as Parameters<typeof loadProgress>[0]);
+          }
+          if (data.hskLevel != null) {
+            levelFromDb.current = data.hskLevel;
+            loadHskLevel(data.hskLevel);
+          }
         } else {
-          if (Object.keys(localProgress).length > 0) {
+          // Nothing in DB yet. Only upload local data if the user explicitly chose a
+          // level or studied on this device — avoids clobbering a sibling device's
+          // in-flight sync with empty default state.
+          const { hskLevel: localLevel, progressByWordId: localProgress, isLevelSelected } =
+            useFlashcardsStore.getState();
+          if (isLevelSelected || Object.keys(localProgress).length > 0) {
             fetch('/api/flashcards/progress', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ progressByWordId: localProgress }),
+              body: JSON.stringify({ progressByWordId: localProgress, hskLevel: localLevel }),
             }).catch(() => {});
           }
-        }
-
-        if (data.hskLevel != null) {
-          levelFromDb.current = data.hskLevel;
-          loadHskLevel(data.hskLevel);
-        } else {
-          fetch('/api/flashcards/progress', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hskLevel: localLevel }),
-          }).catch(() => {});
         }
       })
       .catch(() => {});
