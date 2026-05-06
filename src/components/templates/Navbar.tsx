@@ -67,6 +67,12 @@ export const Navbar = () => {
         <li>
           <Link href="/#character-map">{t('character_map')}</Link>
         </li>
+
+        {user && (
+          <li>
+            <Link href="/dashboard/character-map?view=explorer#collections">Collections</Link>
+          </li>
+        )}
       </CenteredMenu>
     </Section>
   );
