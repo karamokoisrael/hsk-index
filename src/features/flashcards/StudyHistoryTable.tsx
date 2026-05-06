@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
-import type { DailyHistoryEntry } from '@/stores/useFlashcardsStore';
 
 type Labels = {
   title: string;
