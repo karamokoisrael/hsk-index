@@ -15,8 +15,7 @@ export function useCollectionSync() {
   // Skip echoing back the list we just loaded from DB.
   const loadedFromDb = useRef(false);
 
-  // On first authenticated mount: pull from MongoDB (user collections + public ones).
-  // If the server has no user collections yet, push local ones up.
+  // On first authenticated mount: MongoDB is the source of truth.
   useEffect(() => {
     if (!isLoaded || !user || initialized.current) return;
     initialized.current = true;
@@ -26,29 +25,8 @@ export function useCollectionSync() {
       .then((data: { collections: Collection[] }) => {
         if (!Array.isArray(data.collections)) return;
 
-        const userCollectionsFromDb = data.collections.filter(c => !c.isPublic);
-        const publicCollections = data.collections.filter(c => c.isPublic);
-
-        if (userCollectionsFromDb.length > 0) {
-          // Server has user collections — they are authoritative.
-          loadedFromDb.current = true;
-          loadCollections(data.collections);
-        } else {
-          // No server data yet — push local user collections up, then merge with public.
-          const local = useCollectionsStore.getState().collections.filter(c => !c.isPublic);
-          const merged = [...local, ...publicCollections];
-
-          loadedFromDb.current = true;
-          loadCollections(merged);
-
-          if (local.length > 0) {
-            fetch('/api/collections', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ collections: local }),
-            }).catch(() => {});
-          }
-        }
+        loadedFromDb.current = true;
+        loadCollections(data.collections);
       })
       .catch(() => {});
   }, [isLoaded, user, loadCollections]);
@@ -66,7 +44,22 @@ export function useCollectionSync() {
     if (syncTimer.current) clearTimeout(syncTimer.current);
 
     syncTimer.current = setTimeout(() => {
-      const userCollections = useCollectionsStore.getState().collections.filter(c => !c.isPublic);
+      const currentCollections = useCollectionsStore.getState().collections;
+      const userCollections = currentCollections.filter(c => !c.isPublic);
+
+      if (userCollections.length === 0) {
+        fetch('/api/collections')
+          .then(res => res.json())
+          .then((data: { collections: Collection[] }) => {
+            if (!Array.isArray(data.collections)) return;
+
+            loadedFromDb.current = true;
+            loadCollections(data.collections);
+          })
+          .catch(() => {});
+        return;
+      }
+
       fetch('/api/collections', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
