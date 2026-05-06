@@ -3,7 +3,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { hskWords } from '@/libs/services/hskWords';
 import {
   createInitialProgress,
   isDue,
@@ -11,6 +10,7 @@ import {
   scheduleNextReview,
 } from '@/features/flashcards/srs';
 import { HSK_LEVEL_MAX_ID, type HskLevel } from '@/libs/constants/hskLevels';
+import { hskWords } from '@/libs/services/hskWords';
 import type { FlashcardProgress, HskWord, PromptMode, ReviewGrade } from '@/types/Hsk';
 
 type DailyStats = {
@@ -71,6 +71,20 @@ function resolveStats(dailyStats: DailyStats | null, today: string): DailyStats 
   return { date: today, newCardsSeen: 0, reviewsDone: 0 };
 }
 
+function createResetState() {
+  return {
+    progressByWordId: {},
+    promptMode: 'word-to-meaning' as PromptMode,
+    maxNewPerDay: 20,
+    maxReviewsPerDay: 20,
+    dailyStats: null,
+    studyHistory: {},
+    hskLevel: 4 as HskLevel,
+    isLevelSelected: false,
+    hskModalOpen: false,
+  };
+}
+
 export const useFlashcardsStore = create<FlashcardsStore>()(
   persist(
     (set, get) => ({
@@ -91,7 +105,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
       addExtraNewCards: (n) => {
         const today = todayKey(new Date());
-        set(state => {
+        set((state) => {
           const stats = resolveStats(state.dailyStats, today);
           return {
             dailyStats: {
@@ -144,7 +158,11 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
         // Tie-break by original JSON order (stable sort preserves it).
         const charScore = (word: HskWord) => {
           let n = 0;
-          for (const char of word.word) if (knownChars.has(char)) n++;
+          for (const char of word.word) {
+            if (knownChars.has(char)) {
+              n++;
+            }
+          }
           return n;
         };
         newCards.sort((a, b) => charScore(b) - charScore(a));
@@ -231,9 +249,9 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
       loadHskLevel: level => set({ hskLevel: level, isLevelSelected: true }),
 
-      resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null, studyHistory: {} }),
+      resetAllProgress: () => set(createResetState()),
 
-      clearStudyHistory: () => set({ dailyStats: null, studyHistory: {} }),
+      clearStudyHistory: () => set(createResetState()),
 
       openHskModal: () => set({ hskModalOpen: true }),
       closeHskModal: () => set({ hskModalOpen: false }),
