@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 import { EmailVerificationBanner } from '@/features/auth/EmailVerificationBanner';
@@ -18,7 +17,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 export default async function DashboardLayout(props: { children: React.ReactNode }) {
-  const t = useTranslations('DashboardLayout');
+  const t = await getTranslations('DashboardLayout');
   const session = await getSession();
 
   return (
@@ -41,6 +40,10 @@ export default async function DashboardLayout(props: { children: React.ReactNode
               {
                 href: '/dashboard/character-map',
                 label: t('character_map'),
+              },
+              {
+                href: '/dashboard/character-map?view=collections',
+                label: t('collections'),
               },
               // PRO: Link to the /dashboard/todos page
               // PRO: Link to the /dashboard/billing page

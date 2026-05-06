@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 import { DashboardSection } from '@/features/dashboard/DashboardSection';
@@ -18,7 +17,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 const UserProfilePage = async () => {
-  const t = useTranslations('UserProfile');
+  const t = await getTranslations('UserProfile');
   const session = await getSession();
 
   return (

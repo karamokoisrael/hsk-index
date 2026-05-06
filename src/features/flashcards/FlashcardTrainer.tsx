@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { hskWords, totalWords } from '@/libs/services/hskWords';
+import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
+import { hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { getNextIntervalLabel, resolveState, scheduleNextReview } from '@/features/flashcards/srs';
 import { useFlashcardSync } from '@/hooks/useFlashcardSync';
@@ -35,6 +36,8 @@ export const FlashcardTrainer = (props: {
     maxReviewsPerDay: string;
     saveOptions: string;
     addMoreCards: string;
+    hskLevelCurrent: string;
+    hskLevelChange: string;
   };
 }) => {
   useFlashcardSync();
@@ -51,7 +54,9 @@ export const FlashcardTrainer = (props: {
   // Cards in a learning step that will reappear mid-session once their timer elapses.
   const [, setPendingRequeue] = useState<{ wordId: number; dueAt: number }[]>([]);
 
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const progressByWordId = useFlashcardsStore(s => s.progressByWordId);
   const getDueWords = useFlashcardsStore(s => s.getDueWords);
@@ -61,23 +66,41 @@ export const FlashcardTrainer = (props: {
   const maxNewPerDay = useFlashcardsStore(s => s.maxNewPerDay);
   const maxReviewsPerDay = useFlashcardsStore(s => s.maxReviewsPerDay);
   const setLimits = useFlashcardsStore(s => s.setLimits);
+  const addExtraNewCards = useFlashcardsStore(s => s.addExtraNewCards);
+  const hskLevel = useFlashcardsStore(s => s.hskLevel);
+  const openHskModal = useFlashcardsStore(s => s.openHskModal);
 
   const [draftNew, setDraftNew] = useState(maxNewPerDay);
   const [draftReviews, setDraftReviews] = useState(maxReviewsPerDay);
 
+  const levelWords = useMemo(
+    () => hskWords.filter(w => w.id <= HSK_LEVEL_MAX_ID[hskLevel]),
+    [hskLevel],
+  );
+
+  // Reset the queue whenever the HSK level changes (level selection rebuilds the deck).
+  // Skip on initial render when the queue is still null — the effect below handles that.
+  useEffect(() => {
+    if (sessionQueue !== null) {
+      setSessionQueue(null);
+      setPendingRequeue([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hskLevel]);
+
   // Build the session queue once after mount (localStorage is hydrated by then).
   useEffect(() => {
     if (isMounted && sessionQueue === null) {
-      setSessionQueue(getDueWords(hskWords, new Date()).map(w => w.id));
+      setSessionQueue(getDueWords(levelWords, new Date()).map(w => w.id));
     }
-  }, [isMounted, sessionQueue, getDueWords]);
+  }, [isMounted, sessionQueue, getDueWords, levelWords]);
 
   // Periodic tick: refresh `now` for stats + reinsert learning cards that are now due.
   useEffect(() => {
     const id = setInterval(() => {
       const ts = Date.now();
       setNow(new Date());
-      setPendingRequeue(pending => {
+      setPendingRequeue((pending) => {
         const nowDue = pending.filter(p => p.dueAt <= ts);
         const notYet = pending.filter(p => p.dueAt > ts);
         if (nowDue.length > 0) {
@@ -90,13 +113,13 @@ export const FlashcardTrainer = (props: {
   }, []);
 
   const stats = useMemo(
-    () => getDeckStats(hskWords, now),
+    () => getDeckStats(levelWords, now),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getDeckStats, progressByWordId, maxNewPerDay, maxReviewsPerDay, now],
+    [getDeckStats, progressByWordId, maxNewPerDay, maxReviewsPerDay, now, hskLevel],
   );
 
   const currentWordId = sessionQueue?.[0] ?? null;
-  const currentWord = currentWordId != null ? (hskWords.find(w => w.id === currentWordId) ?? null) : null;
+  const currentWord = currentWordId != null ? (levelWords.find(w => w.id === currentWordId) ?? null) : null;
   const currentProgress = currentWord ? getProgress(currentWord.id) : null;
 
   const gradeLabel: Record<ReviewGrade, string> = {
@@ -107,7 +130,9 @@ export const FlashcardTrainer = (props: {
   };
 
   const handleGrade = (grade: ReviewGrade) => {
-    if (!currentWord) return;
+    if (!currentWord) {
+      return;
+    }
     const gradeTime = new Date();
 
     // Predict next state before updating the store (scheduleNextReview is pure).
@@ -161,7 +186,7 @@ export const FlashcardTrainer = (props: {
         <Button
           type="button"
           onClick={() => {
-            setLimits(maxNewPerDay + 20, maxReviewsPerDay);
+            addExtraNewCards(20);
             resetQueue();
           }}
         >
@@ -183,7 +208,12 @@ export const FlashcardTrainer = (props: {
           <span className="text-muted-foreground">+</span>
           <span className="text-green-600">{stats.reviewCount}</span>
           <span className="ml-2 text-xs font-normal text-muted-foreground">
-            ({props.labels.studiedCards}: {sessionReviews})
+            (
+            {props.labels.studiedCards}
+            :
+            {' '}
+            {sessionReviews}
+            )
           </span>
         </div>
 
@@ -203,37 +233,54 @@ export const FlashcardTrainer = (props: {
 
       {/* ── Options panel ──────────────────────────────────────────────── */}
       {showOptions && (
-        <div className="grid gap-3 rounded-md border bg-muted/30 p-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="max-new">{props.labels.maxNewPerDay}</Label>
-            <Input
-              id="max-new"
-              type="number"
-              min={1}
-              max={9999}
-              value={draftNew}
-              onChange={e => setDraftNew(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
+        <div className="rounded-md border bg-muted/30 p-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="max-new">{props.labels.maxNewPerDay}</Label>
+              <Input
+                id="max-new"
+                type="number"
+                min={1}
+                max={9999}
+                value={draftNew}
+                onChange={e => setDraftNew(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="max-reviews">{props.labels.maxReviewsPerDay}</Label>
-            <Input
-              id="max-reviews"
-              type="number"
-              min={1}
-              max={9999}
-              value={draftReviews}
-              onChange={e => setDraftReviews(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="max-reviews">{props.labels.maxReviewsPerDay}</Label>
+              <Input
+                id="max-reviews"
+                type="number"
+                min={1}
+                max={9999}
+                value={draftReviews}
+                onChange={e => setDraftReviews(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
 
-          <div className="sm:col-span-2">
-            <Button type="button" size="sm" onClick={handleSaveOptions}>
-              {props.labels.saveOptions}
-            </Button>
+            <div className="flex items-center justify-between sm:col-span-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {props.labels.hskLevelCurrent}
+                  {' '}
+                  {hskLevel}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={openHskModal}
+                >
+                  {props.labels.hskLevelChange}
+                </Button>
+              </div>
+              <Button type="button" size="sm" onClick={handleSaveOptions}>
+                {props.labels.saveOptions}
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -241,10 +288,9 @@ export const FlashcardTrainer = (props: {
       {/* ── Card ───────────────────────────────────────────────────────── */}
       <FlashcardDisplay
         word={currentWord}
-        total={totalWords}
+        total={HSK_LEVEL_MAX_ID[hskLevel]}
         isRevealed={isRevealed}
         onToggle={() => setIsRevealed(p => !p)}
-
         labels={{
           answer: props.labels.answer,
           example: props.labels.example,

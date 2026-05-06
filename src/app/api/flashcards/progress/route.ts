@@ -13,9 +13,12 @@ export async function GET() {
   try {
     const db = await getDb();
     const doc = await db.collection('flashcard_progress').findOne({ userId: session.userId });
-    return NextResponse.json({ progressByWordId: doc?.progressByWordId ?? {} });
+    return NextResponse.json({
+      progressByWordId: doc?.progressByWordId ?? {},
+      hskLevel: doc?.hskLevel ?? null,
+    });
   } catch {
-    return NextResponse.json({ progressByWordId: {} });
+    return NextResponse.json({ progressByWordId: {}, hskLevel: null });
   }
 }
 
@@ -25,16 +28,21 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { progressByWordId } = await request.json() as {
-    progressByWordId: Record<number, FlashcardProgress>;
+  const body = await request.json() as {
+    progressByWordId?: Record<number, FlashcardProgress>;
+    hskLevel?: number;
   };
+
+  const updateFields: Record<string, unknown> = { userId: session.userId, updatedAt: new Date() };
+  if (body.progressByWordId !== undefined) updateFields.progressByWordId = body.progressByWordId;
+  if (body.hskLevel !== undefined) updateFields.hskLevel = body.hskLevel;
 
   try {
     const db = await getDb();
     await db.collection('flashcard_progress').updateOne(
       { userId: session.userId },
       {
-        $set: { userId: session.userId, progressByWordId, updatedAt: new Date() },
+        $set: updateFields,
         $setOnInsert: { createdAt: new Date() },
       },
       { upsert: true },

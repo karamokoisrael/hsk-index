@@ -19,10 +19,11 @@ export const getPrimaryExample = (word: HskWord) => {
   return firstExample || '';
 };
 
-export const getCharacterMapItems = (): CharacterMapItem[] => {
+export const getCharacterMapItems = (maxId?: number): CharacterMapItem[] => {
   const map = new Map<string, CharacterMapItem>();
+  const words = maxId != null ? hskWords.filter(w => w.id <= maxId) : hskWords;
 
-  for (const word of hskWords) {
+  for (const word of words) {
     for (const character of word.word) {
       if (!characterRegex.test(character)) {
         continue;
