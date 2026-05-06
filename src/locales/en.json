@@ -169,7 +169,17 @@
     "hsk_level_cancel": "Cancel",
     "hsk_level_reset_warning": "Changing your level will erase all your study history and reset your daily limits. This cannot be undone.",
     "hsk_level_reset_confirm": "Yes, change level",
-    "hsk_level_reset_back": "Go back"
+    "hsk_level_reset_back": "Go back",
+    "history_title": "Study history",
+    "history_date": "Date",
+    "history_again": "Again",
+    "history_hard": "Hard",
+    "history_good": "Good",
+    "history_easy": "Easy",
+    "history_total": "Total",
+    "history_empty": "No study sessions recorded yet.",
+    "history_show_more": "Show more",
+    "history_show_less": "Show less"
   },
   "CharacterMap": {
     "title_bar": "Character map",

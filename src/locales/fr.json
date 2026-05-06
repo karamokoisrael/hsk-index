@@ -169,7 +169,17 @@
     "hsk_level_cancel": "Annuler",
     "hsk_level_reset_warning": "Changer de niveau effacera tout votre historique d'étude et réinitialisera vos limites quotidiennes. Cette action est irréversible.",
     "hsk_level_reset_confirm": "Oui, changer de niveau",
-    "hsk_level_reset_back": "Retour"
+    "hsk_level_reset_back": "Retour",
+    "history_title": "Historique d'étude",
+    "history_date": "Date",
+    "history_again": "Encore",
+    "history_hard": "Difficile",
+    "history_good": "Bien",
+    "history_easy": "Facile",
+    "history_total": "Total",
+    "history_empty": "Aucune session d'étude enregistrée.",
+    "history_show_more": "Voir plus",
+    "history_show_less": "Voir moins"
   },
   "CharacterMap": {
     "title_bar": "Carte des caractères",

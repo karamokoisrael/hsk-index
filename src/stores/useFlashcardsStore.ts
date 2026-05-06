@@ -19,6 +19,14 @@ type DailyStats = {
   reviewsDone: number;
 };
 
+export type DailyHistoryEntry = {
+  again: number;
+  hard: number;
+  good: number;
+  easy: number;
+  total: number;
+};
+
 type DeckStats = {
   newCount: number;
   learningCount: number;
@@ -31,6 +39,7 @@ type FlashcardsStore = {
   maxNewPerDay: number;
   maxReviewsPerDay: number;
   dailyStats: DailyStats | null;
+  studyHistory: Record<string, DailyHistoryEntry>;
   hskLevel: HskLevel;
   isLevelSelected: boolean;
   hskModalOpen: boolean;
@@ -69,6 +78,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       maxNewPerDay: 20,
       maxReviewsPerDay: 20,
       dailyStats: null,
+      studyHistory: {},
       hskLevel: 4,
       isLevelSelected: false,
       hskModalOpen: false,
@@ -187,6 +197,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
         set((state) => {
           const stats = resolveStats(state.dailyStats, today);
+          const todayHistory = state.studyHistory[today] ?? { again: 0, hard: 0, good: 0, easy: 0, total: 0 };
           return {
             progressByWordId: {
               ...state.progressByWordId,
@@ -201,6 +212,16 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
                 ? stats.reviewsDone + 1
                 : stats.reviewsDone,
             },
+            studyHistory: {
+              ...state.studyHistory,
+              [today]: {
+                again: todayHistory.again + (grade === 'again' ? 1 : 0),
+                hard: todayHistory.hard + (grade === 'hard' ? 1 : 0),
+                good: todayHistory.good + (grade === 'good' ? 1 : 0),
+                easy: todayHistory.easy + (grade === 'easy' ? 1 : 0),
+                total: todayHistory.total + 1,
+              },
+            },
           };
         });
       },
@@ -209,7 +230,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
       loadHskLevel: level => set({ hskLevel: level, isLevelSelected: true }),
 
-      resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null }),
+      resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null, studyHistory: {} }),
 
       openHskModal: () => set({ hskModalOpen: true }),
       closeHskModal: () => set({ hskModalOpen: false }),
@@ -241,6 +262,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
           isLevelSelected: true,
           progressByWordId,
           dailyStats: null,
+          studyHistory: {},
           maxNewPerDay: 20,
           maxReviewsPerDay: 20,
         });
