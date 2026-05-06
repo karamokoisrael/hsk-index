@@ -42,6 +42,10 @@ export default async function DashboardLayout(props: { children: React.ReactNode
                 href: '/dashboard/character-map',
                 label: t('character_map'),
               },
+              {
+                href: '/dashboard/character-map?view=collections',
+                label: t('collections'),
+              },
               // PRO: Link to the /dashboard/todos page
               // PRO: Link to the /dashboard/billing page
             ]}
