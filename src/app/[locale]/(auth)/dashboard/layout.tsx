@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 import { EmailVerificationBanner } from '@/features/auth/EmailVerificationBanner';
@@ -18,7 +17,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 export default async function DashboardLayout(props: { children: React.ReactNode }) {
-  const t = useTranslations('DashboardLayout');
+  const t = await getTranslations('DashboardLayout');
   const session = await getSession();
 
   return (
