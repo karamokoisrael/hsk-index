@@ -7,10 +7,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { DashboardSection } from '@/features/dashboard/DashboardSection';
 import { FlashcardStats } from '@/features/dashboard/FlashcardStats';
 import { TitleBar } from '@/features/dashboard/TitleBar';
+import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 
 const AccountPage = () => {
   const t = useTranslations('DashboardIndex');
   const { user, signOut } = useAuth();
+  const clearStudyHistory = useFlashcardsStore(state => state.clearStudyHistory);
+
+  const handleClearHistory = () => {
+    const confirmed = window.confirm(t('clear_history_confirm'));
+    if (!confirmed) {
+      return;
+    }
+
+    clearStudyHistory();
+  };
 
   return (
     <>
@@ -59,9 +70,15 @@ const AccountPage = () => {
           </div>
 
           <div className="pt-1">
-            <Button type="button" variant="outline" onClick={signOut}>
-              {t('sign_out')}
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" variant="destructive" onClick={handleClearHistory}>
+                {t('clear_history')}
+              </Button>
+
+              <Button type="button" variant="outline" onClick={signOut}>
+                {t('sign_out')}
+              </Button>
+            </div>
           </div>
         </div>
       </DashboardSection>

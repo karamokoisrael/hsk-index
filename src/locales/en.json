@@ -133,6 +133,8 @@
     "email_label": "Email address",
     "user_id_label": "User ID",
     "sign_out": "Sign out",
+    "clear_history": "Clear history",
+    "clear_history_confirm": "Clear your local study history? This will reset the stats shown here but keep your flashcard progress.",
     "study_stats_today_title": "Today",
     "study_stats_overall_title": "All time",
     "study_stats_touched_today": "Cards touched today",

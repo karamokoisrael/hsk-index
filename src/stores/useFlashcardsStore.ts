@@ -54,6 +54,7 @@ type FlashcardsStore = {
   loadProgress: (progress: Record<number, FlashcardProgress>) => void;
   loadHskLevel: (level: HskLevel) => void;
   resetAllProgress: () => void;
+  clearStudyHistory: () => void;
   setHskLevel: (level: HskLevel) => void;
   openHskModal: () => void;
   closeHskModal: () => void;
@@ -231,6 +232,8 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       loadHskLevel: level => set({ hskLevel: level, isLevelSelected: true }),
 
       resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null, studyHistory: {} }),
+
+      clearStudyHistory: () => set({ dailyStats: null, studyHistory: {} }),
 
       openHskModal: () => set({ hskModalOpen: true }),
       closeHskModal: () => set({ hskModalOpen: false }),

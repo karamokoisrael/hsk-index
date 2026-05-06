@@ -135,6 +135,8 @@
     "sign_out": "Se déconnecter",
     "study_stats_today_title": "Aujourd'hui",
     "study_stats_overall_title": "Tout le temps",
+    "clear_history": "Effacer l’historique",
+    "clear_history_confirm": "Effacer votre historique local ? Cela réinitialisera les statistiques affichées ici, mais conservera votre progression.",
     "study_stats_touched_today": "Cartes marquées aujourd'hui",
     "study_stats_total_marked": "Cartes marquées au total",
     "study_stats_again": "Encore",

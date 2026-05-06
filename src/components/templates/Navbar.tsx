@@ -70,7 +70,7 @@ export const Navbar = () => {
 
         {user && (
           <li>
-            <Link href="/dashboard/character-map?view=explorer#collections">Collections</Link>
+            <Link href="/dashboard/collections">Collections</Link>
           </li>
         )}
       </CenteredMenu>
