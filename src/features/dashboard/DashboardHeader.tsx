@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { ActiveLink } from '@/components/ActiveLink';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { ToggleMenuButton } from '@/components/ToggleMenuButton';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +16,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { UserMenu } from '@/features/auth/UserMenu';
 import { Logo } from '@/components/templates/Logo';
+import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 
 export const DashboardHeader = (props: {
   menu: {
@@ -21,10 +24,16 @@ export const DashboardHeader = (props: {
     label: string;
   }[];
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  const hskLevel = useFlashcardsStore(s => s.hskLevel);
+  const openHskModal = useFlashcardsStore(s => s.openHskModal);
+
+  useEffect(() => { setIsMounted(true); }, []);
+
   return (
     <>
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="max-sm:hidden">
+        <Link href="/account" className="max-sm:hidden">
           <Logo />
         </Link>
 
@@ -53,6 +62,16 @@ export const DashboardHeader = (props: {
 
       <div>
         <ul className="flex items-center gap-x-1.5 [&_li[data-fade]:hover]:opacity-100 [&_li[data-fade]]:opacity-60">
+          <li>
+            {isMounted && (
+              <Button variant="outline" size="sm" onClick={openHskModal}>
+                HSK
+                {' '}
+                {hskLevel}
+              </Button>
+            )}
+          </li>
+
           <li data-fade>
             <div className="lg:hidden">
               <DropdownMenu>

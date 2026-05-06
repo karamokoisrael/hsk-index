@@ -10,12 +10,21 @@ import {
   resolveState,
   scheduleNextReview,
 } from '@/features/flashcards/srs';
+import { HSK_LEVEL_MAX_ID, type HskLevel } from '@/libs/constants/hskLevels';
 import type { FlashcardProgress, HskWord, PromptMode, ReviewGrade } from '@/types/Hsk';
 
 type DailyStats = {
   date: string;
   newCardsSeen: number;
   reviewsDone: number;
+};
+
+export type DailyHistoryEntry = {
+  again: number;
+  hard: number;
+  good: number;
+  easy: number;
+  total: number;
 };
 
 type DeckStats = {
@@ -30,15 +39,25 @@ type FlashcardsStore = {
   maxNewPerDay: number;
   maxReviewsPerDay: number;
   dailyStats: DailyStats | null;
+  studyHistory: Record<string, DailyHistoryEntry>;
+  hskLevel: HskLevel;
+  isLevelSelected: boolean;
+  hskModalOpen: boolean;
 
   setPromptMode: (mode: PromptMode) => void;
   setLimits: (maxNew: number, maxReviews: number) => void;
+  addExtraNewCards: (n: number) => void;
   getProgress: (wordId: number) => FlashcardProgress;
   getDueWords: (words: HskWord[], baseDate: Date) => HskWord[];
   getDeckStats: (words: HskWord[], baseDate: Date) => DeckStats;
   reviewWord: (wordId: number, grade: ReviewGrade, baseDate: Date) => void;
   loadProgress: (progress: Record<number, FlashcardProgress>) => void;
+  loadHskLevel: (level: HskLevel) => void;
   resetAllProgress: () => void;
+  clearStudyHistory: () => void;
+  setHskLevel: (level: HskLevel) => void;
+  openHskModal: () => void;
+  closeHskModal: () => void;
 };
 
 function todayKey(date: Date): string {
@@ -58,13 +77,31 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       progressByWordId: {},
       promptMode: 'word-to-meaning',
       maxNewPerDay: 20,
-      maxReviewsPerDay: 100,
+      maxReviewsPerDay: 20,
       dailyStats: null,
+      studyHistory: {},
+      hskLevel: 4,
+      isLevelSelected: false,
+      hskModalOpen: false,
 
       setPromptMode: mode => set({ promptMode: mode }),
 
       setLimits: (maxNew, maxReviews) =>
         set({ maxNewPerDay: maxNew, maxReviewsPerDay: maxReviews }),
+
+      addExtraNewCards: (n) => {
+        const today = todayKey(new Date());
+        set(state => {
+          const stats = resolveStats(state.dailyStats, today);
+          return {
+            dailyStats: {
+              date: today,
+              newCardsSeen: Math.max(0, stats.newCardsSeen - n),
+              reviewsDone: stats.reviewsDone,
+            },
+          };
+        });
+      },
 
       getProgress: (wordId) => {
         const existing = get().progressByWordId[wordId];
@@ -161,6 +198,7 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
 
         set((state) => {
           const stats = resolveStats(state.dailyStats, today);
+          const todayHistory = state.studyHistory[today] ?? { again: 0, hard: 0, good: 0, easy: 0, total: 0 };
           return {
             progressByWordId: {
               ...state.progressByWordId,
@@ -175,18 +213,72 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
                 ? stats.reviewsDone + 1
                 : stats.reviewsDone,
             },
+            studyHistory: {
+              ...state.studyHistory,
+              [today]: {
+                again: todayHistory.again + (grade === 'again' ? 1 : 0),
+                hard: todayHistory.hard + (grade === 'hard' ? 1 : 0),
+                good: todayHistory.good + (grade === 'good' ? 1 : 0),
+                easy: todayHistory.easy + (grade === 'easy' ? 1 : 0),
+                total: todayHistory.total + 1,
+              },
+            },
           };
         });
       },
 
       loadProgress: progress => set({ progressByWordId: progress }),
 
-      resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null }),
+      loadHskLevel: level => set({ hskLevel: level, isLevelSelected: true }),
+
+      resetAllProgress: () => set({ progressByWordId: {}, dailyStats: null, studyHistory: {} }),
+
+      clearStudyHistory: () => set({ dailyStats: null, studyHistory: {} }),
+
+      openHskModal: () => set({ hskModalOpen: true }),
+      closeHskModal: () => set({ hskModalOpen: false }),
+
+      setHskLevel: (level) => {
+        const prevMaxId = level > 1 ? HSK_LEVEL_MAX_ID[(level - 1) as HskLevel] : 0;
+        const now = new Date();
+        const farFuture = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString();
+
+        // Start from a clean slate, then mark all previous-level words as known.
+        const progressByWordId: Record<number, FlashcardProgress> = {};
+        for (const word of hskWords) {
+          if (word.id <= prevMaxId) {
+            progressByWordId[word.id] = {
+              ease: 2.5,
+              interval: 365,
+              repetitions: 1,
+              dueAt: farFuture,
+              lastReviewedAt: now.toISOString(),
+              lapses: 0,
+              state: 'review',
+              learningStep: 0,
+            };
+          }
+        }
+
+        set({
+          hskLevel: level,
+          isLevelSelected: true,
+          progressByWordId,
+          dailyStats: null,
+          studyHistory: {},
+          maxNewPerDay: 20,
+          maxReviewsPerDay: 20,
+        });
+      },
     }),
     {
       name: 'hsk-flashcards-store',
       storage: createJSONStorage(() => localStorage),
       version: 2,
+      partialize: (state) => {
+        const { hskModalOpen: _m, ...rest } = state;
+        return rest as typeof state;
+      },
     },
   ),
 );

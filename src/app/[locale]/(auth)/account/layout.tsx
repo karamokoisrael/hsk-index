@@ -16,7 +16,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-export default async function DashboardLayout(props: { children: React.ReactNode }) {
+export default async function AccountLayout(props: { children: React.ReactNode }) {
   const session = await getSession();
 
   return (

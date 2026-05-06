@@ -2,18 +2,27 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserMenu } from '@/features/auth/UserMenu';
 import { CenteredMenu } from '@/features/landing/CenteredMenu';
 import { Section } from '@/features/landing/Section';
+import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 
 import { Logo } from './Logo';
 
 export const Navbar = () => {
   const t = useTranslations('Navbar');
   const { user } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
+  const hskLevel = useFlashcardsStore(s => s.hskLevel);
+  const openHskModal = useFlashcardsStore(s => s.openHskModal);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <Section className="px-3 py-6">
@@ -21,6 +30,15 @@ export const Navbar = () => {
         logo={<Logo />}
         rightMenu={(
           <>
+            {isMounted && (
+              <li>
+                <Button variant="outline" size="sm" onClick={openHskModal}>
+                  HSK
+                  {' '}
+                  {hskLevel}
+                </Button>
+              </li>
+            )}
             {user
               ? (
                   <li>
@@ -51,6 +69,12 @@ export const Navbar = () => {
         <li>
           <Link href="/#character-map">{t('character_map')}</Link>
         </li>
+
+        {user && (
+          <li>
+            <Link href="/dashboard/collections">Collections</Link>
+          </li>
+        )}
       </CenteredMenu>
     </Section>
   );
