@@ -29,7 +29,9 @@ function formatDate(dateStr: string, locale: string): string {
 }
 
 function GradeCell({ value, colorClass }: { value: number; colorClass: string }) {
-  if (value === 0) return <span className="text-muted-foreground">—</span>;
+  if (value === 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
   return <span className={colorClass}>{value}</span>;
 }
 

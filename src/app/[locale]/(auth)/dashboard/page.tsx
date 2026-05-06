@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { DashboardSection } from '@/features/dashboard/DashboardSection';
+import { FlashcardStats } from '@/features/dashboard/FlashcardStats';
 import { TitleBar } from '@/features/dashboard/TitleBar';
 
 const DashboardIndexPage = () => {
@@ -14,6 +15,24 @@ const DashboardIndexPage = () => {
         title={t('title_bar')}
         description={t('title_bar_description')}
       />
+
+      <DashboardSection
+        title={t('study_stats_title')}
+        description={t('study_stats_description')}
+      >
+        <FlashcardStats
+          labels={{
+            todayTitle: t('study_stats_today_title'),
+            overallTitle: t('study_stats_overall_title'),
+            cardsTouchedToday: t('study_stats_touched_today'),
+            totalMarkedOverall: t('study_stats_total_marked'),
+            again: t('study_stats_again'),
+            hard: t('study_stats_hard'),
+            good: t('study_stats_good'),
+            easy: t('study_stats_easy'),
+          }}
+        />
+      </DashboardSection>
 
       <div className="grid gap-4 md:grid-cols-2">
         <DashboardSection
