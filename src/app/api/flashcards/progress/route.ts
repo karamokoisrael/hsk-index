@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getSession } from '@/libs/services/auth';
 import { getDb } from '@/libs/database/mongo';
+import { getSession } from '@/libs/services/auth';
 import type { FlashcardProgress } from '@/types/Hsk';
 
 type ProgressMap = Record<number, FlashcardProgress>;
@@ -80,7 +80,9 @@ export async function PUT(request: Request) {
       body.progressByWordId,
     );
   }
-  if (body.hskLevel !== undefined) updateFields.hskLevel = body.hskLevel;
+  if (body.hskLevel !== undefined) {
+    updateFields.hskLevel = body.hskLevel;
+  }
 
   try {
     await db.collection('flashcard_progress').updateOne(
