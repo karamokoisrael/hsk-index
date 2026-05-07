@@ -10,22 +10,8 @@ import type { FlashcardProgress } from '@/types/Hsk';
 type ProgressMap = Record<number, FlashcardProgress>;
 type ApiResponse = { progressByWordId: ProgressMap; hskLevel: HskLevel | null };
 
-/**
- * Merge two progress maps by keeping the entry with the later lastReviewedAt
- * for each word. Words present in only one map are kept as-is.
- */
-function mergeProgress(local: ProgressMap, remote: ProgressMap): ProgressMap {
-  const merged: ProgressMap = { ...remote };
-  for (const [idStr, localProg] of Object.entries(local)) {
-    const id = Number(idStr);
-    const remoteProg = remote[id];
-    const localTs = localProg.lastReviewedAt ? new Date(localProg.lastReviewedAt).getTime() : 0;
-    const remoteTs = remoteProg?.lastReviewedAt ? new Date(remoteProg.lastReviewedAt).getTime() : 0;
-    if (!remoteProg || localTs > remoteTs) {
-      merged[id] = localProg;
-    }
-  }
-  return merged;
+function hasProgress(progress: ProgressMap): boolean {
+  return Object.keys(progress).length > 0;
 }
 
 export function useFlashcardSync() {
@@ -39,8 +25,7 @@ export function useFlashcardSync() {
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const levelFromDb = useRef<HskLevel | null>(null);
 
-  // On first authenticated mount: DB is the source of truth for returning users.
-  // Only upload local data when DB is empty AND the user has explicitly acted here.
+  // On first authenticated mount: DB is the source of truth.
   useEffect(() => {
     if (!isLoaded || !user || initialized.current) return;
     initialized.current = true;
@@ -48,36 +33,19 @@ export function useFlashcardSync() {
     fetch('/api/flashcards/progress')
       .then(res => res.json())
       .then((data: ApiResponse) => {
-        const dbHasData =
-          data.hskLevel != null ||
-          (data.progressByWordId && Object.keys(data.progressByWordId).length > 0);
-
-        if (dbHasData) {
-          if (data.progressByWordId && Object.keys(data.progressByWordId).length > 0) {
-            loadProgress(data.progressByWordId);
-          }
-          if (data.hskLevel != null) {
-            levelFromDb.current = data.hskLevel;
-            loadHskLevel(data.hskLevel);
-          }
-        } else {
-          // New user — only upload if this device has real activity.
-          const { hskLevel: localLevel, progressByWordId: localProgress, isLevelSelected } =
-            useFlashcardsStore.getState();
-          if (isLevelSelected || Object.keys(localProgress).length > 0) {
-            fetch('/api/flashcards/progress', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ progressByWordId: localProgress, hskLevel: localLevel }),
-            }).catch(() => {});
-          }
+        if (hasProgress(data.progressByWordId)) {
+          loadProgress(data.progressByWordId);
+        }
+        if (data.hskLevel != null) {
+          levelFromDb.current = data.hskLevel;
+          loadHskLevel(data.hskLevel);
         }
       })
       .catch(() => {});
   }, [isLoaded, user, loadProgress, loadHskLevel]);
 
   // Re-sync on tab focus to pick up changes from other devices.
-  // Uses per-word merge so in-flight local reviews are never lost.
+  // Server data always overwrites local state on refresh.
   useEffect(() => {
     if (!isLoaded || !user) return;
 
@@ -87,10 +55,8 @@ export function useFlashcardSync() {
       fetch('/api/flashcards/progress')
         .then(res => res.json())
         .then((data: ApiResponse) => {
-          if (data.progressByWordId && Object.keys(data.progressByWordId).length > 0) {
-            const local = useFlashcardsStore.getState().progressByWordId;
-            const merged = mergeProgress(local, data.progressByWordId);
-            loadProgress(merged);
+          if (hasProgress(data.progressByWordId)) {
+            loadProgress(data.progressByWordId);
           }
           if (data.hskLevel != null) {
             levelFromDb.current = data.hskLevel;
@@ -133,10 +99,28 @@ export function useFlashcardSync() {
     if (syncTimer.current) clearTimeout(syncTimer.current);
 
     syncTimer.current = setTimeout(() => {
+      const currentState = useFlashcardsStore.getState();
+
+      if (!hasProgress(currentState.progressByWordId) && !currentState.isLevelSelected) {
+        fetch('/api/flashcards/progress')
+          .then(res => res.json())
+          .then((data: ApiResponse) => {
+            if (hasProgress(data.progressByWordId)) {
+              loadProgress(data.progressByWordId);
+            }
+            if (data.hskLevel != null) {
+              levelFromDb.current = data.hskLevel;
+              loadHskLevel(data.hskLevel);
+            }
+          })
+          .catch(() => {});
+        return;
+      }
+
       fetch('/api/flashcards/progress', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ progressByWordId }),
+        body: JSON.stringify({ progressByWordId, hskLevel }),
       }).catch(() => {});
     }, 1500);
 
