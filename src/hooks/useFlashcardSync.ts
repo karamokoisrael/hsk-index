@@ -4,11 +4,12 @@ import { useEffect, useRef } from 'react';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { type HskLevel } from '@/libs/constants/hskLevels';
-import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
+import { type DailyHistoryEntry, useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import type { FlashcardProgress } from '@/types/Hsk';
 
 type ProgressMap = Record<number, FlashcardProgress>;
-type ApiResponse = { progressByWordId: ProgressMap; hskLevel: HskLevel | null };
+type StudyHistory = Record<string, DailyHistoryEntry>;
+type ApiResponse = { progressByWordId: ProgressMap; hskLevel: HskLevel | null; studyHistory: StudyHistory };
 
 function hasProgress(progress: ProgressMap): boolean {
   return Object.keys(progress).length > 0;
@@ -18,8 +19,10 @@ export function useFlashcardSync() {
   const { user, isLoaded } = useAuth();
   const progressByWordId = useFlashcardsStore(s => s.progressByWordId);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
+  const studyHistory = useFlashcardsStore(s => s.studyHistory);
   const loadProgress = useFlashcardsStore(s => s.loadProgress);
   const loadHskLevel = useFlashcardsStore(s => s.loadHskLevel);
+  const loadStudyHistory = useFlashcardsStore(s => s.loadStudyHistory);
 
   const initialized = useRef(false);
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,9 +43,12 @@ export function useFlashcardSync() {
           levelFromDb.current = data.hskLevel;
           loadHskLevel(data.hskLevel);
         }
+        if (data.studyHistory && Object.keys(data.studyHistory).length > 0) {
+          loadStudyHistory(data.studyHistory);
+        }
       })
       .catch(() => {});
-  }, [isLoaded, user, loadProgress, loadHskLevel]);
+  }, [isLoaded, user, loadProgress, loadHskLevel, loadStudyHistory]);
 
   // Re-sync on tab focus to pick up changes from other devices.
   // Server data always overwrites local state on refresh.
@@ -62,13 +68,16 @@ export function useFlashcardSync() {
             levelFromDb.current = data.hskLevel;
             loadHskLevel(data.hskLevel);
           }
+          if (data.studyHistory && Object.keys(data.studyHistory).length > 0) {
+            loadStudyHistory(data.studyHistory);
+          }
         })
         .catch(() => {});
     };
 
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, [isLoaded, user, loadProgress, loadHskLevel]);
+  }, [isLoaded, user, loadProgress, loadHskLevel, loadStudyHistory]);
 
   // When hskLevel changes: immediately sync both level and progress atomically.
   useEffect(() => {
@@ -84,11 +93,15 @@ export function useFlashcardSync() {
       syncTimer.current = null;
     }
 
-    const currentProgress = useFlashcardsStore.getState().progressByWordId;
+    const currentState = useFlashcardsStore.getState();
     fetch('/api/flashcards/progress', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ progressByWordId: currentProgress, hskLevel }),
+      body: JSON.stringify({
+        progressByWordId: currentState.progressByWordId,
+        hskLevel,
+        studyHistory: currentState.studyHistory,
+      }),
     }).catch(() => {});
   }, [hskLevel, isLoaded, user]);
 
@@ -112,6 +125,9 @@ export function useFlashcardSync() {
               levelFromDb.current = data.hskLevel;
               loadHskLevel(data.hskLevel);
             }
+            if (data.studyHistory && Object.keys(data.studyHistory).length > 0) {
+              loadStudyHistory(data.studyHistory);
+            }
           })
           .catch(() => {});
         return;
@@ -120,7 +136,7 @@ export function useFlashcardSync() {
       fetch('/api/flashcards/progress', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ progressByWordId, hskLevel }),
+        body: JSON.stringify({ progressByWordId, hskLevel, studyHistory }),
       }).catch(() => {});
     }, 1500);
 

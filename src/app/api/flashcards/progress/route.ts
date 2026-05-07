@@ -2,9 +2,30 @@ import { NextResponse } from 'next/server';
 
 import { getDb } from '@/libs/database/mongo';
 import { getSession } from '@/libs/services/auth';
+import type { DailyHistoryEntry } from '@/stores/useFlashcardsStore';
 import type { FlashcardProgress } from '@/types/Hsk';
 
 type ProgressMap = Record<number, FlashcardProgress>;
+type StudyHistory = Record<string, DailyHistoryEntry>;
+
+function mergeStudyHistory(existing: StudyHistory, incoming: StudyHistory): StudyHistory {
+  const merged: StudyHistory = { ...existing };
+  for (const [date, entry] of Object.entries(incoming)) {
+    const current = merged[date];
+    if (!current) {
+      merged[date] = entry;
+    } else {
+      merged[date] = {
+        again: Math.max(current.again, entry.again),
+        hard: Math.max(current.hard, entry.hard),
+        good: Math.max(current.good, entry.good),
+        easy: Math.max(current.easy, entry.easy),
+        total: Math.max(current.total, entry.total),
+      };
+    }
+  }
+  return merged;
+}
 
 function reviewedAt(progress: FlashcardProgress): number {
   if (!progress.lastReviewedAt) {
@@ -53,9 +74,10 @@ export async function GET() {
     return NextResponse.json({
       progressByWordId: doc?.progressByWordId ?? {},
       hskLevel: doc?.hskLevel ?? null,
+      studyHistory: doc?.studyHistory ?? {},
     });
   } catch {
-    return NextResponse.json({ progressByWordId: {}, hskLevel: null });
+    return NextResponse.json({ progressByWordId: {}, hskLevel: null, studyHistory: {} });
   }
 }
 
@@ -68,6 +90,7 @@ export async function PUT(request: Request) {
   const body = await request.json() as {
     progressByWordId?: ProgressMap;
     hskLevel?: number;
+    studyHistory?: StudyHistory;
   };
 
   const db = await getDb();
@@ -82,6 +105,12 @@ export async function PUT(request: Request) {
   }
   if (body.hskLevel !== undefined) {
     updateFields.hskLevel = body.hskLevel;
+  }
+  if (body.studyHistory !== undefined) {
+    updateFields.studyHistory = mergeStudyHistory(
+      (existing?.studyHistory ?? {}) as StudyHistory,
+      body.studyHistory,
+    );
   }
 
   try {

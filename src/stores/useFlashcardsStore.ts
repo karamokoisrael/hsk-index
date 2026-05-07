@@ -53,6 +53,7 @@ type FlashcardsStore = {
   reviewWord: (wordId: number, grade: ReviewGrade, baseDate: Date) => void;
   loadProgress: (progress: Record<number, FlashcardProgress>) => void;
   loadHskLevel: (level: HskLevel) => void;
+  loadStudyHistory: (history: Record<string, DailyHistoryEntry>) => void;
   resetAllProgress: () => void;
   clearStudyHistory: () => void;
   setHskLevel: (level: HskLevel) => void;
@@ -248,6 +249,25 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       loadProgress: progress => set({ progressByWordId: progress }),
 
       loadHskLevel: level => set({ hskLevel: level, isLevelSelected: true }),
+
+      loadStudyHistory: history => set((state) => {
+        const merged: Record<string, DailyHistoryEntry> = { ...state.studyHistory };
+        for (const [date, entry] of Object.entries(history)) {
+          const local = merged[date];
+          if (!local) {
+            merged[date] = entry;
+          } else {
+            merged[date] = {
+              again: Math.max(local.again, entry.again),
+              hard: Math.max(local.hard, entry.hard),
+              good: Math.max(local.good, entry.good),
+              easy: Math.max(local.easy, entry.easy),
+              total: Math.max(local.total, entry.total),
+            };
+          }
+        }
+        return { studyHistory: merged };
+      }),
 
       resetAllProgress: () => set(createResetState()),
 
