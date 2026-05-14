@@ -196,7 +196,13 @@
     "history_total": "Total",
     "history_empty": "No study sessions recorded yet.",
     "history_show_more": "Show more",
-    "history_show_less": "Show less"
+    "history_show_less": "Show less",
+    "find_common_chars": "Find words with common character",
+    "add_to_collection": "Add to collection",
+    "related_words_title": "Words sharing a character",
+    "no_related_words": "No other words share a character with this word.",
+    "add_to_collection_title": "Add to collection",
+    "no_collections": "No collections yet. Create one in the Collections tab."
   },
   "CharacterMap": {
     "title_bar": "Character map",
@@ -231,15 +237,13 @@
     "collection_create": "Create",
     "collection_name_placeholder": "Collection name",
     "collection_empty_state": "No collections yet. Create one above to start grouping characters.",
-    "collection_empty_chars": "No characters added yet.",
-    "collection_no_words": "No matching words for this collection's characters.",
+    "collection_empty_words": "No words added yet.",
+    "collection_no_words": "No matching words for this collection.",
     "collection_study_title": "Study collection",
-    "collection_chars_label": "Characters",
     "collection_words_label": "words",
     "collection_study_btn": "Study",
     "collection_delete_btn": "Delete",
-    "collection_add_char_placeholder": "Add a character (e.g. 不)",
-    "collection_add_char_btn": "Add",
+    "collection_search_words_placeholder": "Search words to add (e.g. 不, hao, good)",
     "collection_back": "All collections"
   },
   "UserProfile": {

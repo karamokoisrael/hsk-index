@@ -39,6 +39,12 @@ const FlashcardsPage = (props: { params: { locale: string } }) => {
             addMoreCards: t('add_more_cards'),
             hskLevelCurrent: t('hsk_level_current'),
             hskLevelChange: t('hsk_level_change'),
+            findCommonChars: t('find_common_chars'),
+            addToCollection: t('add_to_collection'),
+            relatedWordsTitle: t('related_words_title'),
+            noRelatedWords: t('no_related_words'),
+            addToCollectionTitle: t('add_to_collection_title'),
+            noCollections: t('no_collections'),
           }}
         />
       </DashboardSection>

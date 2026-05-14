@@ -196,7 +196,13 @@
     "history_total": "Total",
     "history_empty": "Aucune session d'étude enregistrée.",
     "history_show_more": "Voir plus",
-    "history_show_less": "Voir moins"
+    "history_show_less": "Voir moins",
+    "find_common_chars": "Trouver des mots avec un caractère commun",
+    "add_to_collection": "Ajouter à une collection",
+    "related_words_title": "Mots partageant un caractère",
+    "no_related_words": "Aucun autre mot ne partage un caractère avec ce mot.",
+    "add_to_collection_title": "Ajouter à une collection",
+    "no_collections": "Aucune collection. Créez-en une dans l'onglet Collections."
   },
   "CharacterMap": {
     "title_bar": "Carte des caractères",
@@ -231,15 +237,13 @@
     "collection_create": "Créer",
     "collection_name_placeholder": "Nom de la collection",
     "collection_empty_state": "Aucune collection. Créez-en une ci-dessus pour commencer à regrouper des caractères.",
-    "collection_empty_chars": "Aucun caractère ajouté.",
-    "collection_no_words": "Aucun mot correspondant aux caractères de cette collection.",
+    "collection_empty_words": "Aucun mot ajouté.",
+    "collection_no_words": "Aucun mot correspondant pour cette collection.",
     "collection_study_title": "Étudier la collection",
-    "collection_chars_label": "Caractères",
     "collection_words_label": "mots",
     "collection_study_btn": "Étudier",
     "collection_delete_btn": "Supprimer",
-    "collection_add_char_placeholder": "Ajouter un caractère (ex. 不)",
-    "collection_add_char_btn": "Ajouter",
+    "collection_search_words_placeholder": "Rechercher des mots à ajouter (ex. 不, hao, bien)",
     "collection_back": "Toutes les collections"
   },
   "UserProfile": {

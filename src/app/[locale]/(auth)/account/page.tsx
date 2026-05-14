@@ -31,24 +31,6 @@ const AccountPage = () => {
       />
 
       <DashboardSection
-        title={t('study_stats_title')}
-        description={t('study_stats_description')}
-      >
-        <FlashcardStats
-          labels={{
-            todayTitle: t('study_stats_today_title'),
-            overallTitle: t('study_stats_overall_title'),
-            cardsTouchedToday: t('study_stats_touched_today'),
-            totalMarkedOverall: t('study_stats_total_marked'),
-            again: t('study_stats_again'),
-            hard: t('study_stats_hard'),
-            good: t('study_stats_good'),
-            easy: t('study_stats_easy'),
-          }}
-        />
-      </DashboardSection>
-
-      <DashboardSection
         title={t('account_title')}
         description={t('account_description')}
       >
@@ -81,6 +63,24 @@ const AccountPage = () => {
             </div>
           </div>
         </div>
+      </DashboardSection>
+
+      <DashboardSection
+        title={t('study_stats_title')}
+        description={t('study_stats_description')}
+      >
+        <FlashcardStats
+          labels={{
+            todayTitle: t('study_stats_today_title'),
+            overallTitle: t('study_stats_overall_title'),
+            cardsTouchedToday: t('study_stats_touched_today'),
+            totalMarkedOverall: t('study_stats_total_marked'),
+            again: t('study_stats_again'),
+            hard: t('study_stats_hard'),
+            good: t('study_stats_good'),
+            easy: t('study_stats_easy'),
+          }}
+        />
       </DashboardSection>
     </>
   );

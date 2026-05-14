@@ -65,6 +65,12 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 addMoreCards: flashcardsT('add_more_cards'),
                 hskLevelCurrent: flashcardsT('hsk_level_current'),
                 hskLevelChange: flashcardsT('hsk_level_change'),
+                findCommonChars: flashcardsT('find_common_chars'),
+                addToCollection: flashcardsT('add_to_collection'),
+                relatedWordsTitle: flashcardsT('related_words_title'),
+                noRelatedWords: flashcardsT('no_related_words'),
+                addToCollectionTitle: flashcardsT('add_to_collection_title'),
+                noCollections: flashcardsT('no_collections'),
               }}
             />
           </div>

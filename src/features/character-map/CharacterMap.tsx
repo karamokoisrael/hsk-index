@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
-import type { CollectionLabels } from '@/features/collections/CollectionsView';
+import { CollectionsView, type CollectionLabels } from '@/features/collections/CollectionsView';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import { useCollectionsStore } from '@/stores/useCollectionsStore';
@@ -184,7 +184,7 @@ export const CharacterMap = (props: {
   const resetWordProgress = useFlashcardsStore(state => state.resetWordProgress);
   const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
-  const { collections, addCharacter, createCollection } = useCollectionsStore();
+  const { collections, addWord, removeWord } = useCollectionsStore();
 
   const levelWords = useMemo(
     () => hskWords.filter(w => w.id <= HSK_LEVEL_MAX_ID[hskLevel]),
@@ -197,9 +197,8 @@ export const CharacterMap = (props: {
 
   const [isMounted, setIsMounted] = useState(false);
   const [showDetails, setShowDetails] = useState(true);
-  const [view, setView] = useState<'common' | 'explorer'>(props.initialView ?? 'common');
-  const [addToColOpen, setAddToColOpen] = useState(false);
-  const [newColName, setNewColName] = useState('');
+  const [view, setView] = useState<'common' | 'explorer' | 'collections'>(props.initialView ?? 'common');
+  const [showAddToColModal, setShowAddToColModal] = useState(false);
   const [query, setQuery] = useState('');
   const [charQuery, setCharQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
@@ -320,7 +319,7 @@ export const CharacterMap = (props: {
     setSelectedCharacter(character);
     setSelectedStudyWordId(firstWord.id);
     setIsStudyRevealed(false);
-    setAddToColOpen(false);
+    setShowAddToColModal(false);
 
     if (window.innerWidth < 1024 && detailRef.current) {
       setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -393,6 +392,12 @@ export const CharacterMap = (props: {
         <Button type="button" variant={view === 'explorer' ? 'default' : 'outline'} onClick={() => setView('explorer')}>
           {props.labels.viewExplorer}
         </Button>
+
+        {props.labels.viewCollections && (
+          <Button type="button" variant={view === 'collections' ? 'default' : 'outline'} onClick={() => setView('collections')}>
+            {props.labels.viewCollections}
+          </Button>
+        )}
       </div>
 
       {view === 'common' && (
@@ -462,82 +467,11 @@ export const CharacterMap = (props: {
             {selectedCommonCharacter && (
               <>
                 {/* Character header row */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="text-center flex-1">
-                    <div className="text-7xl font-bold leading-none sm:text-8xl">{selectedCommonCharacter.character}</div>
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {props.labels.appearsInWords}: {selectedCommonCharacter.count}
-                    </div>
+                <div className="text-center">
+                  <div className="text-7xl font-bold leading-none sm:text-8xl">{selectedCommonCharacter.character}</div>
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    {props.labels.appearsInWords}: {selectedCommonCharacter.count}
                   </div>
-
-                  {/* Add to collection — prominent, top-right of panel */}
-                  {props.labels.addToCollection && (
-                    <div className="relative shrink-0">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setAddToColOpen(v => !v)}
-                      >
-                        + {props.labels.addToCollection}
-                      </Button>
-                      {addToColOpen && (
-                        <div className="absolute right-0 z-20 mt-1 w-56 rounded-md border bg-background shadow-lg">
-                          {/* Existing user-owned collections */}
-                          {collections.filter(c => !c.isPublic).map((col) => {
-                            const inCol = col.characters.includes(selectedCommonCharacter.character);
-                            return (
-                              <button
-                                key={col.id}
-                                type="button"
-                                onClick={() => {
-                                  addCharacter(col.id, selectedCommonCharacter.character);
-                                  setAddToColOpen(false);
-                                }}
-                                disabled={inCol}
-                                className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-muted disabled:opacity-50"
-                              >
-                                <span>{col.name}</span>
-                                {inCol && <span className="text-green-600">✓</span>}
-                              </button>
-                            );
-                          })}
-
-                          {/* Inline create */}
-                          <div className="border-t p-2 flex gap-1">
-                            <input
-                              value={newColName}
-                              onChange={e => setNewColName(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && newColName.trim()) {
-                                  const id = createCollection(newColName.trim());
-                                  addCharacter(id, selectedCommonCharacter.character);
-                                  setNewColName('');
-                                  setAddToColOpen(false);
-                                }
-                                e.stopPropagation();
-                              }}
-                              placeholder={props.labels.collectionLabels?.namePlaceholder ?? 'New collection'}
-                              className="min-w-0 flex-1 rounded border px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-primary bg-background"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (!newColName.trim()) return;
-                                const id = createCollection(newColName.trim());
-                                addCharacter(id, selectedCommonCharacter.character);
-                                setNewColName('');
-                                setAddToColOpen(false);
-                              }}
-                              className="shrink-0 rounded border px-2 py-1 text-sm font-bold hover:bg-muted"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 <div className="mt-5 space-y-2">
@@ -711,8 +645,12 @@ export const CharacterMap = (props: {
         </div>
       )}
 
+      {view === 'collections' && props.labels.collectionLabels && (
+        <CollectionsView labels={props.labels.collectionLabels} />
+      )}
+
       {isStudyOpen && (explorerStudyWord ?? selectedStudyWord) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); setShowAddToColModal(false); }}>
           <div
             className="max-h-[90vh] w-full max-w-4xl space-y-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-2xl sm:p-5"
             onClick={event => event.stopPropagation()}
@@ -724,7 +662,7 @@ export const CharacterMap = (props: {
                   {explorerStudyWord ? explorerStudyWord.word : selectedCommonCharacter?.character}
                 </p>
               </div>
-              <Button type="button" variant="outline" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
+              <Button type="button" variant="outline" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); setShowAddToColModal(false); }}>
                 {props.labels.close}
               </Button>
             </div>
@@ -763,7 +701,53 @@ export const CharacterMap = (props: {
                     answer: props.labels.answer,
                     example: props.labels.example,
                   }}
+                  menuItems={isStudyRevealed && props.labels.addToCollection ? [
+                    {
+                      label: props.labels.addToCollection,
+                      onClick: () => setShowAddToColModal(v => !v),
+                    },
+                  ] : undefined}
                 />
+              );
+            })()}
+
+            {showAddToColModal && (() => {
+              const activeWord = explorerStudyWord ?? selectedStudyWord;
+              if (!activeWord) return null;
+              const userCollections = collections.filter(c => !c.isPublic);
+              return (
+                <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold">{props.labels.addToCollection}</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddToColModal(false)}
+                      className="text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {userCollections.length === 0
+                    ? <p className="text-sm text-muted-foreground">{props.labels.noCollectionsHint}</p>
+                    : (
+                        <div className="flex flex-wrap gap-2">
+                          {userCollections.map((col) => {
+                            const inCol = col.wordIds.includes(activeWord.id);
+                            return (
+                              <button
+                                key={col.id}
+                                type="button"
+                                onClick={() => inCol ? removeWord(col.id, activeWord.id) : addWord(col.id, activeWord.id)}
+                                className={`rounded-full border px-3 py-1 text-sm transition-colors ${inCol ? 'border-primary bg-primary text-primary-foreground' : 'hover:border-primary'}`}
+                              >
+                                {col.name}
+                                {inCol && ' ✓'}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                </div>
               );
             })()}
 
