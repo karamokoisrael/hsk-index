@@ -66,6 +66,8 @@ const CharacterMapPage = () => {
               answer: t('answer'),
               example: t('example'),
               close: t('close'),
+              hideDetails: t('collection_hide_details'),
+              showDetails: t('collection_show_details'),
             },
           }}
         />

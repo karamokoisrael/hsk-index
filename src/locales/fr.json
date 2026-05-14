@@ -244,7 +244,9 @@
     "collection_study_btn": "Étudier",
     "collection_delete_btn": "Supprimer",
     "collection_search_words_placeholder": "Rechercher des mots à ajouter (ex. 不, hao, bien)",
-    "collection_back": "Toutes les collections"
+    "collection_back": "Toutes les collections",
+    "collection_hide_details": "Masquer les sens",
+    "collection_show_details": "Afficher les sens"
   },
   "UserProfile": {
     "meta_title": "Profil utilisateur",

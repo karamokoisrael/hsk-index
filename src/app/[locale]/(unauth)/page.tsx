@@ -138,6 +138,8 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                   answer: characterMapT('answer'),
                   example: characterMapT('example'),
                   close: characterMapT('close'),
+                  hideDetails: characterMapT('collection_hide_details'),
+                  showDetails: characterMapT('collection_show_details'),
                 },
               }}
             />
