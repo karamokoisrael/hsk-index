@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const UserMenu = () => {
   const { user, signOut } = useAuth();
+  const router = useRouter();
 
   if (!user) {
     return null;
@@ -40,8 +41,8 @@ export const UserMenu = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link href="/account">Account</Link>
+        <DropdownMenuItem onSelect={() => router.push('/account')}>
+          Account
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
