@@ -226,7 +226,7 @@ export const CharacterMap = (props: {
   }, [isMounted, progressByWordId]);
 
   const normalizedCharQuery = charQuery.trim().toLowerCase();
-  const filteredCharacters = normalizedCharQuery
+  const baseFilteredCharacters = normalizedCharQuery
     ? commonCharacterEntries
       .filter(item =>
         item.character.includes(normalizedCharQuery)
@@ -240,6 +240,12 @@ export const CharacterMap = (props: {
         return diff !== 0 ? diff : b.count - a.count;
       })
     : commonCharacterEntries;
+
+  const filteredCharacters = selectedPos.size > 0
+    ? baseFilteredCharacters.filter(item =>
+        item.words.some(w => w.parts_of_speech.some(p => selectedPos.has(p.part_of_speech))),
+      )
+    : baseFilteredCharacters;
 
   const availablePos = useMemo(() => {
     const set = new Set<string>();
@@ -403,6 +409,32 @@ export const CharacterMap = (props: {
               placeholder={props.labels.searchPlaceholder}
               className="h-8 text-sm"
             />
+
+            <div className="flex flex-wrap gap-1">
+              {availablePos.map(pos => (
+                <button
+                  key={pos}
+                  type="button"
+                  onClick={() => togglePos(pos)}
+                  className={`rounded-full border px-2 py-0.5 text-xs font-medium transition-colors ${
+                    selectedPos.has(pos)
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {POS_LABELS[pos] ?? pos}
+                </button>
+              ))}
+              {selectedPos.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedPos(new Set())}
+                  className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
 
             <div className="max-h-[70vh] overflow-y-auto pr-1">
               <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
