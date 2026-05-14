@@ -43,6 +43,8 @@ const CharacterMapPage = () => {
             basedOnWord: t('based_on_word'),
             hideDetails: t('hide_details'),
             showDetails: t('show_details'),
+            filterPos: t('filter_pos'),
+            resetCard: t('reset_card'),
             collectionLabels: {
               new: t('collection_new'),
               create: t('collection_create'),

@@ -15,6 +15,25 @@ import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types
 
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
 
+const POS_LABELS: Record<string, string> = {
+  'n.': 'Noun',
+  'v.': 'Verb',
+  'adj.': 'Adj.',
+  'adv.': 'Adv.',
+  'prep.': 'Prep.',
+  'pron.': 'Pronoun',
+  'num.': 'Numeral',
+  'conj.': 'Conj.',
+  'aux.': 'Aux.',
+  'int.': 'Interj.',
+  'sv.': 'St. verb',
+  'sa.': 'St. adj.',
+  'vm.': 'V. mod.',
+  'nm.': 'N. mod.',
+  'nm./vm.': 'N./V. mod.',
+  'mp.': 'Modal p.',
+};
+
 const stripTones = (s: string) =>
   s.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase();
 
@@ -156,10 +175,13 @@ export const CharacterMap = (props: {
     basedOnWord: string;
     hideDetails: string;
     showDetails: string;
+    filterPos?: string;
+    resetCard?: string;
     collectionLabels?: CollectionLabels;
   };
 }) => {
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
+  const resetWordProgress = useFlashcardsStore(state => state.resetWordProgress);
   const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
   const { collections, addCharacter, createCollection } = useCollectionsStore();
@@ -185,6 +207,7 @@ export const CharacterMap = (props: {
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
   const [explorerStudyWord, setExplorerStudyWord] = useState<HskWord | null>(null);
+  const [selectedPos, setSelectedPos] = useState<Set<string>>(new Set());
   const detailRef = useRef<HTMLElement>(null);
 
   useEffect(() => { setIsMounted(true); }, []);
@@ -218,9 +241,28 @@ export const CharacterMap = (props: {
       })
     : commonCharacterEntries;
 
+  const availablePos = useMemo(() => {
+    const set = new Set<string>();
+    for (const word of levelWords) {
+      for (const p of word.parts_of_speech) {
+        if (p.part_of_speech) set.add(p.part_of_speech);
+      }
+    }
+    return [...set].sort();
+  }, [levelWords]);
+
+  const togglePos = (pos: string) => {
+    setSelectedPos((prev) => {
+      const next = new Set(prev);
+      if (next.has(pos)) next.delete(pos);
+      else next.add(pos);
+      return next;
+    });
+  };
+
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filteredWords = normalizedQuery
+  const baseFilteredWords = normalizedQuery
     ? levelWords
       .filter(word =>
         word.word.includes(normalizedQuery)
@@ -229,6 +271,12 @@ export const CharacterMap = (props: {
       )
       .sort((a, b) => wordRelevance(b, normalizedQuery) - wordRelevance(a, normalizedQuery))
     : levelWords;
+
+  const filteredWords = selectedPos.size > 0
+    ? baseFilteredWords.filter(word =>
+        word.parts_of_speech.some(p => selectedPos.has(p.part_of_speech)),
+      )
+    : baseFilteredWords;
 
   const selectedCommonCharacter = useMemo(
     () => commonCharacterEntries.find(item => item.character === selectedCharacter) || commonCharacterEntries[0],
@@ -573,6 +621,35 @@ export const CharacterMap = (props: {
             </button>
           </div>
 
+          <div className="flex flex-wrap items-center gap-1.5">
+            {props.labels.filterPos && (
+              <span className="text-xs text-muted-foreground">{props.labels.filterPos}:</span>
+            )}
+            {availablePos.map(pos => (
+              <button
+                key={pos}
+                type="button"
+                onClick={() => togglePos(pos)}
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                  selectedPos.has(pos)
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border bg-background hover:border-primary hover:text-primary'
+                }`}
+              >
+                {POS_LABELS[pos] ?? pos}
+              </button>
+            ))}
+            {selectedPos.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedPos(new Set())}
+                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           <div className="text-sm text-muted-foreground">
             {props.labels.results}: {filteredWords.length}
           </div>
@@ -667,19 +744,39 @@ export const CharacterMap = (props: {
             )}
 
             {isStudyRevealed && (
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('again')}>
-                  {props.labels.gradeAgain}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('hard')}>
-                  {props.labels.gradeHard}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('good')}>
-                  {props.labels.gradeGood}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('easy')}>
-                  {props.labels.gradeEasy}
-                </Button>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('again')}>
+                    {props.labels.gradeAgain}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('hard')}>
+                    {props.labels.gradeHard}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('good')}>
+                    {props.labels.gradeGood}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('easy')}>
+                    {props.labels.gradeEasy}
+                  </Button>
+                </div>
+                {props.labels.resetCard && (() => {
+                  const activeWord = explorerStudyWord ?? selectedStudyWord;
+                  if (!activeWord || !progressByWordId[activeWord.id]) return null;
+                  return (
+                    <div className="flex justify-center">
+                      <button
+                        type="button"
+                        className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                        onClick={() => {
+                          resetWordProgress(activeWord.id);
+                          setIsStudyRevealed(false);
+                        }}
+                      >
+                        {props.labels.resetCard}
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>

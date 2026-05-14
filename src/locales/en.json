@@ -222,6 +222,8 @@
     "based_on_word": "From word",
     "hide_details": "Hide meanings",
     "show_details": "Show meanings",
+    "filter_pos": "Type",
+    "reset_card": "Reset card to new",
     "view_collections": "Collections",
     "add_to_collection": "Add to collection",
     "no_collections_hint": "No collections yet. Create one in the Collections tab.",

@@ -55,6 +55,7 @@ type FlashcardsStore = {
   loadHskLevel: (level: HskLevel) => void;
   loadStudyHistory: (history: Record<string, DailyHistoryEntry>) => void;
   resetAllProgress: () => void;
+  resetWordProgress: (wordId: number) => void;
   clearStudyHistory: () => void;
   setHskLevel: (level: HskLevel) => void;
   openHskModal: () => void;
@@ -270,6 +271,11 @@ export const useFlashcardsStore = create<FlashcardsStore>()(
       }),
 
       resetAllProgress: () => set(createResetState()),
+
+      resetWordProgress: (wordId) => set((state) => {
+        const { [wordId]: _, ...rest } = state.progressByWordId;
+        return { progressByWordId: rest };
+      }),
 
       clearStudyHistory: () => set(createResetState()),
 

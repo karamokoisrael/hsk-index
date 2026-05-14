@@ -222,6 +222,8 @@
     "based_on_word": "À partir du mot",
     "hide_details": "Masquer les sens",
     "show_details": "Afficher les sens",
+    "filter_pos": "Type",
+    "reset_card": "Réinitialiser la carte",
     "view_collections": "Collections",
     "add_to_collection": "Ajouter à une collection",
     "no_collections_hint": "Aucune collection. Créez-en une dans l'onglet Collections.",
