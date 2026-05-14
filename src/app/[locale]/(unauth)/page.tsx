@@ -82,29 +82,6 @@ const IndexPage = async (props: { params: { locale: string } }) => {
           </div>
         </section>
 
-        <section id="progress" className="scroll-mt-24 space-y-2">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            {dashboardT('study_stats_title')}
-          </h2>
-          <p className="text-sm text-muted-foreground sm:text-base">
-            {dashboardT('study_stats_description')}
-          </p>
-          <div className="mt-4">
-            <FlashcardStats
-              labels={{
-                todayTitle: dashboardT('study_stats_today_title'),
-                overallTitle: dashboardT('study_stats_overall_title'),
-                cardsTouchedToday: dashboardT('study_stats_touched_today'),
-                totalMarkedOverall: dashboardT('study_stats_total_marked'),
-                again: dashboardT('study_stats_again'),
-                hard: dashboardT('study_stats_hard'),
-                good: dashboardT('study_stats_good'),
-                easy: dashboardT('study_stats_easy'),
-              }}
-            />
-          </div>
-        </section>
-
         <section id="character-map" className="scroll-mt-24 space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight">
             {characterMapT('section_title')}
@@ -137,6 +114,29 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 basedOnWord: characterMapT('based_on_word'),
                 hideDetails: characterMapT('hide_details'),
                 showDetails: characterMapT('show_details'),
+              }}
+            />
+          </div>
+        </section>
+
+        <section id="progress" className="scroll-mt-24 space-y-2">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {dashboardT('study_stats_title')}
+          </h2>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            {dashboardT('study_stats_description')}
+          </p>
+          <div className="mt-4">
+            <FlashcardStats
+              labels={{
+                todayTitle: dashboardT('study_stats_today_title'),
+                overallTitle: dashboardT('study_stats_overall_title'),
+                cardsTouchedToday: dashboardT('study_stats_touched_today'),
+                totalMarkedOverall: dashboardT('study_stats_total_marked'),
+                again: dashboardT('study_stats_again'),
+                hard: dashboardT('study_stats_hard'),
+                good: dashboardT('study_stats_good'),
+                easy: dashboardT('study_stats_easy'),
               }}
             />
           </div>
