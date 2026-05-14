@@ -94,6 +94,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
               labels={{
                 viewCommon: characterMapT('view_common'),
                 viewExplorer: characterMapT('view_explorer'),
+                viewCollections: characterMapT('view_collections'),
                 commonCharacters: characterMapT('common_characters'),
                 commonHint: characterMapT('common_hint'),
                 appearsInWords: characterMapT('appears_in_words'),
@@ -114,6 +115,30 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 basedOnWord: characterMapT('based_on_word'),
                 hideDetails: characterMapT('hide_details'),
                 showDetails: characterMapT('show_details'),
+                addToCollection: characterMapT('add_to_collection'),
+                noCollectionsHint: characterMapT('no_collections_hint'),
+                collectionLabels: {
+                  new: characterMapT('collection_new'),
+                  create: characterMapT('collection_create'),
+                  namePlaceholder: characterMapT('collection_name_placeholder'),
+                  emptyState: characterMapT('collection_empty_state'),
+                  emptyWords: characterMapT('collection_empty_words'),
+                  noWords: characterMapT('collection_no_words'),
+                  studyTitle: characterMapT('collection_study_title'),
+                  wordsLabel: characterMapT('collection_words_label'),
+                  studyBtn: characterMapT('collection_study_btn'),
+                  deleteBtn: characterMapT('collection_delete_btn'),
+                  searchWordsPlaceholder: characterMapT('collection_search_words_placeholder'),
+                  back: characterMapT('collection_back'),
+                  revealAnswer: flashcardsT('reveal_answer'),
+                  gradeAgain: flashcardsT('grade_again'),
+                  gradeHard: flashcardsT('grade_hard'),
+                  gradeGood: flashcardsT('grade_good'),
+                  gradeEasy: flashcardsT('grade_easy'),
+                  answer: characterMapT('answer'),
+                  example: characterMapT('example'),
+                  close: characterMapT('close'),
+                },
               }}
             />
           </div>
