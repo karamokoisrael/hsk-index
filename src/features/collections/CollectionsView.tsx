@@ -18,15 +18,13 @@ export type CollectionLabels = {
   create: string;
   namePlaceholder: string;
   emptyState: string;
-  emptyChars: string;
+  emptyWords: string;
   noWords: string;
   studyTitle: string;
-  charsLabel: string;
   wordsLabel: string;
   studyBtn: string;
   deleteBtn: string;
-  addCharPlaceholder: string;
-  addCharBtn: string;
+  searchWordsPlaceholder: string;
   back: string;
   revealAnswer: string;
   gradeAgain: string;
@@ -38,22 +36,6 @@ export type CollectionLabels = {
   close: string;
 };
 
-function getCollectionWords(characters: string[], levelMaxId: number): HskWord[] {
-  if (characters.length === 0) return [];
-  const charSet = new Set(characters);
-  const seen = new Set<number>();
-  const result: HskWord[] = [];
-  for (const word of hskWords) {
-    if (word.id > levelMaxId) continue;
-    if (seen.has(word.id)) continue;
-    if ([...word.word].some(c => charSet.has(c))) {
-      seen.add(word.id);
-      result.push(word);
-    }
-  }
-  return result;
-}
-
 function wordBg(progress: FlashcardProgress | undefined): string {
   if (!progress) return 'bg-blue-500/10';
   const state = resolveState(progress);
@@ -63,38 +45,59 @@ function wordBg(progress: FlashcardProgress | undefined): string {
   return 'bg-blue-500/10';
 }
 
-const chineseCharRegex = /[一-鿿]/;
+const stripTones = (s: string) =>
+  s.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase();
 
 export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
-  const [charInput, setCharInput] = useState('');
+  const [wordSearch, setWordSearch] = useState('');
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [studyWordId, setStudyWordId] = useState<number | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => { setIsMounted(true); }, []);
-
   useCollectionSync();
 
-  const { collections, createCollection, deleteCollection, addCharacter, removeCharacter } = useCollectionsStore();
+  const { collections, createCollection, deleteCollection, addWord, removeWord } = useCollectionsStore();
   const reviewWord = useFlashcardsStore(s => s.reviewWord);
   const progressByWordId = useFlashcardsStore(s => s.progressByWordId);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
 
   const levelMaxId = HSK_LEVEL_MAX_ID[hskLevel];
+  const levelWords = useMemo(() => hskWords.filter(w => w.id <= levelMaxId), [levelMaxId]);
+
   const activeCollection = collections.find(c => c.id === activeId) ?? null;
 
-  const collectionWords = useMemo(
-    () => (activeCollection ? getCollectionWords(activeCollection.characters, levelMaxId) : []),
-    [activeCollection, levelMaxId],
-  );
+  const collectionWords = useMemo((): HskWord[] => {
+    if (!activeCollection) return [];
+    return activeCollection.wordIds
+      .map(id => levelWords.find(w => w.id === id))
+      .filter((w): w is HskWord => w !== undefined);
+  }, [activeCollection, levelWords]);
 
   const studyWord = useMemo(
     () => collectionWords.find(w => w.id === studyWordId) ?? collectionWords[0] ?? null,
     [collectionWords, studyWordId],
   );
+
+  const wordSuggestions = useMemo(() => {
+    const q = wordSearch.trim().toLowerCase();
+    if (!q || !activeCollection) return [];
+    const inCol = new Set(activeCollection.wordIds);
+    const stripped = stripTones(q).replace(/\s/g, '');
+    return levelWords
+      .filter((w) => {
+        if (inCol.has(w.id)) return false;
+        return (
+          w.word.includes(q)
+          || stripTones(w.pinyin).replace(/\s/g, '').includes(stripped)
+          || w.parts_of_speech.some(p => p.meaning.toLowerCase().includes(q))
+        );
+      })
+      .slice(0, 8);
+  }, [wordSearch, activeCollection, levelWords]);
 
   const handleCreate = () => {
     const name = newName.trim();
@@ -102,13 +105,6 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
     const id = createCollection(name);
     setNewName('');
     setActiveId(id);
-  };
-
-  const handleAddChar = () => {
-    const char = charInput.trim();
-    if (!char || !activeId || !chineseCharRegex.test(char)) return;
-    addCharacter(activeId, char[0]!);
-    setCharInput('');
   };
 
   const handleGrade = (grade: ReviewGrade) => {
@@ -136,7 +132,9 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <Button type="button" variant="outline" size="sm" onClick={() => setActiveId(null)}>
-            ← {labels.back}
+            ←
+            {' '}
+            {labels.back}
           </Button>
           <h3 className="text-lg font-semibold">{activeCollection.name}</h3>
           {activeCollection.isPublic && (
@@ -146,55 +144,43 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
           )}
         </div>
 
-        {/* Characters */}
-        <div className="rounded-md border bg-background p-4 space-y-3">
-          <div className="text-sm font-medium text-muted-foreground">{labels.charsLabel}</div>
-          <div className="flex flex-wrap gap-2">
-            {activeCollection.characters.length === 0 && (
-              <p className="text-sm text-muted-foreground">{labels.emptyChars}</p>
+        {/* Word search to add */}
+        {!activeCollection.isPublic && (
+          <div className="relative max-w-sm">
+            <Input
+              value={wordSearch}
+              onChange={e => setWordSearch(e.target.value)}
+              placeholder={labels.searchWordsPlaceholder}
+            />
+            {wordSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 z-20 mt-1 w-full max-w-sm overflow-y-auto rounded-md border bg-background shadow-lg" style={{ maxHeight: '16rem' }}>
+                {wordSuggestions.map(word => (
+                  <button
+                    key={word.id}
+                    type="button"
+                    onClick={() => {
+                      addWord(activeId!, word.id);
+                      setWordSearch('');
+                    }}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted"
+                  >
+                    <span className="text-xl font-semibold">{word.word}</span>
+                    <span className="text-muted-foreground">{word.pinyin}</span>
+                    <span className="line-clamp-1 flex-1 text-muted-foreground">{getPrimaryMeaning(word)}</span>
+                  </button>
+                ))}
+              </div>
             )}
-            {activeCollection.characters.map(char => (
-              <span
-                key={char}
-                className="flex items-center gap-1 rounded-md border bg-muted/40 px-2 py-1 text-lg font-semibold"
-              >
-                {char}
-                {!activeCollection.isPublic && (
-                <button
-                  type="button"
-                  onClick={() => removeCharacter(activeCollection.id, char)}
-                  className="ml-1 text-muted-foreground hover:text-destructive text-sm leading-none"
-                >
-                  ×
-                </button>
-                )}
-              </span>
-            ))}
           </div>
-
-          {/* Add character input — only for user-owned collections */}
-          {!activeCollection.isPublic && (
-            <div className="flex gap-2">
-              <Input
-                value={charInput}
-                onChange={e => setCharInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAddChar()}
-                placeholder={labels.addCharPlaceholder}
-                className="w-44"
-                maxLength={1}
-              />
-              <Button type="button" variant="outline" size="sm" onClick={handleAddChar}>
-                {labels.addCharBtn}
-              </Button>
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Words */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
-              {collectionWords.length} {labels.wordsLabel}
+              {collectionWords.length}
+              {' '}
+              {labels.wordsLabel}
             </span>
             {collectionWords.length > 0 && (
               <Button type="button" size="sm" onClick={openStudy}>
@@ -205,27 +191,40 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
 
           {collectionWords.length === 0 && (
             <div className="rounded-md border p-4 text-sm text-muted-foreground">
-              {labels.noWords}
+              {labels.emptyWords}
             </div>
           )}
 
           {collectionWords.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {collectionWords.map(word => (
-                <button
+                <div
                   key={word.id}
-                  type="button"
-                  onClick={() => {
-                    setStudyWordId(word.id);
-                    setIsRevealed(false);
-                    setIsStudyOpen(true);
-                  }}
-                  className={`rounded-md border p-3 text-left transition hover:border-primary ${wordBg(progressByWordId[word.id])}`}
+                  className={`group relative rounded-md border p-3 ${wordBg(progressByWordId[word.id])}`}
                 >
-                  <div className="text-xs text-muted-foreground">{word.pinyin}</div>
-                  <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                  <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStudyWordId(word.id);
+                      setIsRevealed(false);
+                      setIsStudyOpen(true);
+                    }}
+                    className="block w-full text-left"
+                  >
+                    <div className="text-xs text-muted-foreground">{word.pinyin}</div>
+                    <div className="mt-1 text-2xl font-semibold">{word.word}</div>
+                    <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>
+                  </button>
+                  {!activeCollection.isPublic && (
+                    <button
+                      type="button"
+                      onClick={() => removeWord(activeCollection.id, word.id)}
+                      className="absolute right-1.5 top-1.5 hidden text-xs text-muted-foreground hover:text-destructive group-hover:block"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           )}
@@ -251,7 +250,6 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
                 </Button>
               </div>
 
-              {/* Word tabs */}
               <div className="flex flex-wrap gap-2">
                 {collectionWords.map(word => (
                   <Button
@@ -314,7 +312,6 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
   // ── List view ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
-      {/* Create form */}
       <div className="flex gap-2">
         <Input
           value={newName}
@@ -337,7 +334,9 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
       {collections.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((col) => {
-            const wordCount = getCollectionWords(col.characters, levelMaxId).length;
+            const words = col.wordIds
+              .map(id => levelWords.find(w => w.id === id))
+              .filter((w): w is HskWord => w !== undefined);
             return (
               <button
                 key={col.id}
@@ -358,27 +357,32 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); deleteCollection(col.id); }}
-                      className="text-xs text-muted-foreground hover:text-destructive shrink-0"
+                      className="shrink-0 text-xs text-muted-foreground hover:text-destructive"
                     >
                       {labels.deleteBtn}
                     </button>
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {col.characters.slice(0, 12).map(char => (
-                    <span key={char} className="rounded border px-1.5 py-0.5 text-base font-semibold">
-                      {char}
+                  {words.slice(0, 8).map(word => (
+                    <span key={word.id} className="rounded border px-1.5 py-0.5 text-sm font-semibold">
+                      {word.word}
                     </span>
                   ))}
-                  {col.characters.length > 12 && (
-                    <span className="text-sm text-muted-foreground self-center">+{col.characters.length - 12}</span>
+                  {words.length > 8 && (
+                    <span className="self-center text-sm text-muted-foreground">
+                      +
+                      {words.length - 8}
+                    </span>
                   )}
-                  {col.characters.length === 0 && (
-                    <span className="text-xs text-muted-foreground">{labels.emptyChars}</span>
+                  {words.length === 0 && (
+                    <span className="text-xs text-muted-foreground">{labels.emptyWords}</span>
                   )}
                 </div>
                 <div className="mt-3 text-xs text-muted-foreground">
-                  {wordCount} {labels.wordsLabel}
+                  {words.length}
+                  {' '}
+                  {labels.wordsLabel}
                 </div>
               </button>
             );

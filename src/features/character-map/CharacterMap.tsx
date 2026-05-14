@@ -7,13 +7,32 @@ import { Input } from '@/components/ui/input';
 import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { resolveState } from '@/features/flashcards/srs';
-import type { CollectionLabels } from '@/features/collections/CollectionsView';
+import { CollectionsView, type CollectionLabels } from '@/features/collections/CollectionsView';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import { useCollectionsStore } from '@/stores/useCollectionsStore';
 import type { CardState, FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 const chineseCharRegex = /[\u4E00-\u9FFF]/;
+
+const POS_LABELS: Record<string, string> = {
+  'n.': 'Noun',
+  'v.': 'Verb',
+  'adj.': 'Adj.',
+  'adv.': 'Adv.',
+  'prep.': 'Prep.',
+  'pron.': 'Pronoun',
+  'num.': 'Numeral',
+  'conj.': 'Conj.',
+  'aux.': 'Aux.',
+  'int.': 'Interj.',
+  'sv.': 'St. verb',
+  'sa.': 'St. adj.',
+  'vm.': 'V. mod.',
+  'nm.': 'N. mod.',
+  'nm./vm.': 'N./V. mod.',
+  'mp.': 'Modal p.',
+};
 
 const stripTones = (s: string) =>
   s.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase();
@@ -156,13 +175,16 @@ export const CharacterMap = (props: {
     basedOnWord: string;
     hideDetails: string;
     showDetails: string;
+    filterPos?: string;
+    resetCard?: string;
     collectionLabels?: CollectionLabels;
   };
 }) => {
   const reviewWord = useFlashcardsStore(state => state.reviewWord);
+  const resetWordProgress = useFlashcardsStore(state => state.resetWordProgress);
   const progressByWordId = useFlashcardsStore(state => state.progressByWordId);
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
-  const { collections, addCharacter, createCollection } = useCollectionsStore();
+  const { collections, addWord, removeWord } = useCollectionsStore();
 
   const levelWords = useMemo(
     () => hskWords.filter(w => w.id <= HSK_LEVEL_MAX_ID[hskLevel]),
@@ -175,9 +197,8 @@ export const CharacterMap = (props: {
 
   const [isMounted, setIsMounted] = useState(false);
   const [showDetails, setShowDetails] = useState(true);
-  const [view, setView] = useState<'common' | 'explorer'>(props.initialView ?? 'common');
-  const [addToColOpen, setAddToColOpen] = useState(false);
-  const [newColName, setNewColName] = useState('');
+  const [view, setView] = useState<'common' | 'explorer' | 'collections'>(props.initialView ?? 'common');
+  const [showAddToColModal, setShowAddToColModal] = useState(false);
   const [query, setQuery] = useState('');
   const [charQuery, setCharQuery] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState(commonCharacterEntries[0]?.character || '');
@@ -185,6 +206,7 @@ export const CharacterMap = (props: {
   const [isStudyRevealed, setIsStudyRevealed] = useState(false);
   const [selectedStudyWordId, setSelectedStudyWordId] = useState<number | null>(null);
   const [explorerStudyWord, setExplorerStudyWord] = useState<HskWord | null>(null);
+  const [selectedPos, setSelectedPos] = useState<Set<string>>(new Set());
   const detailRef = useRef<HTMLElement>(null);
 
   useEffect(() => { setIsMounted(true); }, []);
@@ -203,7 +225,7 @@ export const CharacterMap = (props: {
   }, [isMounted, progressByWordId]);
 
   const normalizedCharQuery = charQuery.trim().toLowerCase();
-  const filteredCharacters = normalizedCharQuery
+  const baseFilteredCharacters = normalizedCharQuery
     ? commonCharacterEntries
       .filter(item =>
         item.character.includes(normalizedCharQuery)
@@ -218,9 +240,34 @@ export const CharacterMap = (props: {
       })
     : commonCharacterEntries;
 
+  const filteredCharacters = selectedPos.size > 0
+    ? baseFilteredCharacters.filter(item =>
+        item.words.some(w => w.parts_of_speech.some(p => selectedPos.has(p.part_of_speech))),
+      )
+    : baseFilteredCharacters;
+
+  const availablePos = useMemo(() => {
+    const set = new Set<string>();
+    for (const word of levelWords) {
+      for (const p of word.parts_of_speech) {
+        if (p.part_of_speech) set.add(p.part_of_speech);
+      }
+    }
+    return [...set].sort();
+  }, [levelWords]);
+
+  const togglePos = (pos: string) => {
+    setSelectedPos((prev) => {
+      const next = new Set(prev);
+      if (next.has(pos)) next.delete(pos);
+      else next.add(pos);
+      return next;
+    });
+  };
+
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filteredWords = normalizedQuery
+  const baseFilteredWords = normalizedQuery
     ? levelWords
       .filter(word =>
         word.word.includes(normalizedQuery)
@@ -229,6 +276,12 @@ export const CharacterMap = (props: {
       )
       .sort((a, b) => wordRelevance(b, normalizedQuery) - wordRelevance(a, normalizedQuery))
     : levelWords;
+
+  const filteredWords = selectedPos.size > 0
+    ? baseFilteredWords.filter(word =>
+        word.parts_of_speech.some(p => selectedPos.has(p.part_of_speech)),
+      )
+    : baseFilteredWords;
 
   const selectedCommonCharacter = useMemo(
     () => commonCharacterEntries.find(item => item.character === selectedCharacter) || commonCharacterEntries[0],
@@ -266,7 +319,7 @@ export const CharacterMap = (props: {
     setSelectedCharacter(character);
     setSelectedStudyWordId(firstWord.id);
     setIsStudyRevealed(false);
-    setAddToColOpen(false);
+    setShowAddToColModal(false);
 
     if (window.innerWidth < 1024 && detailRef.current) {
       setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -339,6 +392,12 @@ export const CharacterMap = (props: {
         <Button type="button" variant={view === 'explorer' ? 'default' : 'outline'} onClick={() => setView('explorer')}>
           {props.labels.viewExplorer}
         </Button>
+
+        {props.labels.viewCollections && (
+          <Button type="button" variant={view === 'collections' ? 'default' : 'outline'} onClick={() => setView('collections')}>
+            {props.labels.viewCollections}
+          </Button>
+        )}
       </div>
 
       {view === 'common' && (
@@ -355,6 +414,32 @@ export const CharacterMap = (props: {
               placeholder={props.labels.searchPlaceholder}
               className="h-8 text-sm"
             />
+
+            <div className="flex flex-wrap gap-1">
+              {availablePos.map(pos => (
+                <button
+                  key={pos}
+                  type="button"
+                  onClick={() => togglePos(pos)}
+                  className={`rounded-full border px-2 py-0.5 text-xs font-medium transition-colors ${
+                    selectedPos.has(pos)
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {POS_LABELS[pos] ?? pos}
+                </button>
+              ))}
+              {selectedPos.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedPos(new Set())}
+                  className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
 
             <div className="max-h-[70vh] overflow-y-auto pr-1">
               <div className="grid grid-cols-6 gap-2 lg:grid-cols-4">
@@ -382,82 +467,11 @@ export const CharacterMap = (props: {
             {selectedCommonCharacter && (
               <>
                 {/* Character header row */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="text-center flex-1">
-                    <div className="text-7xl font-bold leading-none sm:text-8xl">{selectedCommonCharacter.character}</div>
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {props.labels.appearsInWords}: {selectedCommonCharacter.count}
-                    </div>
+                <div className="text-center">
+                  <div className="text-7xl font-bold leading-none sm:text-8xl">{selectedCommonCharacter.character}</div>
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    {props.labels.appearsInWords}: {selectedCommonCharacter.count}
                   </div>
-
-                  {/* Add to collection — prominent, top-right of panel */}
-                  {props.labels.addToCollection && (
-                    <div className="relative shrink-0">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setAddToColOpen(v => !v)}
-                      >
-                        + {props.labels.addToCollection}
-                      </Button>
-                      {addToColOpen && (
-                        <div className="absolute right-0 z-20 mt-1 w-56 rounded-md border bg-background shadow-lg">
-                          {/* Existing user-owned collections */}
-                          {collections.filter(c => !c.isPublic).map((col) => {
-                            const inCol = col.characters.includes(selectedCommonCharacter.character);
-                            return (
-                              <button
-                                key={col.id}
-                                type="button"
-                                onClick={() => {
-                                  addCharacter(col.id, selectedCommonCharacter.character);
-                                  setAddToColOpen(false);
-                                }}
-                                disabled={inCol}
-                                className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-muted disabled:opacity-50"
-                              >
-                                <span>{col.name}</span>
-                                {inCol && <span className="text-green-600">✓</span>}
-                              </button>
-                            );
-                          })}
-
-                          {/* Inline create */}
-                          <div className="border-t p-2 flex gap-1">
-                            <input
-                              value={newColName}
-                              onChange={e => setNewColName(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && newColName.trim()) {
-                                  const id = createCollection(newColName.trim());
-                                  addCharacter(id, selectedCommonCharacter.character);
-                                  setNewColName('');
-                                  setAddToColOpen(false);
-                                }
-                                e.stopPropagation();
-                              }}
-                              placeholder={props.labels.collectionLabels?.namePlaceholder ?? 'New collection'}
-                              className="min-w-0 flex-1 rounded border px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-primary bg-background"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (!newColName.trim()) return;
-                                const id = createCollection(newColName.trim());
-                                addCharacter(id, selectedCommonCharacter.character);
-                                setNewColName('');
-                                setAddToColOpen(false);
-                              }}
-                              className="shrink-0 rounded border px-2 py-1 text-sm font-bold hover:bg-muted"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 <div className="mt-5 space-y-2">
@@ -573,6 +587,35 @@ export const CharacterMap = (props: {
             </button>
           </div>
 
+          <div className="flex flex-wrap items-center gap-1.5">
+            {props.labels.filterPos && (
+              <span className="text-xs text-muted-foreground">{props.labels.filterPos}:</span>
+            )}
+            {availablePos.map(pos => (
+              <button
+                key={pos}
+                type="button"
+                onClick={() => togglePos(pos)}
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                  selectedPos.has(pos)
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border bg-background hover:border-primary hover:text-primary'
+                }`}
+              >
+                {POS_LABELS[pos] ?? pos}
+              </button>
+            ))}
+            {selectedPos.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedPos(new Set())}
+                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           <div className="text-sm text-muted-foreground">
             {props.labels.results}: {filteredWords.length}
           </div>
@@ -602,8 +645,12 @@ export const CharacterMap = (props: {
         </div>
       )}
 
+      {view === 'collections' && props.labels.collectionLabels && (
+        <CollectionsView labels={props.labels.collectionLabels} />
+      )}
+
       {isStudyOpen && (explorerStudyWord ?? selectedStudyWord) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); setShowAddToColModal(false); }}>
           <div
             className="max-h-[90vh] w-full max-w-4xl space-y-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-2xl sm:p-5"
             onClick={event => event.stopPropagation()}
@@ -615,7 +662,7 @@ export const CharacterMap = (props: {
                   {explorerStudyWord ? explorerStudyWord.word : selectedCommonCharacter?.character}
                 </p>
               </div>
-              <Button type="button" variant="outline" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); }}>
+              <Button type="button" variant="outline" onClick={() => { setIsStudyOpen(false); setExplorerStudyWord(null); setShowAddToColModal(false); }}>
                 {props.labels.close}
               </Button>
             </div>
@@ -654,7 +701,53 @@ export const CharacterMap = (props: {
                     answer: props.labels.answer,
                     example: props.labels.example,
                   }}
+                  menuItems={isStudyRevealed && props.labels.addToCollection ? [
+                    {
+                      label: props.labels.addToCollection,
+                      onClick: () => setShowAddToColModal(v => !v),
+                    },
+                  ] : undefined}
                 />
+              );
+            })()}
+
+            {showAddToColModal && (() => {
+              const activeWord = explorerStudyWord ?? selectedStudyWord;
+              if (!activeWord) return null;
+              const userCollections = collections.filter(c => !c.isPublic);
+              return (
+                <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold">{props.labels.addToCollection}</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddToColModal(false)}
+                      className="text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {userCollections.length === 0
+                    ? <p className="text-sm text-muted-foreground">{props.labels.noCollectionsHint}</p>
+                    : (
+                        <div className="flex flex-wrap gap-2">
+                          {userCollections.map((col) => {
+                            const inCol = col.wordIds.includes(activeWord.id);
+                            return (
+                              <button
+                                key={col.id}
+                                type="button"
+                                onClick={() => inCol ? removeWord(col.id, activeWord.id) : addWord(col.id, activeWord.id)}
+                                className={`rounded-full border px-3 py-1 text-sm transition-colors ${inCol ? 'border-primary bg-primary text-primary-foreground' : 'hover:border-primary'}`}
+                              >
+                                {col.name}
+                                {inCol && ' ✓'}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                </div>
               );
             })()}
 
@@ -667,19 +760,39 @@ export const CharacterMap = (props: {
             )}
 
             {isStudyRevealed && (
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('again')}>
-                  {props.labels.gradeAgain}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('hard')}>
-                  {props.labels.gradeHard}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('good')}>
-                  {props.labels.gradeGood}
-                </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('easy')}>
-                  {props.labels.gradeEasy}
-                </Button>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('again')}>
+                    {props.labels.gradeAgain}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('hard')}>
+                    {props.labels.gradeHard}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('good')}>
+                    {props.labels.gradeGood}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => markStudyWord('easy')}>
+                    {props.labels.gradeEasy}
+                  </Button>
+                </div>
+                {props.labels.resetCard && (() => {
+                  const activeWord = explorerStudyWord ?? selectedStudyWord;
+                  if (!activeWord || !progressByWordId[activeWord.id]) return null;
+                  return (
+                    <div className="flex justify-center">
+                      <button
+                        type="button"
+                        className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                        onClick={() => {
+                          resetWordProgress(activeWord.id);
+                          setIsStudyRevealed(false);
+                        }}
+                      >
+                        {props.labels.resetCard}
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>

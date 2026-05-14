@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
-import { hskWords } from '@/libs/services/hskWords';
+import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { FlashcardDisplay } from '@/features/flashcards/FlashcardDisplay';
 import { getNextIntervalLabel, resolveState, scheduleNextReview } from '@/features/flashcards/srs';
 import { useFlashcardSync } from '@/hooks/useFlashcardSync';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
+import { useCollectionsStore } from '@/stores/useCollectionsStore';
 import type { ReviewGrade } from '@/types/Hsk';
+
+const chineseCharRegex = /[一-鿿]/;
 
 const GRADES: ReviewGrade[] = ['again', 'hard', 'good', 'easy'];
 
@@ -38,6 +41,12 @@ export const FlashcardTrainer = (props: {
     addMoreCards: string;
     hskLevelCurrent: string;
     hskLevelChange: string;
+    findCommonChars: string;
+    addToCollection: string;
+    relatedWordsTitle: string;
+    noRelatedWords: string;
+    addToCollectionTitle: string;
+    noCollections: string;
   };
 }) => {
   useFlashcardSync();
@@ -46,6 +55,8 @@ export const FlashcardTrainer = (props: {
   const [isRevealed, setIsRevealed] = useState(false);
   const [sessionReviews, setSessionReviews] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
+  const [showRelated, setShowRelated] = useState(false);
+  const [showAddToCol, setShowAddToCol] = useState(false);
   const [now, setNow] = useState(() => new Date());
 
   // Explicit session queue: word IDs in study order.
@@ -70,6 +81,8 @@ export const FlashcardTrainer = (props: {
   const hskLevel = useFlashcardsStore(s => s.hskLevel);
   const openHskModal = useFlashcardsStore(s => s.openHskModal);
 
+  const { collections, addWord, removeWord } = useCollectionsStore();
+
   const [draftNew, setDraftNew] = useState(maxNewPerDay);
   const [draftReviews, setDraftReviews] = useState(maxReviewsPerDay);
 
@@ -77,6 +90,7 @@ export const FlashcardTrainer = (props: {
     () => hskWords.filter(w => w.id <= HSK_LEVEL_MAX_ID[hskLevel]),
     [hskLevel],
   );
+
 
   // Reset the queue whenever the HSK level changes (level selection rebuilds the deck).
   // Skip on initial render when the queue is still null — the effect below handles that.
@@ -122,6 +136,16 @@ export const FlashcardTrainer = (props: {
   const currentWord = currentWordId != null ? (levelWords.find(w => w.id === currentWordId) ?? null) : null;
   const currentProgress = currentWord ? getProgress(currentWord.id) : null;
 
+  const relatedWords = useMemo(() => {
+    if (!currentWord) return [];
+    const chars = new Set([...currentWord.word].filter(c => chineseCharRegex.test(c)));
+    return levelWords
+      .filter(w => w.id !== currentWord.id && [...w.word].some(c => chars.has(c)))
+      .slice(0, 24);
+  }, [currentWord, levelWords]);
+
+  const userCollections = collections.filter(c => !c.isPublic);
+
   const gradeLabel: Record<ReviewGrade, string> = {
     again: props.labels.gradeAgain,
     hard: props.labels.gradeHard,
@@ -133,6 +157,8 @@ export const FlashcardTrainer = (props: {
     if (!currentWord) {
       return;
     }
+    setShowRelated(false);
+    setShowAddToCol(false);
     const gradeTime = new Date();
 
     // Predict next state before updating the store (scheduleNextReview is pure).
@@ -295,7 +321,82 @@ export const FlashcardTrainer = (props: {
           answer: props.labels.answer,
           example: props.labels.example,
         }}
+        menuItems={isRevealed ? [
+          {
+            label: props.labels.findCommonChars,
+            onClick: () => { setShowRelated(v => !v); setShowAddToCol(false); },
+          },
+          {
+            label: props.labels.addToCollection,
+            onClick: () => { setShowAddToCol(v => !v); setShowRelated(false); },
+          },
+        ] : undefined}
       />
+
+      {/* ── Related words panel ─────────────────────────────────────────── */}
+      {showRelated && (
+        <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold">{props.labels.relatedWordsTitle}</span>
+            <button
+              type="button"
+              onClick={() => setShowRelated(false)}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              ✕
+            </button>
+          </div>
+          {relatedWords.length === 0
+            ? <p className="text-sm text-muted-foreground">{props.labels.noRelatedWords}</p>
+            : (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                  {relatedWords.map(word => (
+                    <div key={word.id} className="rounded-md border bg-background p-2">
+                      <div className="text-xl font-semibold">{word.word}</div>
+                      <div className="text-xs text-muted-foreground">{word.pinyin}</div>
+                      <div className="mt-1 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+        </div>
+      )}
+
+      {/* ── Add-to-collection panel ─────────────────────────────────────── */}
+      {showAddToCol && currentWord && (
+        <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold">{props.labels.addToCollectionTitle}</span>
+            <button
+              type="button"
+              onClick={() => setShowAddToCol(false)}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              ✕
+            </button>
+          </div>
+          {userCollections.length === 0
+            ? <p className="text-sm text-muted-foreground">{props.labels.noCollections}</p>
+            : (
+                <div className="flex flex-wrap gap-2">
+                  {userCollections.map((col) => {
+                    const inCol = col.wordIds.includes(currentWord.id);
+                    return (
+                      <button
+                        key={col.id}
+                        type="button"
+                        onClick={() => inCol ? removeWord(col.id, currentWord.id) : addWord(col.id, currentWord.id)}
+                        className={`rounded-full border px-3 py-1 text-sm transition-colors ${inCol ? 'border-primary bg-primary text-primary-foreground' : 'hover:border-primary'}`}
+                      >
+                        {col.name}
+                        {inCol && ' ✓'}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+        </div>
+      )}
 
       {/* ── Reveal button ──────────────────────────────────────────────── */}
       {!isRevealed && (

@@ -2,6 +2,7 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
 import { Navbar } from '@/components/templates/Navbar';
 import { CharacterMap } from '@/features/character-map/CharacterMap';
+import { FlashcardStats } from '@/features/dashboard/FlashcardStats';
 import { FlashcardTrainer } from '@/features/flashcards/FlashcardTrainer';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
@@ -27,6 +28,11 @@ const IndexPage = async (props: { params: { locale: string } }) => {
   const characterMapT = await getTranslations({
     locale: props.params.locale,
     namespace: 'CharacterMap',
+  });
+
+  const dashboardT = await getTranslations({
+    locale: props.params.locale,
+    namespace: 'DashboardIndex',
   });
 
   return (
@@ -65,6 +71,12 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 addMoreCards: flashcardsT('add_more_cards'),
                 hskLevelCurrent: flashcardsT('hsk_level_current'),
                 hskLevelChange: flashcardsT('hsk_level_change'),
+                findCommonChars: flashcardsT('find_common_chars'),
+                addToCollection: flashcardsT('add_to_collection'),
+                relatedWordsTitle: flashcardsT('related_words_title'),
+                noRelatedWords: flashcardsT('no_related_words'),
+                addToCollectionTitle: flashcardsT('add_to_collection_title'),
+                noCollections: flashcardsT('no_collections'),
               }}
             />
           </div>
@@ -82,6 +94,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
               labels={{
                 viewCommon: characterMapT('view_common'),
                 viewExplorer: characterMapT('view_explorer'),
+                viewCollections: characterMapT('view_collections'),
                 commonCharacters: characterMapT('common_characters'),
                 commonHint: characterMapT('common_hint'),
                 appearsInWords: characterMapT('appears_in_words'),
@@ -102,6 +115,53 @@ const IndexPage = async (props: { params: { locale: string } }) => {
                 basedOnWord: characterMapT('based_on_word'),
                 hideDetails: characterMapT('hide_details'),
                 showDetails: characterMapT('show_details'),
+                addToCollection: characterMapT('add_to_collection'),
+                noCollectionsHint: characterMapT('no_collections_hint'),
+                collectionLabels: {
+                  new: characterMapT('collection_new'),
+                  create: characterMapT('collection_create'),
+                  namePlaceholder: characterMapT('collection_name_placeholder'),
+                  emptyState: characterMapT('collection_empty_state'),
+                  emptyWords: characterMapT('collection_empty_words'),
+                  noWords: characterMapT('collection_no_words'),
+                  studyTitle: characterMapT('collection_study_title'),
+                  wordsLabel: characterMapT('collection_words_label'),
+                  studyBtn: characterMapT('collection_study_btn'),
+                  deleteBtn: characterMapT('collection_delete_btn'),
+                  searchWordsPlaceholder: characterMapT('collection_search_words_placeholder'),
+                  back: characterMapT('collection_back'),
+                  revealAnswer: flashcardsT('reveal_answer'),
+                  gradeAgain: flashcardsT('grade_again'),
+                  gradeHard: flashcardsT('grade_hard'),
+                  gradeGood: flashcardsT('grade_good'),
+                  gradeEasy: flashcardsT('grade_easy'),
+                  answer: characterMapT('answer'),
+                  example: characterMapT('example'),
+                  close: characterMapT('close'),
+                },
+              }}
+            />
+          </div>
+        </section>
+
+        <section id="progress" className="scroll-mt-24 space-y-2">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {dashboardT('study_stats_title')}
+          </h2>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            {dashboardT('study_stats_description')}
+          </p>
+          <div className="mt-4">
+            <FlashcardStats
+              labels={{
+                todayTitle: dashboardT('study_stats_today_title'),
+                overallTitle: dashboardT('study_stats_overall_title'),
+                cardsTouchedToday: dashboardT('study_stats_touched_today'),
+                totalMarkedOverall: dashboardT('study_stats_total_marked'),
+                again: dashboardT('study_stats_again'),
+                hard: dashboardT('study_stats_hard'),
+                good: dashboardT('study_stats_good'),
+                easy: dashboardT('study_stats_easy'),
               }}
             />
           </div>
