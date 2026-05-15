@@ -12,7 +12,6 @@ export function useCollectionSync() {
 
   const initialized = useRef(false);
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Skip echoing back the list we just loaded from DB.
   const loadedFromDb = useRef(false);
 
   // On first authenticated mount: MongoDB is the source of truth.
@@ -24,11 +23,31 @@ export function useCollectionSync() {
       .then(res => res.json())
       .then((data: { collections: Collection[] }) => {
         if (!Array.isArray(data.collections)) return;
-
         loadedFromDb.current = true;
         loadCollections(data.collections);
       })
       .catch(() => {});
+  }, [isLoaded, user, loadCollections]);
+
+  // Re-sync on tab focus to pick up changes from other devices.
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+
+    const handleVisibility = () => {
+      if (document.visibilityState !== 'visible' || !initialized.current) return;
+
+      fetch('/api/collections')
+        .then(res => res.json())
+        .then((data: { collections: Collection[] }) => {
+          if (!Array.isArray(data.collections)) return;
+          loadedFromDb.current = true;
+          loadCollections(data.collections);
+        })
+        .catch(() => {});
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [isLoaded, user, loadCollections]);
 
   // Debounced sync of user-owned collections to MongoDB after every local change.
@@ -44,21 +63,7 @@ export function useCollectionSync() {
     if (syncTimer.current) clearTimeout(syncTimer.current);
 
     syncTimer.current = setTimeout(() => {
-      const currentCollections = useCollectionsStore.getState().collections;
-      const userCollections = currentCollections.filter(c => !c.isPublic);
-
-      if (userCollections.length === 0) {
-        fetch('/api/collections')
-          .then(res => res.json())
-          .then((data: { collections: Collection[] }) => {
-            if (!Array.isArray(data.collections)) return;
-
-            loadedFromDb.current = true;
-            loadCollections(data.collections);
-          })
-          .catch(() => {});
-        return;
-      }
+      const userCollections = useCollectionsStore.getState().collections.filter(c => !c.isPublic);
 
       fetch('/api/collections', {
         method: 'PUT',

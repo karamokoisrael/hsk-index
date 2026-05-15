@@ -10,7 +10,6 @@ import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import { useCollectionsStore } from '@/stores/useCollectionsStore';
-import { useCollectionSync } from '@/hooks/useCollectionSync';
 import type { FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 export type CollectionLabels = {
@@ -61,7 +60,6 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
   const [showDetails, setShowDetails] = useState(true);
 
   useEffect(() => { setIsMounted(true); }, []);
-  useCollectionSync();
 
   const { collections, createCollection, deleteCollection, addWord, removeWord } = useCollectionsStore();
   const reviewWord = useFlashcardsStore(s => s.reviewWord);
