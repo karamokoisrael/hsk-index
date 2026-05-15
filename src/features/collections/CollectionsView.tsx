@@ -10,7 +10,6 @@ import { getPrimaryMeaning, hskWords } from '@/libs/services/hskWords';
 import { HSK_LEVEL_MAX_ID } from '@/libs/constants/hskLevels';
 import { useFlashcardsStore } from '@/stores/useFlashcardsStore';
 import { useCollectionsStore } from '@/stores/useCollectionsStore';
-import { useCollectionSync } from '@/hooks/useCollectionSync';
 import type { FlashcardProgress, HskWord, ReviewGrade } from '@/types/Hsk';
 
 export type CollectionLabels = {
@@ -34,6 +33,8 @@ export type CollectionLabels = {
   answer: string;
   example: string;
   close: string;
+  hideDetails?: string;
+  showDetails?: string;
 };
 
 function wordBg(progress: FlashcardProgress | undefined): string {
@@ -56,9 +57,9 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
   const [isStudyOpen, setIsStudyOpen] = useState(false);
   const [studyWordId, setStudyWordId] = useState<number | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
 
   useEffect(() => { setIsMounted(true); }, []);
-  useCollectionSync();
 
   const { collections, createCollection, deleteCollection, addWord, removeWord } = useCollectionsStore();
   const reviewWord = useFlashcardsStore(s => s.reviewWord);
@@ -176,17 +177,28 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
 
         {/* Words */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <span className="text-sm text-muted-foreground">
               {collectionWords.length}
               {' '}
               {labels.wordsLabel}
             </span>
-            {collectionWords.length > 0 && (
-              <Button type="button" size="sm" onClick={openStudy}>
-                {labels.studyBtn}
-              </Button>
-            )}
+            <div className="flex items-center gap-3">
+              {(labels.hideDetails || labels.showDetails) && (
+                <button
+                  type="button"
+                  onClick={() => setShowDetails(v => !v)}
+                  className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  {showDetails ? labels.hideDetails : labels.showDetails}
+                </button>
+              )}
+              {collectionWords.length > 0 && (
+                <Button type="button" size="sm" onClick={openStudy}>
+                  {labels.studyBtn}
+                </Button>
+              )}
+            </div>
           </div>
 
           {collectionWords.length === 0 && (
@@ -211,9 +223,9 @@ export const CollectionsView = ({ labels }: { labels: CollectionLabels }) => {
                     }}
                     className="block w-full text-left"
                   >
-                    <div className="text-xs text-muted-foreground">{word.pinyin}</div>
-                    <div className="mt-1 text-2xl font-semibold">{word.word}</div>
-                    <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>
+                    {showDetails && <div className="text-xs text-muted-foreground">{word.pinyin}</div>}
+                    <div className={`text-2xl font-semibold ${showDetails ? 'mt-1' : ''}`}>{word.word}</div>
+                    {showDetails && <div className="mt-2 line-clamp-2 text-sm">{getPrimaryMeaning(word)}</div>}
                   </button>
                   {!activeCollection.isPublic && (
                     <button
