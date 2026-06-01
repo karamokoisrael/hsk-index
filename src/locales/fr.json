@@ -1,4 +1,13 @@
 {
+  "NewVersionModal": {
+    "title": "Nouvelle version disponible !",
+    "description": "Une version améliorée de HSK Index est maintenant en ligne avec des nouveautés majeures.",
+    "feature_hsk3": "Basé sur HSK 3.0 — la dernière norme officielle",
+    "feature_levels": "Nouveaux niveaux HSK jusqu'au HSK 9",
+    "feature_audio": "Prononciation audio ajoutée pour chaque mot",
+    "cta": "Découvrir la nouvelle version",
+    "dismiss": "Rester ici"
+  },
   "Index": {
     "meta_title": "HSK Index - Apprenez le chinois avec des flashcards et une carte des caractères.",
     "meta_description": "Entraînez le vocabulaire HSK avec des flashcards SRS et explorez les caractères chinois via une carte interactive."
